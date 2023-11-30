@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      灯光(Lighting) 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">灯光(Lighting)</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/" title="RHI">
+                    <b>#</b> RHI
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/DirectX/" title="DirectX">
+                    <b>#</b> DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/RHI/" title="RHI">
+                    #RHI
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/DirectX/" title="DirectX">
+                    #DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="灯光的组成"><a href="#灯光的组成" class="headerlink" title="灯光的组成"></a>灯光的组成</h1><p>在Direct3D灯光模型中，灯光是通过灯光资源的三个成员之一来照射的，即有三种灯光。</p>
+<ul>
+<li>环境光（Ambient Light）——这种类型的灯光将被其他所有表面反射且被用在照亮整个场景。例如，物体的各部分都被照亮，对于一个角度，甚至穿过不在光源直接照射的地方他们都能被照亮。环境光的使用是粗略的，便宜的，它模仿反射光。</li>
+<li>漫反射（Diffuse Reflection）——这种灯光按照特殊方向传播。当它照射到一个表面，它将在所有方向上均匀的反射。因为漫射光在所有方向上都均匀的反射，被反射的光线将到达眼睛而与观察点无关，因此我们不必为观察者考虑。因而，漫射光仅仅需要考虑灯光方向和表面的姿态。这种灯光将成为你的资源中照射的普通灯光。</li>
+<li>镜面反射（Specular Reflection）——这种灯光按照特殊方向传播。当它照射到一个表面时，它严格地按照一个方向反射。这将产生一个明亮的光泽，它能在某角度被看见。因为这种灯光在一个方向反射。明显的观察点，必须考虑灯光的方向和表面姿态，且必须按照镜面灯光等式来考虑。镜面灯光被用在物体上产生高光的地方，这种光泽只有在灯光照射在磨光的表面上才会产生。<br>　　镜面光比其他灯光类型要求更多的计算；因此，Direct3D提供了一个开关选择。实际上，它默认是被关闭的；要使用镜面光你必须设置D3DRS_SPECULARENABLE渲染状态。<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Device-&gt;SetRenderState(D3DRS_SPECULARENABLE, <span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+每一种灯光都是通过D3DCOLORVALUE结构或者描述灯光颜色的D3DXCOLOR来描绘的。这里有几个灯光颜色的例子：<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">D3DXCOLOR <span class="title function_">redAmbient</span><span class="params">(<span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>)</span>;</span><br><span class="line">D3DXCOLOR <span class="title function_">blueDiffuse</span><span class="params">(<span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">1.0f</span>)</span>;</span><br><span class="line">D3DXCOLOR <span class="title function_">whiteSpecular</span><span class="params">(<span class="number">1.0f</span>, <span class="number">1.0f</span>, <span class="number">1.0f</span>, <span class="number">1.0f</span>)</span>;</span><br></pre></td></tr></table></figure>
+注意：在D3DXCOLOR类中的alpha值用在描述灯光颜色时是被忽略的。</li>
+</ul>
+<h2 id="材质"><a href="#材质" class="headerlink" title="材质"></a>材质</h2><p>在现实世界中我们看到的物体颜色将由物体反射回来的灯光颜色来决定。比如，一个红色的球是红色的，因为它吸收所有的灯光颜色除了红色光。红色光是被球反射回来进入我们眼睛的，因此我们看到的球是红色的。Direct3D通过我们定义的物体材质来模拟这些所有的现象。材质允许我们定义表面反射灯光的百分比。在代码中通过D3DMATERIAL9结构描述一个材质。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">_D3DMATERIAL9</span> &#123;</span><br><span class="line">    D3DCOLORVALUE Diffuse, Ambient, Specular, Emissive;</span><br><span class="line">    <span class="type">float</span> Power;</span><br><span class="line">&#125; D3DMATERIAL9;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Diffuse——指定此表面反射的漫射光数量。</li>
+<li>Ambient——指定此表面反射的环境光数量。</li>
+<li>Specular——指定此表面反射的镜面光数量</li>
+<li>Emissive——这个是被用来给表面添加颜色，它使得物体看起来就象是它自己发出的光一样。</li>
+<li>Power——指定锐利的镜面高光；它的值是高光的锐利值。<br>　　举例，想得到一个红色的球。我们将定义球的材质来只反射红光吸收其他颜色的所有光：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">D3DMATERIAL9 red;</span><br><span class="line">::<span class="built_in">ZeroMemory</span>(&amp;red, <span class="built_in">sizeof</span>(red));</span><br><span class="line">red.Diffuse = <span class="built_in">D3DXCOLOR</span>(<span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>); <span class="comment">// red</span></span><br><span class="line">red.Ambient = <span class="built_in">D3DXCOLOR</span>(<span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>); <span class="comment">// red</span></span><br><span class="line">red.Specular = <span class="built_in">D3DXCOLOR</span>(<span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>); <span class="comment">// red</span></span><br><span class="line">red.Emissive = <span class="built_in">D3DXCOLOR</span>(<span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>); <span class="comment">// no emission</span></span><br><span class="line">red.Power = <span class="number">5.0f</span>;</span><br></pre></td></tr></table></figure>
+　　这里我们设置绿色和蓝色的值为0，这表明材质反射0%此颜色的光。我们设置红色为1，表示材质反射100%的红光。注意，我们能够控制每种灯光反射的颜色（环境、漫射和镜面光）。<br>　　同样假如我们定义一个只发出蓝色光的光源，对球的光照将失败因为蓝色光将被全部吸收而没有红光被反射。当物体吸收了所有光以后，物体看起来就为黑色。同样的，当物体反射100%的红、绿和蓝光，物体就将呈现为白色。<br>　　因为手工填充一个材质结构将是乏味的工作，我们添加下列有用的函数和全局材质常数到d3dUtility.h&#x2F;cpp文件中：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">D3DMATERIAL9 <span class="title">d3d::InitMtrl</span><span class="params">(D3DXCOLOR a, D3DXCOLOR d,</span></span></span><br><span class="line"><span class="params"><span class="function">D3DXCOLOR s, D3DXCOLOR e, <span class="type">float</span> p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    D3DMATERIAL9 mtrl;</span><br><span class="line">    mtrl.Ambient = a;</span><br><span class="line">    mtrl.Diffuse = d;</span><br><span class="line">    mtrl.Specular = s;</span><br><span class="line">    mtrl.Emissive = e;</span><br><span class="line">    mtrl.Power = p;</span><br><span class="line">    <span class="keyword">return</span> mtrl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">namespace</span> d3d</span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">D3DMATERIAL9 <span class="title">InitMtrl</span><span class="params">(D3DXCOLOR a, D3DXCOLOR d, D3DXCOLOR s, D3DXCOLOR e, <span class="type">float</span> p)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> D3DMATERIAL9 WHITE_MTRL = <span class="built_in">InitMtrl</span>(WHITE, WHITE, WHITE, BLACK, <span class="number">8.0f</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> D3DMATERIAL9 RED_MTRL = <span class="built_in">InitMtrl</span>(RED, RED, RED, BLACK, <span class="number">8.0f</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> D3DMATERIAL9 GREEN_MTRL = <span class="built_in">InitMtrl</span>(GREEN, GREEN, GREEN, BLACK, <span class="number">8.0f</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> D3DMATERIAL9 BLUE_MTRL = <span class="built_in">InitMtrl</span>(BLUE, BLUE, BLUE, BLACK, <span class="number">8.0f</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> D3DMATERIAL9 YELLOW_MTRL = <span class="built_in">InitMtrl</span>(YELLOW, YELLOW, YELLOW, BLACK, <span class="number">8.0f</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+顶点结构没有材质属性；一个通用的材质必须被设置。设置它我们使用IDirect3DDevice9::SetMaterial(CONST D3DMATERIAL9 * pMaterial)方法。<br>假设我们想渲染几个不同材质的物体；我们将按照如下的写法去做：<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">D3DMATERIAL9 blueMaterial, redMaterial;</span><br><span class="line"><span class="comment">// set up material structures</span></span><br><span class="line"></span><br><span class="line">Device-&gt;SetMaterial(&amp;blueMaterial);</span><br><span class="line">drawSphere(); <span class="comment">// blue sphere</span></span><br><span class="line"></span><br><span class="line">Device-&gt;SetMaterial(&amp;redMaterial);</span><br><span class="line">drawSphere(); <span class="comment">// red sphere</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="顶点法线"><a href="#顶点法线" class="headerlink" title="顶点法线"></a>顶点法线</h1><pre><code>面法线（face normal）是描述多边形表面方向的一个向量（如图5.1）。
+</code></pre>
+<p>图5.1<br>　　顶点法线（Vertex normals）也是基于同样的概念，但是我们与其指定每个多边形的法线，还不如为每个顶点指定（如图5.2）。<br>　　<br>　　图5.2<br>　　Direct3D需要知道顶点法线以便它能够确定灯光照射到物体表面的角度，并且一旦计算了每个顶点的灯光，Direct3D需要知道每个顶点的表面方向。注意顶点法线不一定和面法线相同。球体&#x2F;环形物就是很好的实物例子，它们的顶点法线和三角形法线是不相同的（如图5.3）。<br>　　<br>　　图5.3<br>为了描述顶点的顶点法线，我们必须更新原来的顶点结构</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Vertex</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">float</span> _x, _y, _z;</span><br><span class="line">    <span class="type">float</span> _nx, _ny, _nz;</span><br><span class="line">    <span class="type">static</span> <span class="type">const</span> DWORD FVF;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">const</span> DWORD Vertex::FVF = D3DFVF_XYZ | D3DFVF_NORMAL;</span><br></pre></td></tr></table></figure>
+<p>注意，我们已经将上一章中使用的颜色成分去除了。这是因为我们将使用灯光来计算顶点的颜色。<br>　　作为一个简单的物体比如立方体和球体，我们能够通过观察看见顶点法线。对于更多复杂的网格，我们需要一个更多的机械方法。假设一个由p0,p1,p2构成的三角形，我们需要计算每个顶点的法线n0,n1,n2。<br>　　简单的步骤，我们列举它是为了找到由三个点构成的三角形的面法线，同时使用面法线作为顶点法线。首先计算三角形上的两个向量：<br>　　<br>　　那么面法线是：<br>　　<br>　　每个顶点的法线和面法线是相等的：<br>　　<br>　　下面是一个C函数，它通过三角形的三个顶点计算三角形的面法线。注意这个函数的三个顶点是按照顺时针方向指定的。假如不是这样，那么法线方向将是相反的。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">ComputeNormal</span><span class="params">(D3DXVECTOR3* p0,</span></span></span><br><span class="line"><span class="params"><span class="function">                D3DXVECTOR3* p1,</span></span></span><br><span class="line"><span class="params"><span class="function">                D3DXVECTOR3* p2,</span></span></span><br><span class="line"><span class="params"><span class="function">                D3DXVECTOR3* out)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    D3DXVECTOR3 u = *p1 - *p0;</span><br><span class="line">    D3DXVECTOR3 v = *p2 - *p0;</span><br><span class="line">    <span class="built_in">D3DXVec3Cross</span>(out, &amp;u, &amp;v);</span><br><span class="line">    <span class="built_in">D3DXVec3Normalize</span>(out, out);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当用三角形近似表示曲面时，使用面法线作为顶点法线不能表现一个平滑的结果。一个更好的方法是找到顶点法线的平均法线。为了找到顶点v的顶点法线vn，我们找到网格模型中所有三角形的面法线记为顶点v。vn是通过计算他们的平均面法线得到的。这里有一个例子，假设有3个三角形它们的面法线分别是n0，n1，n2，指定为顶点v。那么vn的平均法线就是：<br>　　<br>通过改变“舞台”，把顶点法线变为non-normal,这是有可能的。因此这样最好是安全的且在通过D3DRS_NORMALIZENORMALS设置渲染状态来改变“舞台”后，Direct3D从新规格化所有法线。<br>Device-&gt;SetRenderState(D3DRS_NORMALIZENORMALS, true);<br>5.4光源<br>　　Direct3D支持三种类型的光源。</p>
+<ul>
+<li>点光源——这种光源在世界坐标中有一个位置且向所有方向上都照射光线。</li>
+</ul>
+<p>图5.4</p>
+<ul>
+<li>方向光源——这种光源没有位置但是向指定方向发出平行光线。</li>
+</ul>
+<p>图5.5</p>
+<ul>
+<li>聚光灯——这种类型的光源和手电筒的光类似；它有位置并且发出的光在指定方向上按照圆锥形照射。这个圆锥形有两个角度，θ和φ。角度θ描述内圆锥，φ描述外圆锥。</li>
+</ul>
+<p>图5.6<br>　　在代码中一个灯光资源是通过D3DLIGHT9结构来表现的。<br>typedef struct _D3DLIGHT9 {<br>    D3DLIGHTTYPE Type;<br>    D3DCOLORVALUE Diffuse;<br>    D3DCOLORVALUE Specular;<br>    D3DCOLORVALUE Ambient;<br>    D3DVECTOR Position;<br>    D3DVECTOR Direction;<br>    float Range;<br>    float Falloff;<br>    float Attenuation0;<br>    float Attenuation1;<br>    float Attenuation2;<br>    float Theta;<br>    float Phi;<br>} D3DLIGHT9;</p>
+<ul>
+<li><p>Type——定义灯光类型，我们能够使用下面三种类型之一：D3DLIGHT_POINT, D3DLIGHT_SPOT, D3DLIGHT_DIRECTIONAL</p>
+</li>
+<li><p>Diffuse——此光源发出的漫射光颜色。</p>
+</li>
+<li><p>Specular——此光源发出的镜面光颜色。</p>
+</li>
+<li><p>Ambient——此光源发出的环境光颜色。</p>
+</li>
+<li><p>Position——用一个向量来描述的光源世界坐标位置。这个值对于灯光的方向是无意义的。</p>
+</li>
+<li><p>Direction——用一个向量来描述的光源世界坐标照射方向。这个值不能用在点光源上。</p>
+</li>
+<li><p>Range——灯光能够传播的最大范围。这个值不能比大。且不能用于方向光源。</p>
+</li>
+<li><p>Falloff——这个值只能用在聚光灯上。它定义灯光在从内圆锥到外圆锥之间的强度衰减。它的值通常设置为1.0f。</p>
+</li>
+<li><p>Attenuation0, Attenuation1, Attenuation2——这些衰减变量被用来定义灯光强度的传播距离衰减。它们只被用于点光源和聚光灯上。Attenuation0定义恒定衰减，Attenuation1定义线性衰减，Attenuation2定义二次衰减。适当的使用这个公式，D是代表到光源的距离，A0,A1,A2与Attenuation0，1，2相匹配。</p>
+</li>
+<li><p>Theta——只用于聚光灯；指定内圆锥的角度，单位是弧度。</p>
+</li>
+<li><p>Phi——只用于聚光灯；指定外圆锥的角度，单位是弧度。<br>　　就象初始化D3DMATERIAL9结构一样，初始化D3DLIGHT9结构是一件单调乏味的工作。我们添加下面的函数到d3dUtility.h&#x2F;cpp文件中用于初始化简单灯光。<br>namespace d3d<br>{<br>  … …<br>  D3DLIGHT9 InitDirectionalLight(D3DXVECTOR3* direction, D3DXCOLOR* color);</p>
+<p>  D3DLIGHT9 InitPointLight(D3DXVECTOR3* position, D3DXCOLOR* color);</p>
+<p>  D3DLIGHT9 InitSpotLight(D3DXVECTOR3* position, D3DXVECTOR3* direction, D3DXCOLOR* color);</p>
+</li>
+</ul>
+<p>}<br>　　使用这些函数是非常简单的。我们现在只是演示怎样使用InitDirectionalLight。其他的也很类似：<br>D3DLIGHT9 d3d::InitDirectionalLight(D3DXVECTOR3* direction, D3DXCOLOR* color)<br>{<br>    D3DLIGHT9 light;<br>    ::ZeroMemory(&amp;light, sizeof(light));<br>    light.Type &#x3D; D3DLIGHT_DIRECTIONAL;<br>    light.Ambient &#x3D; *color * 0.4f;<br>    light.Diffuse &#x3D; *color;<br>    light.Specular &#x3D; *color * 0.6f;<br>    light.Direction &#x3D; *direction;<br>    return light;<br>}<br>　　然后创建一个方向光源，它沿着x轴正方向照射白色灯光。我们按照下面的方法来做：<br>D3DXVECTOR3 dir(1.0f, 0.0f, 0.0f);<br>D3DXCOLOR c &#x3D; d3d::WHITE;<br>D3DLIGHT9 dirLight &#x3D; d3d::InitDirectionalLight(&amp;dir, &amp;c);<br>　　在把D3DLIGHT9初始化好以后，我们需要用Direct3D内在支持的灯光来注册。就象这样做：<br>Device-&gt;SetLight(<br>    0, &#x2F;&#x2F; element in the light list to set, range is 0-maxlights<br>    &amp;light);&#x2F;&#x2F; address of the D3DLIGHT9 structure to set<br>　　一旦灯光注册了，我们就能使用下面的列举的例子来开或关灯光了：<br>Device-&gt;LightEnable(<br>    0, &#x2F;&#x2F; the element in the light list to enable&#x2F;disable<br>    true); &#x2F;&#x2F; true &#x3D; enable, false &#x3D; disable<br>5.5实例程序：灯光<br>    这一章的例子是创建如图5.7所显示的场景。它示范了怎样指定顶点法线，怎样创建材质，以及怎样创建和使用一个方向灯光。注意在这个示例程序中我们不会使用在文件d3dUtility.h&#x2F;cpp中的材质和灯光函数。因为我们想展示怎样手动来做这些设置。</p>
+<p>图5.7<br>    给场景增加灯光的步骤是：<br>1、 允许使用灯光。<br>2、 为每个物体创建材质并且在渲染相应物体前应将材质附予物体。<br>3、 创建一个或多个光源，设置它们，把它们设为可用。<br>4、 将其他附加光源设为可用，比如镜面高光。<br>　　首先我们初始化一个全局顶点缓存用他来存储“金字塔”的顶点：<br>IDirect3DVertexBuffer9* Pyramid &#x3D; 0;<br>　　Setup函数包含本章的所有代码，因此我们忽略其他函数。它执行刚才讨论的步骤来给场景加入灯光。Setup方法首先允许使用灯光，当然这不是必须的因为默认设置就是允许使用灯光的。<br>bool Setup()<br>{<br>    Device-&gt;SetRenderState(D3DRS_LIGHTING, true);<br>　　下一步，我们创建顶点缓存，锁定，并且把“金字塔”的三角形顶点放入其中。顶点法线是利用5.3节中的运算法则预先计算好的。注意三角形共享顶点，但它们的法线不能共享；因此对这个物体使用索引列表并不是最有利的。例如，所有三角形都共享顶点（0,1,0）；然而，对每个三角形，它们的顶点法线是不相同的。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">Device-&gt;<span class="built_in">CreateVertexBuffer</span>(</span><br><span class="line">            <span class="number">12</span> * <span class="built_in">sizeof</span>(Vertex),</span><br><span class="line">            D3DUSAGE_WRITEONLY,</span><br><span class="line">            Vertex::FVF,</span><br><span class="line">            D3DPOOL_MANAGED,</span><br><span class="line">            &amp;Pyramid,</span><br><span class="line">            <span class="number">0</span>);</span><br><span class="line"><span class="comment">// fill the vertex buffer with pyramid data</span></span><br><span class="line">Vertex* v;</span><br><span class="line">Pyramid-&gt;<span class="built_in">Lock</span>(<span class="number">0</span>, <span class="number">0</span>, (<span class="type">void</span>**)&amp;v, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// front face</span></span><br><span class="line">v[<span class="number">0</span>] = <span class="built_in">Vertex</span>(<span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.707f</span>, <span class="number">-0.707f</span>);</span><br><span class="line">v[<span class="number">1</span>] = <span class="built_in">Vertex</span>( <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">0.707f</span>, <span class="number">-0.707f</span>);</span><br><span class="line">v[<span class="number">2</span>] = <span class="built_in">Vertex</span>( <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.707f</span>, <span class="number">-0.707f</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// left face</span></span><br><span class="line">v[<span class="number">3</span>] = <span class="built_in">Vertex</span>(<span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">-0.707f</span>, <span class="number">0.707f</span>, <span class="number">0.0f</span>);</span><br><span class="line">v[<span class="number">4</span>] = <span class="built_in">Vertex</span>( <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">-0.707f</span>, <span class="number">0.707f</span>, <span class="number">0.0f</span>);</span><br><span class="line">v[<span class="number">5</span>] = <span class="built_in">Vertex</span>(<span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">-0.707f</span>, <span class="number">0.707f</span>, <span class="number">0.0f</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// right face</span></span><br><span class="line">v[<span class="number">6</span>] = <span class="built_in">Vertex</span>( <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">0.707f</span>, <span class="number">0.707f</span>, <span class="number">0.0f</span>);</span><br><span class="line">v[<span class="number">7</span>] = <span class="built_in">Vertex</span>( <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.707f</span>, <span class="number">0.707f</span>, <span class="number">0.0f</span>);</span><br><span class="line">v[<span class="number">8</span>] = <span class="built_in">Vertex</span>( <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">0.707f</span>, <span class="number">0.707f</span>, <span class="number">0.0f</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// back face</span></span><br><span class="line">v[<span class="number">9</span>] = <span class="built_in">Vertex</span>( <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.707f</span>, <span class="number">0.707f</span>);</span><br><span class="line">v[<span class="number">10</span>] = <span class="built_in">Vertex</span>( <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">0.707f</span>, <span class="number">0.707f</span>);</span><br><span class="line">v[<span class="number">11</span>] = <span class="built_in">Vertex</span>(<span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.707f</span>, <span class="number">0.707f</span>);</span><br><span class="line"></span><br><span class="line">Pyramid-&gt;<span class="built_in">Unlock</span>();</span><br></pre></td></tr></table></figure>
+<p>　　为物体产生了顶点数据以后，我们描述利用灯光表现各自材质的物体间是怎样相互影响的。在这个例子中，“金字塔”反射出白光，自身不发光，且会产生一些高光。<br>D3DMATERIAL9 mtrl;<br>mtrl.Ambient &#x3D; d3d::WHITE;<br>mtrl.Diffuse &#x3D; d3d::WHITE;<br>mtrl.Specular &#x3D; d3d::WHITE;<br>mtrl.Emissive &#x3D; d3d::BLACK;<br>mtrl.Power &#x3D; 5.0f;<br>Device-&gt;SetMaterial(&amp;mtrl);<br>　　接着，我们创建一个方向光并将其设为可用。方向光是沿着x轴的正方向照射的。灯光照射最强的白色漫射光（dir.Diffuse &#x3D; WHITE），较弱的白色镜面光（dir.Specular &#x3D; WHITE * 0.3f）以及一个中等强度的白色环境光（dir.Ambient &#x3D; WHITE *0.6f）。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">D3DLIGHT9 dir;</span><br><span class="line">::<span class="built_in">ZeroMemory</span>(&amp;dir, <span class="built_in">sizeof</span>(dir));</span><br><span class="line">dir.Type = D3DLIGHT_DIRECTIONAL;</span><br><span class="line">dir.Diffuse = d3d::WHITE;</span><br><span class="line">dir.Specular = d3d::WHITE * <span class="number">0.3f</span>;</span><br><span class="line">dir.Ambient = d3d::WHITE * <span class="number">0.6f</span>;</span><br><span class="line">dir.Direction = <span class="built_in">D3DXVECTOR3</span>(<span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>);</span><br><span class="line">Device-&gt;<span class="built_in">SetLight</span>(<span class="number">0</span>, &amp;dir);</span><br><span class="line">Device-&gt;<span class="built_in">LightEnable</span>(<span class="number">0</span>, <span class="literal">true</span>);</span><br><span class="line"><span class="comment">//最后，我们设置状态使法线从新规格化且把镜面高光设置为可用。</span></span><br><span class="line">Device-&gt;<span class="built_in">SetRenderState</span>(D3DRS_NORMALIZENORMALS, <span class="literal">true</span>);</span><br><span class="line">Device-&gt;<span class="built_in">SetRenderState</span>(D3DRS_SPECULARENABLE, <span class="literal">true</span>);</span><br><span class="line"><span class="comment">// ... code to set up the view matrix and projection matrix</span></span><br><span class="line"><span class="comment">// omitted</span></span><br><span class="line"><span class="keyword">return</span> <span class="literal">true</span>;</span><br></pre></td></tr></table></figure>
+<p>5.6附加实例<br>　　这一章中还有三个附加的例子。它们使用D3DXCreate<em>函数来创建组成场景的3D物体。D3DXCreate</em>函数创建的顶点数据是D3DFVF_XYZ | D3DFVF_NORMAL格式。在增加的函数中为我们的网格模型的每个顶点计算了顶点法线。这些实例演示了怎样使用方向光，点光源，以及聚光灯。图5.8显示的是方向光实例中的一个场景图。<br>　　<br>　　图5.8</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/color/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/" title="RHI">
+                        <b>#</b> RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/DirectX/" title="DirectX">
+                        <b>#</b> DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/RHI/" title="RHI">
+                        #RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/DirectX/" title="DirectX">
+                        #DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/Texturing/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%81%AF%E5%85%89%E7%9A%84%E7%BB%84%E6%88%90"><span class="toc-text">灯光的组成</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%90%E8%B4%A8"><span class="toc-text">材质</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A1%B6%E7%82%B9%E6%B3%95%E7%BA%BF"><span class="toc-text">顶点法线</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E7%81%AF%E5%85%89(Lighting) + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F04%2F11%2FProgramer%2FRHI%2FDirectX%2FLighting%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/04/11/Programer/RHI/DirectX/Lighting/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

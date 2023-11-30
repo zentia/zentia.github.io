@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      混合(Blending) 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">混合(Blending)</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/" title="RHI">
+                    <b>#</b> RHI
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/DirectX/" title="DirectX">
+                    <b>#</b> DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/RHI/" title="RHI">
+                    #RHI
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/DirectX/" title="DirectX">
+                    #DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="混合因素"><a href="#混合因素" class="headerlink" title="混合因素"></a>混合因素</h1><p>　　观察图7.1，我们将一个红色的茶壶绘制在一个木质背景上。<br>　　<br>　　图7.1<br>　　假设想让茶壶有一个透明度，以便我们能够透过茶壶看见背景（如图7.2）。<br>　　<br>　　图7.2<br>　　我们怎样才能实现这个效果呢？我们只需要在木箱子上光栅化茶壶三角形，我们需要结合像素颜色，就象通过茶壶显示木箱那样来计算茶壶的像素颜色。结合像素值的意思就是用以前写过的目标像素值去估算源像素值这被叫做混合。注意混合的效果不仅仅象是玻璃透明一样。我们有很多选项来指定颜色是怎样被混合的，就象7.2部分中看到的一样。<br>　　这是很重要的，认识三角形普遍利用以前写入后缓存中的像素来与之混合来光栅化。在示例图片中，木箱图片首先被画出来且它的像素在后缓存中。我们然后绘制茶壶，以便用木箱的像素来混合茶壶的像素。因此，当使用混合时，下面的规则将被遵循：<br>　　规则：首先不使用混合绘制物体。然后根据物体离摄象机的距离使用混合对物体拣选；这是非常有效的处理，假如物体是在视图坐标中，那么你能够利用z分量简单地拣选。最后使用从后到前的顺序混合绘制物体。<br>　　下面的公式是用来混合两个像素值的：<br>　　<br>　　上面的所有变量都是一个4D颜色向量（r,g,b,a），并且符号是表示分量相乘。</p>
+<ul>
+<li>OutputPixel——混合后的像素结果。</li>
+<li>SourcePixel——通常被计算的像素，它是利用在后缓存中的像素来被混合的。</li>
+<li>SourceBlendFactor——在[0，1]范围内的一个值。它指定源像素在混合中的百分比。</li>
+<li>DestPixel——在后缓存中的像素。</li>
+<li>DestBlendFactor——在[0，1]范围内的一个值。它指定目的像素在混合中的百分比。<br>　　源和目的混合要素使我们能够按照多种途径改变原始源和目的像素，允许实现不同的效果。7.2节列举了能够被使用的预先确定的值。<br>　　混合默认是被关闭的；你能够通过设置D3DRS_ALPHABLENDENABLE渲染状态为true来开启它：<br>Device-&gt;SetRenderState(D3DRS_ALPHABLENDENABLE, true);<br>7.2混合要素<br>　　通过设置不同的源和目的要素，我们能够创造很多不同的混合效果。通过实验，使用不同的组合看看它们到底能实现什么效果。你能够通过设置D3DRS_SRCBLEND和D3DRS_DESTBLEND渲染状态来分别设置源混合要素和目的混合要素。例如我们可以这样写：<br>Device-&gt;SetRenderState(D3DRS_SRCBLEND, Source);<br>Device-&gt;SetRenderState(D3DRS_DESTBLEND, Destination);<br>　　这里Source和Destination能够使用下面混合要素中的一个：</li>
+<li>D3DBLEND_ZERO——blendFactor&#x3D;(0, 0, 0, 0)</li>
+<li>D3DBLEND_ONE——blendFactor&#x3D;(1, 1, 1, 1)</li>
+<li>D3DBLEND_SRCCOLOR——blendFactor&#x3D;(rs, gs, bs, as)</li>
+<li>D3DBLEND_INVSRCCOLOR——blendFactor&#x3D;(1-rs, 1-gs, 1-bs, 1-as)</li>
+<li>D3DBLEND_SRCALPHA——blendFactor&#x3D;(as, as, as, as)</li>
+<li>D3DBLEND_INVSRCALPHA——blendFactor&#x3D;(1-as, 1-as, 1-as, 1-as)</li>
+<li>D3DBLEND_DESTALPHA——blendFactor&#x3D;(ad, ad, ad, ad)</li>
+<li>D3DBLEND_INVDESTALPHA——blendFactor&#x3D;(1-ad, 1-ad, 1-ad, 1-ad)</li>
+<li>D3DBLEND_DESTCOLOR——blendFactor&#x3D;(rd, gd, bd, ad)</li>
+<li>D3DBLEND_INVDESTCOLOR——blendFactor&#x3D;(1-rd, 1-gd, 1-bd, 1-ad)</li>
+<li>D3DBLEND_SRCALPHASAT——blendFactor&#x3D;(f, f, f, 1)  ,  f&#x3D;min(as, 1 – ad)</li>
+<li>D3DBLEND_BOTHINVSRCALPHA——这种混合模式设置源混合要素为（1-as, 1-as, 1-as, 1-as,）以及目的混合要素为（as,as,as,as）。这种混合模式仅对D3DRS_SRCBLEND有效。<br>　　源和目的混合要素的默认值分别是D3DBLEND_SRCALPHA和D3DBLEND_INVSRCALPHA。<br>7.3透明度<br>  在以前的章节中我们忽略了颜色顶点和材质中的alpha部分，那是因为当时它并不是必须的。现在它首先被用在混合中。<br>  Alpha部分主要是用来指定像素的透明等级。我们为每个像素的alpha部分保留8位，alpha的有效值在[0,255]范围内，[0,255]代表不透明度[0%,100%]。因此，像素的alpha为0时，表示完全透明，像素的alpha为128时，表示50%透明，像素的alpha为255时，表示完全不透明。<br>  为了让alpha部分描述像素的透明等级，我们必须设置源混合要素为D3DBLEND_SRCALPHA以及目的混合要素为D3DBLEND_INVSRCALPHA。这些值碰巧也是被默认设置的。<br>7.3.1Alpha通道<br>　　代替使用Alpha部分来计算遮影，我们能够从纹理的alpha通道中得到alpha信息。Alpha通道是额外的设置位，用它来保存每一个点的alpha值。当一个纹理被映射到一个图元上时，在alpha通道中的alpha信息也被映射，并且它们利用alpha信息为每个像素赋予纹理。图7.3显示了一个带8位alpha通道的图片。</li>
+</ul>
+<p>　　<br>　　图7.3<br>　　图7.4显示的是一个利用alpha通道指定透明度来渲染的一个纹理方块。<br>　　<br>　　图7.4<br>7.3.2指定Alpha资源<br>　　默认情况下，假如设置一个有alpha通道的纹理，alpha值从在alpha通道中获得。假如没有alpha通道，那么alpha值是通过顶点颜色获得。然而，你能够通过下面的渲染状态来指定使用哪一个资源：<br>&#x2F;&#x2F; compute alpha from diffuse colors during shading<br>Device-&gt;SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);<br>Device-&gt;SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);<br>&#x2F;&#x2F; take alpha from alpha channel<br>Device-&gt;SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);<br>Device-&gt;SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);<br>7.4使用DirectX纹理工具创建Alpha通道<br>    绝大多数普通图象文件格式没有存储alpha信息。在这一部分我们给你演示怎样使用DirectX纹理工具来创建一个带alpha通道的DDS文件。DDS文件是一个为DirectX应用程序和纹理设置的图象格式。DDS文件能够利用D3DXCreateTextureFromFile被读进纹理中，就象bmp和jpg文件一样。DirectX纹理工具被放在你的DXSDK目录下的\Bin\DXUtils文件夹下（我是放在C:\Program Files\Microsoft DirectX 9.0 SDK (February 2005)\Utilities\Bin\x86下的，文件名是DxTex.exe）。<br>    打开DirectX纹理工具，并且把本章中示例文件夹下的crate.jpg文件用工具打开。木箱被自动的按照24位RGB纹理被读取。它包含8位红色，8位绿色，以及8位蓝色。我们需要将该纹理增加为32位ARGB纹理，增加的是额外的8位alpha通道。从菜单中选择Format，选择Change Surface Format。一个象图7.5的对话框将被弹出。选择A8R8G8B8格式点击OK。</p>
+<p>图7.5<br>    它创建了一个32位颜色深度的图象，它的每个象素都有8位alpha通道，8位红色，8位绿色，8位蓝色。我们下一步是向alpha通道中写入数据。我们将图7.3中的8位灰色图片信息写进alpha通道中。选择菜单中的File，选择Open Onto Alpha Channel Of This Texture。一个对话框将弹出让你选择包含你想要写入alpha通道中数据信息的图片。选择alphachannel.bmp文件。图7.6显示的是程序已经插入了alpha通道数据。</p>
+<p>图7.6<br>    现在用你选择的文件名存储纹理；我们使用cratewalpha.dds文件名。<br>7.5实例程序：透明度<br>    这个实例程序是在一个木箱背景上绘制一个透明的茶壶，就象图7.2所显示的一样。在这个例子中alpha值是从材质中得到。应用程序允许我们通过按A或S键来增加&#x2F;减少alpha的值。<br>    使用混合的必要步骤是：</p>
+<ol>
+<li>设置混合要素D3DRS_SRCBLEND 和 D3DRS_DESTBLEND。</li>
+<li>假如你使用alpha部分，指定资源（材质或alpha通道）。</li>
+<li>允许alpha混合渲染状态。<br>　　对于这个例子，我们定义下面的全局变量：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ID3DXMesh* Teapot = <span class="number">0</span>; <span class="comment">// the teapot</span></span><br><span class="line">D3DMATERIAL9 TeapotMtrl; <span class="comment">// the teapot’s material</span></span><br><span class="line"></span><br><span class="line">IDirect3DVertexBuffer9* BkGndQuad = <span class="number">0</span>; <span class="comment">// background quad - crate</span></span><br><span class="line">IDirect3DTexture9* BkGndTex = <span class="number">0</span>; <span class="comment">// crate texture</span></span><br><span class="line">D3DMATERIAL9 BkGndMtrl; <span class="comment">// background material</span></span><br></pre></td></tr></table></figure>
+Setup方法设置很多东西；我们省略了很多与本章无关的代码。关心混合，Setup方法指定alpha值的获取资源。在这个例子中，我们通过材质指定alpha值。注意我们设置茶壶的材质alpha部分为0.5，也就是说茶壶将按照50%的透明度被渲染。我们在这里也要设置混合要素。要注意的是在这个方法中我们不能将alpha混合设置为启用。理由是alpha混合要进行额外的处理并且应该仅在需要用时才被使用。举例，在这个例子中只有茶壶需要用允许alpha混合来被渲染——而方块不需要。因此，我们在Display函数中启用alpha混合。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">Setup</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    TeapotMtrl = d3d::RED_MTRL;</span><br><span class="line">    TeapotMtrl.Diffuse.a = <span class="number">0.5f</span>; <span class="comment">// set alpha to 50% opacity</span></span><br><span class="line">    BkGndMtrl = d3d::WHITE_MTRL;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">D3DXCreateTeapot</span>(Device, &amp;Teapot, <span class="number">0</span>);</span><br><span class="line">    </span><br><span class="line">    ...<span class="comment">// Create background quad snipped    </span></span><br><span class="line">    ...<span class="comment">// Light and texture setup snipped</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// use alpha in material&#x27;s diffuse component for alpha</span></span><br><span class="line">    Device-&gt;<span class="built_in">SetTextureStageState</span>(<span class="number">0</span>, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);</span><br><span class="line">    Device-&gt;<span class="built_in">SetTextureStageState</span>(<span class="number">0</span>, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);</span><br><span class="line">    <span class="comment">// set blending factors so that alpha</span></span><br><span class="line">    <span class="comment">// component determines transparency</span></span><br><span class="line">    Device-&gt;<span class="built_in">SetRenderState</span>(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);</span><br><span class="line">    Device-&gt;<span class="built_in">SetRenderState</span>(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);</span><br><span class="line">    </span><br><span class="line">    ...<span class="comment">// view/projection matrix setup snipped</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+在Display函数中，我们检测假如A或S键被按下那么就通过增加或减少材质的alpha值来反馈。注意这个方法要保证alpha值不会超出[0,1]的范围。我们然后渲染背景。最后，我们启用alpha混合，利用alpha混合来渲染茶壶，关闭alpha混合。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">Display</span><span class="params">(<span class="type">float</span> timeDelta)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>( Device )</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">// Update</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">// increase/decrease alpha via keyboard input</span></span><br><span class="line">        <span class="keyword">if</span>( ::<span class="built_in">GetAsyncKeyState</span>(<span class="string">&#x27;A&#x27;</span>) &amp; <span class="number">0x8000f</span> )</span><br><span class="line">            TeapotMtrl.Diffuse.a += <span class="number">0.01f</span>;</span><br><span class="line">        <span class="keyword">if</span>( ::<span class="built_in">GetAsyncKeyState</span>(<span class="string">&#x27;S&#x27;</span>) &amp; <span class="number">0x8000f</span> )</span><br><span class="line">            TeapotMtrl.Diffuse.a -= <span class="number">0.01f</span>;</span><br><span class="line">        <span class="comment">// force alpha to [0, 1] interval</span></span><br><span class="line">        <span class="keyword">if</span>(TeapotMtrl.Diffuse.a &gt; <span class="number">1.0f</span>)</span><br><span class="line">            TeapotMtrl.Diffuse.a = <span class="number">1.0f</span>;</span><br><span class="line">        <span class="keyword">if</span>(TeapotMtrl.Diffuse.a &lt; <span class="number">0.0f</span>)</span><br><span class="line">            TeapotMtrl.Diffuse.a = <span class="number">0.0f</span>;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">// Render</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        Device-&gt;<span class="built_in">Clear</span>(<span class="number">0</span>, <span class="number">0</span>, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,</span><br><span class="line">                        <span class="number">0xffffffff</span>, <span class="number">1.0f</span>, <span class="number">0</span>);</span><br><span class="line">        Device-&gt;<span class="built_in">BeginScene</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Draw the background</span></span><br><span class="line">        D3DXMATRIX W;</span><br><span class="line">        <span class="built_in">D3DXMatrixIdentity</span>(&amp;W);</span><br><span class="line">        Device-&gt;<span class="built_in">SetTransform</span>(D3DTS_WORLD, &amp;W);</span><br><span class="line">        Device-&gt;<span class="built_in">SetFVF</span>(Vertex::FVF);</span><br><span class="line">        Device-&gt;<span class="built_in">SetStreamSource</span>(<span class="number">0</span>, BkGndQuad, <span class="number">0</span>, <span class="built_in">sizeof</span>(Vertex));</span><br><span class="line">        Device-&gt;<span class="built_in">SetMaterial</span>(&amp;BkGndMtrl);</span><br><span class="line">        Device-&gt;<span class="built_in">SetTexture</span>(<span class="number">0</span>, BkGndTex);</span><br><span class="line">        Device-&gt;<span class="built_in">DrawPrimitive</span>(D3DPT_TRIANGLELIST, <span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Draw the teapot</span></span><br><span class="line">        Device-&gt;<span class="built_in">SetRenderState</span>(D3DRS_ALPHABLENDENABLE, <span class="literal">true</span>);</span><br><span class="line">        <span class="built_in">D3DXMatrixScaling</span>(&amp;W, <span class="number">1.5f</span>, <span class="number">1.5f</span>, <span class="number">1.5f</span>);</span><br><span class="line">        Device-&gt;<span class="built_in">SetTransform</span>(D3DTS_WORLD, &amp;W);</span><br><span class="line">        Device-&gt;<span class="built_in">SetMaterial</span>(&amp;TeapotMtrl);</span><br><span class="line">        Device-&gt;<span class="built_in">SetTexture</span>(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        Teapot-&gt;<span class="built_in">DrawSubset</span>(<span class="number">0</span>);</span><br><span class="line">        Device-&gt;<span class="built_in">SetRenderState</span>(D3DRS_ALPHABLENDENABLE, <span class="literal">false</span>);</span><br><span class="line">        Device-&gt;<span class="built_in">EndScene</span>();</span><br><span class="line">        Device-&gt;<span class="built_in">Present</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+注意：在本章中有另一个使用纹理通道来演示alpha混合的例子texAlpha。与上边的代码不同之处仅仅在于得到alpha值是从纹理而不是从材质。<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use alpha channel in texture for alpha</span></span><br><span class="line">Device-&gt;SetTextureStageState(<span class="number">0</span>, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);</span><br><span class="line">Device-&gt;SetTextureStageState(<span class="number">0</span>, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);</span><br></pre></td></tr></table></figure>
+这个应用程序读取的是一个在7.4节中用DX Tex Tool工具创建的带有alpha通道的DDS文件。</li>
+</ol>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/Texturing/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/" title="RHI">
+                        <b>#</b> RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/DirectX/" title="DirectX">
+                        <b>#</b> DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/RHI/" title="RHI">
+                        #RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/DirectX/" title="DirectX">
+                        #DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/Stenciling/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%9B%A0%E7%B4%A0"><span class="toc-text">混合因素</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E6%B7%B7%E5%90%88(Blending) + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F04%2F11%2FProgramer%2FRHI%2FDirectX%2FBlending%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/04/11/Programer/RHI/DirectX/Blending/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

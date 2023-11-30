@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      Unity3DOptimize 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Unity3DOptimize</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:03
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Engine/" title="Engine">
+                    <b>#</b> Engine
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Engine/Unity/" title="Unity">
+                    <b>#</b> Unity
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="遮挡剔除OcclusionCulling"><a href="#遮挡剔除OcclusionCulling" class="headerlink" title="遮挡剔除OcclusionCulling"></a>遮挡剔除OcclusionCulling</h1><p>遮挡剔除(Occlusion Culling)功能可在对象因被其他物体遮挡，当前在相机中无法看到时，禁用对象渲染。该功能不会在三维计算机图形中自动开启，因为在大部分情况下，离相机最远的对象最先渲染，离相机的对象覆盖先前的物体（该步骤称之为“重复渲染(overdraw)”）。遮挡剔除(Occlusion Culling)与视锥体剔除(Frustum Culling)不同。视锥体剔除(Frustum Culling)只禁用相机视野外的对象渲染，不禁用视野中被遮挡的任何物体的渲染。注意，使用遮挡剔除(Occlusion Culling)功能时，仍将受益于视锥体剔除(Frustum Culling)。<br>当场景中包含大量模型时，势必会造成渲染效率的降低。如果使用遮挡剔除技术，可以使用那些被阻挡的物体不被渲染，从而达到提高渲染效率的目的。</p>
+<p>遮挡剔除的基本原理是在场景中创建一个遮挡区域，该遮挡区域由单元格组成；每个单元格构成整个场景遮挡区域的一部分，这些单元格会把整个场景拆分为多个部分。当摄像机能够看到该单元格时，单元格中的物体会被渲染出来，而被其他单元格挡住的不被摄像机看到的物体不会被渲染。</p>
+<p>下面，我们来做遮挡剔除的案例</p>
+<h1 id="层级消隐"><a href="#层级消隐" class="headerlink" title="层级消隐"></a>层级消隐</h1><p>如果场景中存在大量的小物体，则可以使用层消隐优化场景。层消隐就是在比较远的距离将小物体剔除，减少绘制调用的次数。例如，在比较远的距离，大型建筑物依然可见，但是小型的石块和碎片隐藏掉。可以将小物件单独放入一个层，并且使用Camera.main.layerCullDistance函数设置层的消隐距离。调整摄像机位置进行测试即可。只有在摄像机距离这些物体小于10M的时候，地面上的这些物体才能显示出来。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">SeperateControl</span> : <span class="title">MonoBehaviour</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span> &#123;</span><br><span class="line">        <span class="built_in">float</span>[] distance = <span class="keyword">new</span> <span class="built_in">float</span>[<span class="number">32</span>];</span><br><span class="line">        distances[<span class="number">8</span>] = <span class="number">10</span>;</span><br><span class="line">        Camera.main.layerCullDistances = distances; <span class="comment">// 如果main == null,则设置camera的tag为mainCamera</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="层级细节LOD"><a href="#层级细节LOD" class="headerlink" title="层级细节LOD"></a>层级细节LOD</h1><p>层级细节LOD全称为LevelOfDetail,它是根据物体在游戏画面中锁占据的百分比来调用不同复杂度的模型的。简单理解就是当一个物体距离摄像机比较远的时候，使用复杂度低的模型，比较近的时候，使用复杂度高的模型。</p>
+<p>在建模软件中，制作好各个层级的模型，并且根据复杂程度自高向低命名为：模型名称_LOD0,模型名称_LOD1,模型名称_LOD2，数字越低，复杂程度越高。</p>
+<p>我们新建一个场景，构造最简单的LOD模型示例。</p>
+<ol>
+<li>准备3个Unity基本游戏对象，添加必要的材质。</li>
+<li>定义一个空对象，命名为_LOD,添加LODGroup组件</li>
+<li>分别将以上三个基本对象拖拽到LODGroup的各个级别上</li>
+<li>首先添加LOD0的对象，当然中间需要修改父节点，点击确定即可</li>
+<li>在Scene视图中，拖动摄像机分别近距离与远距离观察模型的变化。</li>
+</ol>
+<h1 id="DrawCall讲解"><a href="#DrawCall讲解" class="headerlink" title="DrawCall讲解"></a>DrawCall讲解</h1><p>一个DrawCall，表示U3D使用这个材质&#x2F;纹理，来进行一次渲染，那么这次渲染假设有3个对象，那么当3个对象都使用这一个材质&#x2F;纹理的时候，就会产生一次DrawCall，可以理解为一次将纹理输送到屏幕上的过程，（实际上引擎大多会使用如双缓冲，缓存这类的手段来优化这个过程，但在这里我们只需要这样认识就可以了），假设3个对象使用不同的材质&#x2F;纹理，那么无疑会产生3个DrawCall。</p>
+<p>批处理动态物体需要在每个顶点上进行一定的开销，所以动态批处理仅支持小于900顶点的网格物体，如果你的着色器使用顶点位置，法线和UV值三种属性，那么你只能批处理300顶点一下的物体；请注意：属性数量的限制可能会在将来进行改变。</p>
+<p>相同的物体采取相同的材质，修改其缩放比例，观察DrawCall的变化。</p>
+<p>功能描述如下：Static Batching是将标明为Static的静态物件，如果在使用相同材质球的条件下，Unity会自动帮你把这两个物体合并成一个Batch，送往GPU来处理。</p>
+<p>Static Batching可以让引擎降低任何尺寸网格的Draw Call，如下图所示：</p>
+<h1 id="Profile-工具使用"><a href="#Profile-工具使用" class="headerlink" title="Profile 工具使用"></a>Profile 工具使用</h1><p>性能分析工具可以给我们提供游戏性能表现的详细信息。如果我们的游戏存在性能问题，如低帧率或者高内存占用，性能分析工具可以帮助我们法线问题的起因，并协助我们解决问题。</p>
+<p>Profiler布局</p>
+<p>在我们使用Profiler收集游戏数据之前，先打开它熟悉下界面布局。从菜单Window-&gt;Profiler打开。</p>
+<p>在窗口左侧，可以看到一列profilers，每个profiler显示我们游戏的一个方面的信息，分别为cpu使用情况，gpu使用情况，渲染，内存使用情况，声音，物理和网络。</p>
+<p>当开始录制时，窗口上部的每个profiler会随着时间显示数据。性能是随着时间变化的，所以随着时间变化的信息是比仅仅一帧的信息有用的多的。有些性能问题是持续性的，有些问题是仅仅在一帧中出现的，还有一些性能问题是随着时间逐渐显现的。</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2018/06/09/Programer/GPU/BRDF/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:03
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Engine/" title="Engine">
+                        <b>#</b> Engine
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Engine/Unity/" title="Unity">
+                        <b>#</b> Unity
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2018/07/01/Programer/Engine/Unity/Unity3D_Game_Design/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%81%AE%E6%8C%A1%E5%89%94%E9%99%A4OcclusionCulling"><span class="toc-text">遮挡剔除OcclusionCulling</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B1%82%E7%BA%A7%E6%B6%88%E9%9A%90"><span class="toc-text">层级消隐</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B1%82%E7%BA%A7%E7%BB%86%E8%8A%82LOD"><span class="toc-text">层级细节LOD</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DrawCall%E8%AE%B2%E8%A7%A3"><span class="toc-text">DrawCall讲解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Profile-%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8"><span class="toc-text">Profile 工具使用</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Unity3DOptimize + '&url=' + http%3A%2F%2Fzentia.github.io%2F2018%2F06%2F26%2FProgramer%2FEngine%2FUnity%2FUnity3D-Optimize%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2018/06/26/Programer/Engine/Unity/Unity3D-Optimize/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      3D游戏与计算机图形学中的数学方法 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">3D游戏与计算机图形学中的数学方法</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/game/" title="game">
+                    <b>#</b> game
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>通过像素包含测试、裁剪测试、Alpha测试、模版测试和深度测试，段数据的最终颜色值被混合到图像缓冲区。图像缓冲区的新颜色值通过将端数据的最终颜色值与图像缓冲区对应位置的颜色值进行混合操作而获得。段数据的Alpha值和保存在图像缓冲区中的Alpha值也可用来决定视见区中显示的最终颜色值。最简单的混合操作就是用段数据的最终颜色值替换图像缓冲区中的颜色值。混合操作也可用来产生透明一类的特殊视觉效果。</p>
+<h2 id="内积"><a href="#内积" class="headerlink" title="内积"></a>内积</h2><p>两个向量的内积也被称为向量的点积或者标量积，是3D图形学忠应用最多的概念之一。内积可用来计算两个向量的方向差。<br><strong>定义2.3</strong> 两个n维向量$P$和$Q$的内积可以表示$P\cdot Q$，是一个标量，可以按以下公式计算：<br>$\vec P\cdot \vec Q&#x3D;\sum_{i&#x3D;1}^nP_iQ_i$<br>从该定义可以看出，两个向量的内积是每个分量乘积的和，对于三维向量，其内积可以表示为<br>$\vec P\cdot \vec Q&#x3D;P_xQ_x+P_yQ_y+P_zQ_z$<br>接下来的定理2.4将揭示向量内积被广泛应用的原因。<br><strong>定理2.4</strong> 给定任意两个n维向量$\vec P$和$\vec Q$，内积$\vec P \cdot \vec Q$满足以下等式。<br>$\vec P \cdot \vec Q &#x3D; ||P||\ ||Q||cos\alpha$<br>其中$\alpha$是坐标原点分别与向量$\vec P$和$\vec Q$对应的点之间连线的平面夹角。<br><strong>证明：</strong> 如图2.2所示，令其中$\alpha$为向量$\vec P$和向量$\vec Q$之间的夹角，根据余弦定义可知。</p>
+<img src="/2019/09/06/Programer/game/Mathematical-methods-in-3D-games-and-computer-graphics/1.jpg" class="">
+<p>图 2.2 等式$\vec P \cdot \vec Q &#x3D; ||P||\ ||Q||cos\alpha$将两个向量的内积与它们的夹角联系在一起</p>
+<h1 id="曲线与曲面"><a href="#曲线与曲面" class="headerlink" title="曲线与曲面"></a>曲线与曲面</h1><p>现代图形硬件已经具备对由大量顶点和平面组成的各类光滑曲面进行有效渲染的能力，因此弯曲几何体的表示与处理已经成为3D图形引擎的必备功能之一。另外，在几何造型系统中，曲线可以表示某个对象的运动轨迹。本章将介绍多种三维的三次曲线，并进一步介绍如何用这些曲线生成双三次参数曲面。</p>
+<h2 id="三次曲线"><a href="#三次曲线" class="headerlink" title="三次曲线"></a>三次曲线</h2><p>三次多项式定义的曲线在操作灵活性和计算简单性方面比较均衡，因此在计算机图形学中被广泛应用。下面将介绍几种不同类型的三次曲线并比较它们之间的性质。<br>三次曲线的基本形式可用以下参数表达式表示。<br>$Q(t)&#x3D;\vec a+\vec bt+\vec ct^2+\vec dt^3$<br>其中，a，b，c和d为常向量，Q(t)为曲线上与参数t对应的点。Q(t)的分部表达式为<br>$Q_x(t)&#x3D;\vec a_x+\vec b_xt+\vec c_xt^2+\vec d_xt^3$<br>$Q_y(t)&#x3D;\vec a_y+\vec b_yt+\vec c_yt^2+\vec d_yt^3$<br>$Q_z(t)&#x3D;\vec a_z+\vec b_zt+\vec c_zt^2+\vec d_zt^3$<br>上式可以容易地写成矩阵乘积的形式：<br>$Q(t)&#x3D;\begin{bmatrix}a_x&amp;b_x&amp;c_x&amp;d_x\\a_y&amp;b_y&amp;c_y&amp;d_y\\a_z&amp;b_z&amp;c_z&amp;d_z\end{bmatrix}\begin{bmatrix}1\\t\\t^2\\t^3\end{bmatrix}$<br>写成更紧凑的形式，如下所示：<br>$Q(t)&#x3D;CT(t)$<br>其中，C为系数矩阵，$T(t)&#x3D;(1,t,t^2,t^3)$，Q(t)的导数为曲线在t的切线方向，由于矩阵C为常数矩阵，可以很容易地计算出Q(t)的导数，如下式所示。<br>$Q^’(t)&#x3D;Cd&#x2F;dtT(t)&#x3D;C$</p>
+<h3 id="4-4-3-坐标w的几何意义"><a href="#4-4-3-坐标w的几何意义" class="headerlink" title="4.4.3 坐标w的几何意义"></a>4.4.3 坐标w的几何意义</h3><p>在利用$4\times 4$矩阵进行的变换中，四维向量的w坐标起了重要作用，除了这个作用外，w坐标还有重要的几何意义。前面，通过给三维点扩展一个等于1的w坐标，变成四维空间中的一个点。这里研究一下相反的情况，假设有一个4D点向量$\vec p &#x3D; (x,y,z,w)$，其中w不为0.令向量$P’$为向量$P$在w&#x3D;1的三维空间中的映射，如下式所示：<br>$P’&#x3D;({x\over w},{y\over w},{z\over w})$</p>
+<h3 id="4-6-2-四元数旋转"><a href="#4-6-2-四元数旋转" class="headerlink" title="4.6.2 四元数旋转"></a>4.6.2 四元数旋转</h3><p>三维空间的旋转可以看成函数$\varphi$在三维向量空间$R^3$内的映射变换。由于函数$\varphi$表示一个旋转变换，它必须保持长度、角度和偏手性不变。<br>如图4.5所示，图中为了方便省略了z轴，3D点向量$P’$为点$P$与坐标系原点的连线与w&#x3D;1的三维空间的交点，因此，给4D向量P</p>
+<h3 id="5-3-1-视场"><a href="#5-3-1-视场" class="headerlink" title="5.3.1 视场"></a>5.3.1 视场</h3><p>如图5.10所示，投影平面是一个与相机指向垂直的平面，该平面与相机的距离为e，左锥面与右锥面分别与该平面在x&#x3D;-1和x&#x3D;1处相交。距离e有时也被称为相机的焦距，与左锥面和右锥面之间的夹角$\alpha$有关，夹角$\alpha$被称为水平视场角。</p>
+<img src="/2019/09/06/Programer/game/Mathematical-methods-in-3D-games-and-computer-graphics/2.jpg" class="">
+<p>图5.10 相机到投影平面的距离e与水平视场角$\alpha$有关</p>
+<p>对于给定的水平视场角$\alpha$，到投影平面的距离e可由以下三角关系表达式给出。<br>$e &#x3D; {1\over tan( \alpha &#x2F; 2)}$</p>
+<p>焦距越短，则视场越大。视场角逐渐缩小，相机则进行放大成像，而焦距越大。<br>显示屏幕的宽高比等于显示屏幕的高度除以宽度，例如，像素分辨率为$640\times 480$的显示器的宽高比为0.75。由于大多数显示器不是正方形而是长方形，所以垂直视场不等于水平视场。低锥平面和顶锥平面与投影平面在$y&#x3D;\pm a$处相交，a为显示器的宽高比，这可构成图5.11所示的三角形，则垂直视场角$\beta$的表达式如下：<br>$\beta&#x3D;2tan^{-1}(a&#x2F;e)$</p>
+<img src="/2019/09/06/Programer/game/Mathematical-methods-in-3D-games-and-computer-graphics/3.jpg" class="">
+<p>图5.11 垂直视场角$\beta$与高宽比a有关</p>
+<p>视锥的4个边平面在从投影平面切出一个长方形，该长方形与相机距离为e，它的四条边分别位于$x&#x3D;\pm 1$和$y&#x3D;\pm a$处。</p>
+<h3 id="5-3-2-锥平面"><a href="#5-3-2-锥平面" class="headerlink" title="5.3.2 锥平面"></a>5.3.2 锥平面</h3><p>6个视锥平面在相机空间的法向量如图5.12所示，其中4个边锥平面的法向量向内，指向视锥内部，可以通过将边平面中的边的方向向里旋转90°获得。由于每个边锥平面都经过坐标系原点，其平面四锥表达式中的D&#x3D;0。近锥平面与原点距离为n，与原点的相对方向与其法向量相同，所以D&#x3D;-n。远锥平面与原点距离为f，与原点的相对方向与其法向量相反，所以D&#x3D;f。表5.1总结了视锥的6个锥平面的四维平面表示向量。在表5.1中，4个边锥平面的法向量已经规范化成长度为单位长度的向量。</p>
+<img src="/2019/09/06/Programer/game/Mathematical-methods-in-3D-games-and-computer-graphics/4.jpg" class="">
+<p>图5.12 在OpenGL的相机空间中的视锥平面的法向量方向<br><strong>表5.1 在OpenGL的相机空间中的视锥平面向量</strong></p>
+<h2 id="深度值偏移"><a href="#深度值偏移" class="headerlink" title="深度值偏移"></a>深度值偏移</h2><p>在很多游戏中，经常遇到渲染一些特殊效果的情况，如墙上的火烧痕迹和地面上的脚印，这些内容都不是原始场景的一部分，而是在游戏过程中产生的，在9.2节中将介绍这些特效的方法。这些修饰性的对象通常被贴到当前的物体表面上，因此这些对象包含的多边形与场景中的插值深度值，很少会等于与共面的另一多边形某一部分对应的渲染像素的插值深度值，这将导致一个不想要的渲染结果，即原始表面的多边形会透过贴上去的多边形而显示出来。<br>为了解决上述问题，需要寻找一个方法可以将多边形在场景中的深度适当偏移而不改变它的投影屏幕坐标或者调整多边形的纹理映射透视处理方法。多数3D图形系统包含一些多边形偏移函数，借用这些函数可实现处理目标。然而，这些办法缺少灵活的控制方法，常会导致逐顶点的复杂运算。本节将介绍一个通过修改投影矩阵而获得深度偏移效果的方法。</p>
+<h3 id="投影矩阵调整"><a href="#投影矩阵调整" class="headerlink" title="投影矩阵调整"></a>投影矩阵调整</h3><p>首先分析标准的OpenGL透视投影矩阵对观察空间一点$P &#x3D; (P_x,P_y,P_z,1)$的变换结果。</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/09/06/Programer/Render/ArchitecturalShadow/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/game/" title="game">
+                        <b>#</b> game
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2020/01/03/Programer/Engine/Unreal/SpatialOS/SpatialOS/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%A7%AF"><span class="toc-text">内积</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9B%B2%E7%BA%BF%E4%B8%8E%E6%9B%B2%E9%9D%A2"><span class="toc-text">曲线与曲面</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E6%AC%A1%E6%9B%B2%E7%BA%BF"><span class="toc-text">三次曲线</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-3-%E5%9D%90%E6%A0%87w%E7%9A%84%E5%87%A0%E4%BD%95%E6%84%8F%E4%B9%89"><span class="toc-text">4.4.3 坐标w的几何意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-6-2-%E5%9B%9B%E5%85%83%E6%95%B0%E6%97%8B%E8%BD%AC"><span class="toc-text">4.6.2 四元数旋转</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-1-%E8%A7%86%E5%9C%BA"><span class="toc-text">5.3.1 视场</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-2-%E9%94%A5%E5%B9%B3%E9%9D%A2"><span class="toc-text">5.3.2 锥平面</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E5%80%BC%E5%81%8F%E7%A7%BB"><span class="toc-text">深度值偏移</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%95%E5%BD%B1%E7%9F%A9%E9%98%B5%E8%B0%83%E6%95%B4"><span class="toc-text">投影矩阵调整</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + 3D%E6%B8%B8%E6%88%8F%E4%B8%8E%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E4%B8%AD%E7%9A%84%E6%95%B0%E5%AD%A6%E6%96%B9%E6%B3%95 + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F09%2F06%2FProgramer%2Fgame%2FMathematical-methods-in-3D-games-and-computer-graphics%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/09/06/Programer/game/Mathematical-methods-in-3D-games-and-computer-graphics/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

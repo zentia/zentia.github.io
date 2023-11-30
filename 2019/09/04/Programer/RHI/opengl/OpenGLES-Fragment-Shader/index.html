@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      OpenGL ES 3.0 Fragment Shader 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">OpenGL ES 3.0 Fragment Shader</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/" title="RHI">
+                    <b>#</b> RHI
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/opengl/" title="opengl">
+                    <b>#</b> opengl
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/OpenGL-ES-3-0/" title="OpenGL ES 3.0">
+                    #OpenGL ES 3.0
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>第9章介绍了在片段着色器中创建和应用纹理的基础知识。在本章中，我们提供了片段着色器的更多细节，并描述它的一些用户。特别是，我们聚焦于如何用片段着色器实现固定功能技术。本章介绍的主题包括：</p>
+<ul>
+<li>固定功能片段着色器</li>
+<li>可编程片段着色器概述</li>
+<li>多重纹理</li>
+<li>雾化</li>
+<li>Alpha测试</li>
+<li>用户裁剪平面</li>
+</ul>
+<img src="/2019/09/04/Programer/RHI/opengl/OpenGLES-Fragment-Shader/7.jpg" class="">
+
+<p>在图10-1中，已经包含了可编程管线的顶点着色器、图元装配和光栅化阶段。我们已经讨论了在片段着色器中使用纹理。现在，我们将重点放在管线的片段着色器部分，介绍片段着色器编写方面的其余细节。</p>
+<h1 id="固定功能片段着色器"><a href="#固定功能片段着色器" class="headerlink" title="固定功能片段着色器"></a>固定功能片段着色器</h1><p>对可编程片段管线还不熟悉但是已经使用过OpenGL ES 1.x的读者可能熟悉固定功能片段管线。在研究片段着色器的细节之前，我们认为值得简单地回顾一下老式的固定功能片段管线，这将帮助你理解老式的固定功能管线映射到片段着色器的方式。在转到更先进的片段编程技术之前，这是很好的起点。</p>
+<p>在OpenGL ES 1.1中，可以使用一组有限的方程式，确定如何组合片段着色的不同输入。在固定功能管线中，实际上可以使用3种输入：插值顶点颜色、纹理颜色和常量颜色。顶点颜色通常保存一个预先计算的颜色或者顶点照明计算的结果。纹理颜色来自于使用图元纹理坐标绑定中读取的值，而常量颜色可以对每个纹理单元设置。</p>
+<h2 id="内建特殊变量"><a href="#内建特殊变量" class="headerlink" title="内建特殊变量"></a>内建特殊变量</h2><p>OpenGL ES 3.0有内建特殊变量，这些变量由片段着色器输出或者作为片段着色器的输入。片段着色器中可用的内建特殊变量如下所示：</p>
+<ul>
+<li>gl_FragCoord—-片段着色器中的一个只读变量。这个变量保存片段的窗口相对坐标(x,y,z,1&#x2F;w)。在一些算法中，知道当前片段的窗口坐标是很有用的。例如，可以使用窗口坐标作为某个随机噪声贴图纹理读取的偏移量，噪声贴图的值用于旋转阴影贴图的过滤核心。这种技术用于减少阴影贴图的锯齿失真。</li>
+<li>gl_FrontFacing—-片段着色器中的一个只读变量。这个布尔变量在片段是正面图元的一部分时为true，否则为false。</li>
+<li>gl_PointCoord—-一个只读变量，可以在渲染点精灵时使用。它保存点精灵的纹理坐标，这个坐标在点光栅化期间自动生成，处于[0,1]区间内。第14章中有一个使用该变量渲染点精灵的示例。</li>
+<li>gl_FragDepth—-一个只写输出变量，在片段着色器中写入时，覆盖片段的固定功能深度值。这一个功能应该谨慎使用（只在必要时），因为它可能禁用许多GPU的深度优化。例如，许多GPU有所谓的“Early-Z”功能，在执行片段着色器之前进行深度测试。使用Early-Z的好处是不能通过深度测试的片段永远不回被着色（从而保护了性能）。但是，使用gl_FragDepth时，必须禁用该功能，因为GPU在执行片段着色器之前不知道深度值。</li>
+</ul>
+<h2 id="内建变量"><a href="#内建变量" class="headerlink" title="内建变量"></a>内建变量</h2><p>下面是与片段着色器有关的内建变量：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> mediump <span class="type">int</span> gl_MaxFragmentInputVectors = <span class="number">15</span>;</span><br><span class="line"><span class="type">const</span> mediump <span class="type">int</span> gl_MaxTextureImageUnits = <span class="number">16</span>;</span><br><span class="line"><span class="type">const</span> mediump <span class="type">int</span> gl_MaxFragmentUniformVectors = <span class="number">224</span>;</span><br><span class="line"><span class="type">const</span> mediump <span class="type">int</span> gl_MaxDrawBuffers = <span class="number">4</span>;</span><br><span class="line"><span class="type">const</span> mediump <span class="type">int</span> gl_MinProgramTexelOffset = <span class="number">-8</span>;</span><br><span class="line"><span class="type">const</span> mediump <span class="type">int</span> gl_MaxProgramTexelOffset = <span class="number">7</span>;</span><br></pre></td></tr></table></figure>
+<p>内建常量描述如下最大项：</p>
+<ul>
+<li>gl_MaxFragmentInputVectors—-片段着色器输入（或者可变值）的最大数量。所有ES 3.0实现支持的最小值为15。</li>
+<li>gl_MaxTextureImageUnits—-可用纹理图像单元的最大数量。所有ES 3.0 实现支持的最小值为16。</li>
+<li>gl_MaxFragmentUniformVectors—-片段着色器内可以使用vec4统一变量项目的最大数量。所有ES 3.0实现支持的最小值为224。开发者实际可以使用的vec4统一变量项目的数量在不同实现以及不同片段着色器可能不一样。这个问题在第8张中说明过，同样适用于片段着色器。</li>
+<li>gl_MaxDrawBuffers—-多重渲染目标（MRT）的最大支持数量。所有ES 3.0实现支持的最小值为4。</li>
+<li>gl_MinProgramTexelOffset&#x2F;gl_MaxProgramTexelOffset—-通过内建ESSL函数texture*Offset()偏移参数支持的最大和最小偏移量。</li>
+</ul>
+<h2 id="多重纹理"><a href="#多重纹理" class="headerlink" title="多重纹理"></a>多重纹理</h2><p>我们从多重纹理入手，这是片段着色器中非常常见的操作，用于组合多个纹理贴图。例如，QuakeIII等多种游戏里曾经使用一种技术，将来自光照计算的照明效果存储在一个纹理贴图中。然后，这个贴图在片段着色器中与基本纹理贴图合并，以表现静态照明。多重纹理还有许多其他的示例，我们将在第14张介绍。例如，纹理贴图常常用于存储反射指数和遮罩，以衰减和遮盖反射光的分布。许多游戏还是用法线贴图，这种纹理以比逐顶点法线更高级别的细节存储法线信息，以便在片段着色器中计算照明。</p>
+<h2 id="雾化"><a href="#雾化" class="headerlink" title="雾化"></a>雾化</h2><p>应用雾化是渲染3D场景的一种常见技术。在OpenGL ES 1.1中，雾化作为一种固定功能操作。雾化如此普遍应用的原因之一是，它可以用于减少绘图距离，并且消除靠近观看者的几何体的“突现”现象。</p>
+<p>雾化的计算有几种可能的方式，使用可编程片段着色器，你就不必局限于任何特定的方程式。下面我们将介绍如何用片段着色器计算线性雾化。要计算任何类型的雾化，需要两个输入：像素到眼睛的距离以及雾化的颜色。要计算线性雾化，还需要雾化所覆盖的最小和最大距离。</p>
+<h2 id="片段测试和操作"><a href="#片段测试和操作" class="headerlink" title="片段测试和操作"></a>片段测试和操作</h2><p>下面几个小节描述可以应用到OpenGL ES片段的各种测试。默认情况下，所有片段测试和操作都被禁用，片段在写入帧缓冲区时按照接受它们的顺序变成像素。通过启用不通的片段，可以应用操作性测试，以选择哪些片段成为像素并影响最终的图像。</p>
+<p>每个片段测试都可以通过调用glEnable单独启用，该函数所带的标志参数如表11-1所示。</p>
+<p>表11-1 片段测试启用标志</p>
+<table>
+<thead>
+<tr>
+<th>glEnable标志</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GL_DEPTH_TEST</td>
+<td>控制片段的深度测试</td>
+</tr>
+<tr>
+<td>GL_STENCIL_TEST</td>
+<td>控制片段的模版测试</td>
+</tr>
+<tr>
+<td>GL_BLEND</td>
+<td>控制片段与颜色缓冲区中存储的颜色的混合</td>
+</tr>
+<tr>
+<td>GL_DITHER</td>
+<td>在写入颜色颜色缓冲区前控制片段颜色的抖动</td>
+</tr>
+<tr>
+<td>GL_SAMPLE_COVERAGE</td>
+<td>控制样本范围值的计算</td>
+</tr>
+<tr>
+<td>GL_SAMPLE_ALPHA_TO_COVERAGE</td>
+<td>控制样本范围值计算中样本Alpha的使用</td>
+</tr>
+</tbody></table>
+<h2 id="使用裁剪测试"><a href="#使用裁剪测试" class="headerlink" title="使用裁剪测试"></a>使用裁剪测试</h2><p>裁剪测试通过制定一个矩形区域（进一步限制帧缓冲区中可以写入的像素）提供了额外的裁剪层次。使用裁剪矩形是两步的过程。首先，需用glScissor函数指定矩形区域：<br><code>void glScissor(GLint x, GLint y, GLsizei width, GLsizei height);</code><br>x,y    以视口坐标指定裁剪矩形左下角<br>width  指定裁剪矩形宽度（以像素表示）<br>height 指定裁剪矩形高度（以像素显示）</p>
+<p>指定裁剪矩形之后，需通过条用glEnable(GL_SCISSOR_TEST)启用它，以实施更多的裁剪。所有渲染（包括视口清除）都限于裁剪矩形之内。</p>
+<p>一般来说，裁剪矩形是视口中的一个子区域，但是这两个区域不一定真正交叉。当两个区域不交叉时，裁剪操作将在视口区域外渲染的像素上进行。注意，视口的变换发生在片段着色器之前，而裁剪测试发生在片段着色器阶段之后。</p>
+<h2 id="模版缓冲区测试"><a href="#模版缓冲区测试" class="headerlink" title="模版缓冲区测试"></a>模版缓冲区测试</h2><p>应用到片段的下一个操作是模版测试。模版缓冲区是一个逐像素掩码，保存可用于确定某个像素是否应该被更新的值。模版测试由应用程序启用或者禁用。<br>模版缓冲区的使用可以看做两步的操作。第一步是用逐像素掩码初始化模版缓冲区，这可以通过渲染几何形状并制定模版缓冲区的更新方式来完成。第二部通常是使用这些值控制后续在颜色缓冲区中的渲染。在两种情况下，都制定参数在模版测试中的使用方式。</p>
+<p>模版测试实际上是一个位测试，就像在C程序中使用掩码确定某一位是否置位一样。控制模版测试的运算符和值的模版函数由glStencilFunc或glStencilFuncSeparate函数控制。<br><code>void glStencilFunc(GLenum func,GLint ref, GLuint mask)</code><br><code>void glStencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask)</code></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/09/04/Programer/GPU/GPU-Optimize/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/" title="RHI">
+                        <b>#</b> RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/opengl/" title="opengl">
+                        <b>#</b> opengl
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/OpenGL-ES-3-0/" title="OpenGL ES 3.0">
+                        #OpenGL ES 3.0
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/09/05/Programer/GPU/GPU-Architectures/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%BA%E5%AE%9A%E5%8A%9F%E8%83%BD%E7%89%87%E6%AE%B5%E7%9D%80%E8%89%B2%E5%99%A8"><span class="toc-text">固定功能片段着色器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%BB%BA%E7%89%B9%E6%AE%8A%E5%8F%98%E9%87%8F"><span class="toc-text">内建特殊变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%BB%BA%E5%8F%98%E9%87%8F"><span class="toc-text">内建变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E9%87%8D%E7%BA%B9%E7%90%86"><span class="toc-text">多重纹理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%BE%E5%8C%96"><span class="toc-text">雾化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%87%E6%AE%B5%E6%B5%8B%E8%AF%95%E5%92%8C%E6%93%8D%E4%BD%9C"><span class="toc-text">片段测试和操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E8%A3%81%E5%89%AA%E6%B5%8B%E8%AF%95"><span class="toc-text">使用裁剪测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E7%89%88%E7%BC%93%E5%86%B2%E5%8C%BA%E6%B5%8B%E8%AF%95"><span class="toc-text">模版缓冲区测试</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + OpenGL%20ES%203.0%20Fragment%20Shader + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F09%2F04%2FProgramer%2FRHI%2Fopengl%2FOpenGLES-Fragment-Shader%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/09/04/Programer/RHI/opengl/OpenGLES-Fragment-Shader/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

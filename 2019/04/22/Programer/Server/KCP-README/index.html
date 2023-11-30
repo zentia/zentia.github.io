@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      KCP - A Fast and Reliable ARQ Protocol 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">KCP - A Fast and Reliable ARQ Protocol</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Server/" title="Server">
+                    <b>#</b> Server
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Server/" title="Server">
+                    #Server
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p><a target="_blank" rel="noopener" href="https://github.com/skywind3000/kcp/blob/master/README.en.md">README in English</a> </p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>KCP是一个快速可靠协议，能以比 TCP浪费10%-20%的带宽的代价，换取平均延迟降低 30%-40%，且最大延迟降低三倍的传输效果。纯算法实现，并不负责底层协议（如UDP）的收发，需要使用者自己定义下层数据包的发送方式，以 callback的方式提供给 KCP。 连时钟都需要外部传递进来，内部不会有任何一次系统调用。</p>
+<p>整个协议只有 ikcp.h, ikcp.c两个源文件，可以方便的集成到用户自己的协议栈中。也许你实现了一个P2P，或者某个基于 UDP的协议，而缺乏一套完善的ARQ可靠协议实现，那么简单的拷贝这两个文件到现有项目中，稍微编写两行代码，即可使用。</p>
+<h1 id="技术特性"><a href="#技术特性" class="headerlink" title="技术特性"></a>技术特性</h1><p>TCP是为流量设计的（每秒内可以传输多少KB的数据），讲究的是充分利用带宽。而 KCP是为流速设计的（单个数据包从一端发送到一端需要多少时间），以10%-20%带宽浪费的代价换取了比 TCP快30%-40%的传输速度。TCP信道是一条流速很慢，但每秒流量很大的大运河，而KCP是水流湍急的小激流。KCP有正常模式和快速模式两种，通过以下策略达到提高流速的结果：</p>
+<h4 id="RTO翻倍vs不翻倍："><a href="#RTO翻倍vs不翻倍：" class="headerlink" title="RTO翻倍vs不翻倍："></a>RTO翻倍vs不翻倍：</h4><p>   TCP超时计算是RTOx2，这样连续丢三次包就变成RTOx8了，十分恐怖，而KCP启动快速模式后不x2，只是x1.5（实验证明1.5这个值相对比较好），提高了传输速度。</p>
+<h4 id="选择性重传-vs-全部重传："><a href="#选择性重传-vs-全部重传：" class="headerlink" title="选择性重传 vs 全部重传："></a>选择性重传 vs 全部重传：</h4><p>   TCP丢包时会全部重传从丢的那个包开始以后的数据，KCP是选择性重传，只重传真正丢失的数据包。</p>
+<h4 id="快速重传："><a href="#快速重传：" class="headerlink" title="快速重传："></a>快速重传：</h4><p>   发送端发送了1,2,3,4,5几个包，然后收到远端的ACK: 1, 3, 4, 5，当收到ACK3时，KCP知道2被跳过1次，收到ACK4时，知道2被跳过了2次，此时可以认为2号丢失，不用等超时，直接重传2号包，大大改善了丢包时的传输速度。</p>
+<h4 id="延迟ACK-vs-非延迟ACK："><a href="#延迟ACK-vs-非延迟ACK：" class="headerlink" title="延迟ACK vs 非延迟ACK："></a>延迟ACK vs 非延迟ACK：</h4><p>   TCP为了充分利用带宽，延迟发送ACK（NODELAY都没用），这样超时计算会算出较大 RTT时间，延长了丢包时的判断过程。KCP的ACK是否延迟发送可以调节。</p>
+<h4 id="UNA-vs-ACK-UNA："><a href="#UNA-vs-ACK-UNA：" class="headerlink" title="UNA vs ACK+UNA："></a>UNA vs ACK+UNA：</h4><p>   ARQ模型响应有两种，UNA（此编号前所有包已收到，如TCP）和ACK（该编号包已收到），光用UNA将导致全部重传，光用ACK则丢失成本太高，以往协议都是二选其一，而 KCP协议中，除去单独的 ACK包外，所有包都有UNA信息。</p>
+<h4 id="非退让流控："><a href="#非退让流控：" class="headerlink" title="非退让流控："></a>非退让流控：</h4><p>   KCP正常模式同TCP一样使用公平退让法则，即发送窗口大小由：发送缓存大小、接收端剩余接收缓存大小、丢包退让及慢启动这四要素决定。但传送及时性要求很高的小数据时，可选择通过配置跳过后两步，仅用前两项来控制发送频率。以牺牲部分公平性及带宽利用率之代价，换取了开着BT都能流畅传输的效果。</p>
+<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><ol>
+<li><p>创建 KCP对象：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化 kcp对象，conv为一个表示会话编号的整数，和tcp的 conv一样，通信双</span></span><br><span class="line"><span class="comment">// 方需保证 conv相同，相互的数据包才能够被认可，user是一个给回调函数的指针</span></span><br><span class="line">ikcpcb *kcp = <span class="built_in">ikcp_create</span>(conv, user);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置回调函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// KCP的下层协议输出函数，KCP需要发送数据时会调用它</span></span><br><span class="line"><span class="comment">// buf/len 表示缓存和长度</span></span><br><span class="line"><span class="comment">// user指针为 kcp对象创建时传入的值，用于区别多个 KCP对象</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">udp_output</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *buf, <span class="type">int</span> len, ikcpcb *kcp, <span class="type">void</span> *user)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ....</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 设置回调函数</span></span><br><span class="line">kcp-&gt;output = udp_output;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>循环调用 update：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 以一定频率调用 ikcp_update来更新 kcp状态，并且传入当前时钟（毫秒单位）</span></span><br><span class="line"><span class="comment">// 如 10ms调用一次，或用 ikcp_check确定下次调用 update的时间不必每次调用</span></span><br><span class="line"><span class="built_in">ikcp_update</span>(kcp, millisec);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>输入一个下层数据包：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 收到一个下层数据包（比如UDP包）时需要调用：</span></span><br><span class="line"><span class="built_in">ikcp_input</span>(kcp, received_udp_packet, received_udp_size);</span><br></pre></td></tr></table></figure>
+<p>处理了下层协议的输出&#x2F;输入后 KCP协议就可以正常工作了，使用 ikcp_send 来向<br>远端发送数据。而另一端使用 ikcp_recv(kcp, ptr, size)来接收数据。</p>
+</li>
+</ol>
+<h1 id="协议配置"><a href="#协议配置" class="headerlink" title="协议配置"></a>协议配置</h1><p>协议默认模式是一个标准的 ARQ，需要通过配置打开各项加速开关：</p>
+<ol>
+<li><p>工作模式：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">ikcp_nodelay</span><span class="params">(ikcpcb *kcp, <span class="type">int</span> nodelay, <span class="type">int</span> interval, <span class="type">int</span> resend, <span class="type">int</span> nc)</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>nodelay ：是否启用 nodelay模式，0不启用；1启用。</li>
+<li>interval ：协议内部工作的 interval，单位毫秒，比如 10ms或者 20ms</li>
+<li>resend ：快速重传模式，默认0关闭，可以设置2（2次ACK跨越将会直接重传）</li>
+<li>nc ：是否关闭流控，默认是0代表不关闭，1代表关闭。</li>
+<li>普通模式： ikcp_nodelay(kcp, 0, 40, 0, 0);</li>
+<li>极速模式： ikcp_nodelay(kcp, 1, 10, 2, 1);</li>
+</ul>
+</li>
+<li><p>最大窗口：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">ikcp_wndsize</span><span class="params">(ikcpcb *kcp, <span class="type">int</span> sndwnd, <span class="type">int</span> rcvwnd)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>该调用将会设置协议的最大发送窗口和最大接收窗口大小，默认为32. 这个可以理解为 TCP的 SND_BUF 和 RCV_BUF，只不过单位不一样 SND&#x2F;RCV_BUF 单位是字节，这个单位是包。</p>
+</li>
+<li><p>最大传输单元：</p>
+<p>纯算法协议并不负责探测 MTU，默认 mtu是1400字节，可以使用ikcp_setmtu来设置该值。该值将会影响数据包归并及分片时候的最大传输单元。</p>
+</li>
+<li><p>最小RTO：</p>
+<p>不管是 TCP还是 KCP计算 RTO时都有最小 RTO的限制，即便计算出来RTO为40ms，由于默认的 RTO是100ms，协议只有在100ms后才能检测到丢包，快速模式下为30ms，可以手动更改该值：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kcp-&gt;rx_minrto = <span class="number">10</span>;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="文档索引"><a href="#文档索引" class="headerlink" title="文档索引"></a>文档索引</h1><p>协议的使用和配置都是很简单的，大部分情况看完上面的内容基本可以使用了。如果你需要进一步进行精细的控制，比如改变 KCP的内存分配器，或者你需要更有效的大规模调度 KCP链接（比如 3500个以上），或者如何更好的同 TCP结合，那么可以继续延伸阅读：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/skywind3000/kcp/wiki">Wiki Home</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/skywind3000/kcp/wiki/KCP-Best-Practice">KCP 最佳实践</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/skywind3000/kcp/wiki/Cooperate-With-Tcp-Server">同现有TCP服务器集成</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/skywind3000/kcp/wiki/Network-Encryption">传输数据加密</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/skywind3000/kcp/wiki/Flow-Control-for-Users">应用层流量控制</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/skywind3000/kcp/wiki/KCP-Benchmark">性能评测</a></li>
+</ul>
+<h1 id="开源案例"><a href="#开源案例" class="headerlink" title="开源案例"></a>开源案例</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/xtaci/kcptun">kcptun</a>: 基于 kcp-go做的高速远程端口转发(隧道) ，配合ssh -D，可以比 shadowsocks 更流畅的看在线视频。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/vzex/dog-tunnel">dog-tunnel</a>: GO开发的网络隧道，使用 KCP极大的改进了传输速度，并移植了一份 GO版本 KCP</li>
+<li><a target="_blank" rel="noopener" href="https://www.v2ray.com/">v2ray</a>：著名代理软件，Shadowsocks 代替者，1.17后集成了 kcp协议，使用UDP传输，无数据包特征。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/libinzhangyuan/asio_kcp">asio-kcp</a>: 使用 KCP的完整 UDP网络库，完整实现了基于 UDP的链接状态管理，会话控制，KCP协议调度等</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/hkspirt/kcp-java">kcp-java</a>：Java版本 KCP协议实现。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/szhnet/kcp-netty">kcp-netty</a>：kcp的Java语言实现，基于netty。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/xtaci/kcp-go">kcp-go</a>: 高安全性的kcp的 GO语言实现，包含 UDP会话管理的简单实现，可以作为后续开发的基础库。 </li>
+<li><a target="_blank" rel="noopener" href="https://github.com/limpo1989/kcp-csharp">kcp-csharp</a>: kcp的 csharp移植，同时包含一份回话管理，可以连接上面kcp-go的服务端。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/KumoKyaku/KCP">kcp-csharp</a>: 新版本 Kcp的 csharp移植。线程安全，运行时无alloc，对gc无压力。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/en/kcp-rs">kcp-rs</a>: KCP的 rust移植</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Matrix-Zhang/kcp">kcp-rust</a>：新版本 KCP的 rust 移植</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Matrix-Zhang/tokio_kcp">tokio-kcp</a>：rust tokio 的 kcp 集成</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/linxiaolong/lua-kcp">lua-kcp</a>: KCP的 Lua扩展，用于 Lua服务器</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/leenjewel/node-kcp">node-kcp</a>: node-js 的 KCP 接口  </li>
+<li><a target="_blank" rel="noopener" href="https://github.com/oyyd/nysocks">nysocks</a>: 基于libuv实现的<a target="_blank" rel="noopener" href="https://nodejs.org/api/addons.html">node-addon</a>，提供nodejs版本的代理服务，客户端接入支持SOCKS5和ss两种协议</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/shadowsocks/shadowsocks-android">shadowsocks-android</a>: Shadowsocks for android 集成了 kcptun 使用 kcp协议加速 shadowsocks，效果不错</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/elisaday/kcpuv">kcpuv</a>: 使用 libuv开发的kcpuv库，目前还在 Demo阶段</li>
+<li><a target="_blank" rel="noopener" href="https://getlantern.org/">Lantern</a>：更好的 VPN，Github 50000 星，使用 kcpgo 加速</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/smallnest/rpcx">rpcx</a> ：RPC 框架，1000+ 星，使用 kcpgo 加速 RPC</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/liudf0716/xkcptun">xkcptun</a>: c语言实现的kcptun，主要用于<a target="_blank" rel="noopener" href="https://github.com/openwrt/openwrt">OpenWrt</a>, <a target="_blank" rel="noopener" href="https://github.com/lede-project/source">LEDE</a>开发的路由器项目上</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/egametang/ET">et-frame</a>: C#前后端框架(前端unity3d)，统一用C#开发游戏，实现了前后端kcp协议</li>
+</ul>
+<h1 id="商业案例"><a href="#商业案例" class="headerlink" title="商业案例"></a>商业案例</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://www.taptap.com/app/50664">明日帝国</a>：Game K17 的 《明日帝国》 （Google Play），使用 KCP 加速游戏消息，让全球玩家流畅联网</li>
+<li><a target="_blank" rel="noopener" href="https://www.taptap.com/app/27242">仙灵大作战</a>：4399 的 MOBA游戏，使用 KCP 优化游戏同步</li>
+<li><a target="_blank" rel="noopener" href="http://cc.163.com/">CC</a>：网易 CC 使用 kcp 加速视频推流，有效提高流畅性</li>
+<li><a target="_blank" rel="noopener" href="http://bobo.163.com/">BOBO</a>：网易 BOBO 使用 kcp 加速主播推流</li>
+<li><a target="_blank" rel="noopener" href="http://www.yfcloud.com/">云帆加速</a>：使用 KCP 加速文件传输和视频推流，优化了台湾主播推流的流畅度</li>
+</ul>
+<p>欢迎告知更多案例</p>
+<h1 id="协议比较"><a href="#协议比较" class="headerlink" title="协议比较"></a>协议比较</h1><p>如果网络永远不卡，那 KCP&#x2F;TCP 表现类似，但是网络本身就是不可靠的，丢包和抖动无法避免（否则还要各种可靠协议干嘛）。在内网这种几乎理想的环境里直接比较，大家都差不多，但是放到公网上，放到3G&#x2F;4G网络情况下，或者使用内网丢包模拟，差距就很明显了。公网在高峰期有平均接近10%的丢包，wifi&#x2F;3g&#x2F;4g下更糟糕，这些都会让传输变卡。</p>
+<p>感谢 <a target="_blank" rel="noopener" href="https://github.com/libinzhangyuan/asio_kcp">asio-kcp</a> 的作者 <a target="_blank" rel="noopener" href="https://github.com/libinzhangyuan">zhangyuan</a> 对 KCP 与 enet, udt做过的一次横向评测，结论如下：</p>
+<ul>
+<li>ASIO-KCP <strong>has good performace in wifi and phone network(3G, 4G)</strong>.</li>
+<li>The kcp is the <strong>first choice for realtime pvp game</strong>.</li>
+<li>The lag is less than 1 second when network lag happen. <strong>3 times better than enet</strong> when lag happen.</li>
+<li>The enet is a good choice if your game allow 2 second lag.</li>
+<li><strong>UDT is a bad idea</strong>. It always sink into badly situation of more than serval seconds lag. And the recovery is not expected.</li>
+<li>enet has the problem of lack of doc. And it has lots of functions that you may intrest.</li>
+<li>kcp’s doc is chinese. Good thing is the function detail which is writen in code is english. And you can use asio_kcp which is a good wrap.</li>
+<li>The kcp is a simple thing. You will write more code if you want more feature.</li>
+<li>UDT has a perfect doc. UDT may has more bug than others as I feeling.</li>
+</ul>
+<p>具体见：<a target="_blank" rel="noopener" href="https://github.com/libinzhangyuan/reliable_udp_bench_mark">横向比较</a> 和 <a target="_blank" rel="noopener" href="https://github.com/skywind3000/kcp/wiki/KCP-Benchmark">评测数据</a>，为犹豫选择的人提供了更多指引。</p>
+<p>欢迎关注</p>
+<p>blog: <a target="_blank" rel="noopener" href="http://www.skywind.me/">http://www.skywind.me</a></p>
+<p>zhihu: <a target="_blank" rel="noopener" href="https://www.zhihu.com/people/skywind3000">https://www.zhihu.com/people/skywind3000</a></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/04/22/Programer/Render/frame-sync/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Server/" title="Server">
+                        <b>#</b> Server
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Server/" title="Server">
+                        #Server
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/04/22/Programer/Server/KCP-CSharp-README/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E7%89%B9%E6%80%A7"><span class="toc-text">技术特性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#RTO%E7%BF%BB%E5%80%8Dvs%E4%B8%8D%E7%BF%BB%E5%80%8D%EF%BC%9A"><span class="toc-text">RTO翻倍vs不翻倍：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E6%80%A7%E9%87%8D%E4%BC%A0-vs-%E5%85%A8%E9%83%A8%E9%87%8D%E4%BC%A0%EF%BC%9A"><span class="toc-text">选择性重传 vs 全部重传：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E9%87%8D%E4%BC%A0%EF%BC%9A"><span class="toc-text">快速重传：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BB%B6%E8%BF%9FACK-vs-%E9%9D%9E%E5%BB%B6%E8%BF%9FACK%EF%BC%9A"><span class="toc-text">延迟ACK vs 非延迟ACK：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#UNA-vs-ACK-UNA%EF%BC%9A"><span class="toc-text">UNA vs ACK+UNA：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%9E%E9%80%80%E8%AE%A9%E6%B5%81%E6%8E%A7%EF%BC%9A"><span class="toc-text">非退让流控：</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-text">基本使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E9%85%8D%E7%BD%AE"><span class="toc-text">协议配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E7%B4%A2%E5%BC%95"><span class="toc-text">文档索引</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BC%80%E6%BA%90%E6%A1%88%E4%BE%8B"><span class="toc-text">开源案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%95%86%E4%B8%9A%E6%A1%88%E4%BE%8B"><span class="toc-text">商业案例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E6%AF%94%E8%BE%83"><span class="toc-text">协议比较</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + KCP%20-%20A%20Fast%20and%20Reliable%20ARQ%20Protocol + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F04%2F22%2FProgramer%2FServer%2FKCP-README%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/04/22/Programer/Server/KCP-README/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      Flutter源码阅读分析：Framework层的启动 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Flutter源码阅读分析：Framework层的启动</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:03
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Flutter/" title="Flutter">
+                    <b>#</b> Flutter
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Flutter/" title="Flutter">
+                    #Flutter
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>在上一篇文章的最后，提到了引擎在启动时，会以”main”方法为入口函数，执行Dart代码。那么本文就从<code>main</code>入手，分析<code>Dart Framework</code>具体做了什么。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> main() &#123;</span><br><span class="line">  runApp(ModularApp(module: AppModule(), child: MyApp()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>runApp</code>方法的主要功能是填充给定的<code>Widget</code>并将其Attach到屏幕上。</li>
+</ul>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> runApp(Widget app) &#123;</span><br><span class="line">  WidgetsFlutterBinding.ensureInitialized()</span><br><span class="line">    ..scheduleAttachRootWidget(app)</span><br><span class="line">    ..scheduleWarmUpFrame();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果重复调用<code>runApp</code>方法，那么会将之前的根<code>Widget</code>从屏幕中移除，并将新的指定的<code>Widget</code>替换到该位置。这个新的Widget树与前者进行对比，并将区别的地方应用到后续的渲染树。这里涉及到Flutter的渲染布局机制，会在后续讲解。</p>
+<p><code>WidgetsFlutterBinding</code>类是基于Widget框架的应用程序的具体绑定。这将框架和Flutter引擎绑定起来。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WidgetsFlutterBinding</span> <span class="keyword">extends</span> <span class="title">BindingBase</span> <span class="title">with</span> <span class="title">GestureBinding</span>, <span class="title">SchedulerBinding</span>, <span class="title">ServicesBinding</span>, <span class="title">PaintingBinding</span>, <span class="title">SemanticsBinding</span>, <span class="title">RendererBinding</span>, <span class="title">WidgetsBinding</span> </span>&#123;</span><br><span class="line">  <span class="comment">/// <span class="language-markdown">Returns an instance of the binding that implements</span></span></span><br><span class="line">  <span class="comment">/// <span class="language-markdown">[WidgetsBinding]. If no binding has yet been initialized, the</span></span></span><br><span class="line">  <span class="comment">/// <span class="language-markdown">[WidgetsFlutterBinding] class is used to create and initialize</span></span></span><br><span class="line">  <span class="comment">/// <span class="language-markdown">one.</span></span></span><br><span class="line">  <span class="comment">///</span></span><br><span class="line">  <span class="comment">/// <span class="language-markdown">You only need to call this method if you need the binding to be</span></span></span><br><span class="line">  <span class="comment">/// <span class="language-markdown">initialized before calling [runApp].</span></span></span><br><span class="line">  <span class="comment">///</span></span><br><span class="line">  <span class="comment">/// <span class="language-markdown">In the <span class="code">`flutter_test`</span> framework, [testWidgets] initializes the</span></span></span><br><span class="line">  <span class="comment">/// <span class="language-markdown">binding instance to a [TestWidgetsFlutterBinding], not a</span></span></span><br><span class="line">  <span class="comment">/// <span class="language-markdown">[WidgetsFlutterBinding]. See</span></span></span><br><span class="line">  <span class="comment">/// <span class="language-markdown">[TestWidgetsFlutterBinding.ensureInitialized].</span></span></span><br><span class="line">  <span class="keyword">static</span> WidgetsBinding ensureInitialized() &#123;</span><br><span class="line">    <span class="keyword">if</span> (WidgetsBinding._instance == <span class="keyword">null</span>)</span><br><span class="line">      WidgetsFlutterBinding();</span><br><span class="line">    <span class="keyword">return</span> WidgetsBinding.instance;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ensureInitialized</code>方法返回一个<code>WidgetBinding</code>的实例。<br>再看一下<code>scheduleAttachRootWidget</code>和<code>scheduleWarmUpFrame</code>方法：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@protected</span></span><br><span class="line"><span class="keyword">void</span> scheduleAttachRootWidget(Widget rootWidget) &#123;</span><br><span class="line">  Timer.run(() &#123;</span><br><span class="line">    attachRootWidget(rootWidget);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> scheduleWarmUpFrame() &#123;</span><br><span class="line">  <span class="keyword">if</span> (_warmUpFrame || schedulerPhase != SchedulerPhase.idle)</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">  _warmUpFrame = <span class="keyword">true</span>;</span><br><span class="line">  <span class="keyword">final</span> TimelineTask timelineTask = TimelineTask()..start(<span class="string">&#x27;Warm-up frame&#x27;</span>);</span><br><span class="line">  <span class="keyword">final</span> <span class="built_in">bool</span> hadScheduledFrame = _hasScheduledFrame;</span><br><span class="line">  <span class="comment">// We use timers here to ensure that microtasks flush in between.</span></span><br><span class="line">  Timer.run(() &#123;</span><br><span class="line">    <span class="keyword">assert</span>(_warmUpFrame);</span><br><span class="line">    handleBeginFrame(<span class="keyword">null</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">  Timer.run(() &#123;</span><br><span class="line">    <span class="keyword">assert</span>(_warmUpFrame);</span><br><span class="line">    handleDrawFrame();</span><br><span class="line">    <span class="comment">// We call resetEpoch after this frame so that, in the hot reload case,</span></span><br><span class="line">    <span class="comment">// the very next frame pretends to have occurred immediately after this</span></span><br><span class="line">    <span class="comment">// warm-up frame. The warm-up frame&#x27;s timestamp will typically be far in</span></span><br><span class="line">    <span class="comment">// the past (the time of the last real frame), so if we didn&#x27;t reset the</span></span><br><span class="line">    <span class="comment">// epoch we would see a sudden jump from the old time in the warm-up frame</span></span><br><span class="line">    <span class="comment">// to the new time in the &quot;real&quot; frame. The biggest problem with this is</span></span><br><span class="line">    <span class="comment">// that implicit animations end up being triggered at the old time and</span></span><br><span class="line">    <span class="comment">// then skipping every frame and finishing in the new time.</span></span><br><span class="line">    resetEpoch();</span><br><span class="line">    _warmUpFrame = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (hadScheduledFrame)</span><br><span class="line">      scheduleFrame();</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Lock events so touch events etc don&#x27;t insert themselves until the</span></span><br><span class="line">  <span class="comment">// scheduled frame has finished.</span></span><br><span class="line">  lockEvents(() <span class="keyword">async</span> &#123;</span><br><span class="line">    <span class="keyword">await</span> endOfFrame;</span><br><span class="line">    timelineTask.finish();</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里涉及到<code>Widget</code>、<code>Element</code>、<code>Render</code>，都属于Flutter的渲染机制，后续在渲染机制中详细分析。</p>
+<ul>
+<li><code>handleBeginFrame</code>方法主要作用是让framework准备好，去创建一个新的帧。它会调用所有通过<code>scheduleFrameCallback</code>注册进来的临时回调函数。</li>
+<li><code>handleDrawFrame</code> 方法主要作用是创建一个新的帧，这个方法一般紧跟着<code>handleBeginFrame</code>方法后调用。</li>
+</ul>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> handleDrawFrame() &#123;</span><br><span class="line">  <span class="keyword">assert</span>(_schedulerPhase == SchedulerPhase.midFrameMicrotasks);</span><br><span class="line">  _frameTimelineTask?.finish(); <span class="comment">// end the &quot;Animate&quot; phase</span></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// PERSISTENT FRAME CALLBACKS</span></span><br><span class="line">    _schedulerPhase = SchedulerPhase.persistentCallbacks;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">final</span> FrameCallback callback <span class="keyword">in</span> _persistentCallbacks)</span><br><span class="line">      _invokeFrameCallback(callback, _currentFrameTimeStamp!);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// POST-FRAME CALLBACKS</span></span><br><span class="line">    _schedulerPhase = SchedulerPhase.postFrameCallbacks;</span><br><span class="line">    <span class="keyword">final</span> <span class="built_in">List</span>&lt;FrameCallback&gt; localPostFrameCallbacks =</span><br><span class="line">        <span class="built_in">List</span>&lt;FrameCallback&gt;.of(_postFrameCallbacks);</span><br><span class="line">    _postFrameCallbacks.clear();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">final</span> FrameCallback callback <span class="keyword">in</span> localPostFrameCallbacks)</span><br><span class="line">      _invokeFrameCallback(callback, _currentFrameTimeStamp!);</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    _schedulerPhase = SchedulerPhase.idle;</span><br><span class="line">    _frameTimelineTask?.finish(); <span class="comment">// end the Frame</span></span><br><span class="line">    <span class="keyword">assert</span>(() &#123;</span><br><span class="line">      <span class="keyword">if</span> (debugPrintEndFrameBanner)</span><br><span class="line">        debugPrint(<span class="string">&#x27;▀&#x27;</span> * _debugBanner!.length);</span><br><span class="line">      _debugBanner = <span class="keyword">null</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;());</span><br><span class="line">    _currentFrameTimeStamp = <span class="keyword">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>handleDrawFrame</code>会调用所有通过<code>addPersistentFrameCallback</code>方法注册进来的回调函数（这些回调函数通常都是驱动渲染管线），以及通过<code>addPostFrameCallback</code>方法注册进来的回调函数。<br>在<code>RendererBinding</code>类的<code>initInstances</code>方法调用了<code>addPersistentFrameCallback</code>方法。其添加的回调函数如下：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> _handlePersistentFrameCallback(<span class="built_in">Duration</span> timeStamp) &#123;</span><br><span class="line">  drawFrame();</span><br><span class="line">  _scheduleMouseTrackerUpdate();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> drawFrame() &#123;</span><br><span class="line">  <span class="keyword">assert</span>(renderView != <span class="keyword">null</span>);</span><br><span class="line">  pipelineOwner.flushLayout();</span><br><span class="line">  pipelineOwner.flushCompositingBits();</span><br><span class="line">  pipelineOwner.flushPaint();</span><br><span class="line">  <span class="keyword">if</span> (sendFramesToEngine) &#123;</span><br><span class="line">    renderView.compositeFrame(); <span class="comment">// this sends the bits to the GPU</span></span><br><span class="line">    pipelineOwner.flushSemantics(); <span class="comment">// this also sends the semantics to the OS.</span></span><br><span class="line">    _firstFrameSent = <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>drawFrame</code>方法主要是让渲染管线产生出一帧。</p>
+<ul>
+<li><code>scheduleFrame</code>则是在需要的时候，通过调用<code>platformDispatcher</code>的<code>scheduleFrame</code>方法安排一个新的帧。<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> scheduleFrame() &#123;</span><br><span class="line">    <span class="keyword">if</span> (_hasScheduledFrame || !framesEnabled)</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">assert</span>(() &#123;</span><br><span class="line">      <span class="keyword">if</span> (debugPrintScheduleFrameStacks)</span><br><span class="line">        debugPrintStack(label: <span class="string">&#x27;scheduleFrame() called. Current phase is <span class="subst">$schedulerPhase</span>.&#x27;</span>);</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;());</span><br><span class="line">    ensureFrameCallbacksRegistered();</span><br><span class="line">    platformDispatcher.scheduleFrame();</span><br><span class="line">    _hasScheduledFrame = <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+这里的<code>platformDispatcher</code>类是引擎内实现的，通过Dart引擎扩展API，调用到C++的<code>ScheduleFrame</code>方法：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">PlatformConfigurationNativeApi::ScheduleFrame</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  UIDartState::<span class="built_in">ThrowIfUIOperationsProhibited</span>();</span><br><span class="line">  UIDartState::<span class="built_in">Current</span>()-&gt;<span class="built_in">platform_configuration</span>()-&gt;<span class="built_in">client</span>()-&gt;<span class="built_in">ScheduleFrame</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="渲染管线"><a href="#渲染管线" class="headerlink" title="渲染管线"></a>渲染管线</h1><p>下面看一下<code>PipelineOwner</code>，这个类是渲染树的持有者，维护布局、合成、绘制和可达性的状态。<br><code>PipelineOwner</code>主要方法有以下几个</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> flushLayout() &#123;</span><br><span class="line">    <span class="keyword">if</span> (!kReleaseMode) &#123;</span><br><span class="line">      <span class="built_in">Map</span>&lt;<span class="built_in">String</span>, <span class="built_in">String</span>&gt; debugTimelineArguments = timelineArgumentsIndicatingLandmarkEvent;</span><br><span class="line">      <span class="keyword">assert</span>(() &#123;</span><br><span class="line">        <span class="keyword">if</span> (debugProfileLayoutsEnabled) &#123;</span><br><span class="line">          debugTimelineArguments = &lt;<span class="built_in">String</span>, <span class="built_in">String</span>&gt;&#123;</span><br><span class="line">            ...debugTimelineArguments,</span><br><span class="line">            <span class="string">&#x27;dirty count&#x27;</span>: <span class="string">&#x27;<span class="subst">$&#123;_nodesNeedingLayout.length&#125;</span>&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;dirty list&#x27;</span>: <span class="string">&#x27;<span class="subst">$_nodesNeedingLayout</span>&#x27;</span>,</span><br><span class="line">          &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">      &#125;());</span><br><span class="line">      Timeline.startSync(</span><br><span class="line">        <span class="string">&#x27;LAYOUT&#x27;</span>,</span><br><span class="line">        arguments: debugTimelineArguments,</span><br><span class="line">      );</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">assert</span>(() &#123;</span><br><span class="line">      _debugDoingLayout = <span class="keyword">true</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;());</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">while</span> (_nodesNeedingLayout.isNotEmpty) &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="built_in">List</span>&lt;RenderObject&gt; dirtyNodes = _nodesNeedingLayout;</span><br><span class="line">        _nodesNeedingLayout = &lt;RenderObject&gt;[];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">final</span> RenderObject node <span class="keyword">in</span> dirtyNodes..sort((RenderObject a, RenderObject b) =&gt; a.depth - b.depth)) &#123;</span><br><span class="line">          <span class="keyword">if</span> (node._needsLayout &amp;&amp; node.owner == <span class="keyword">this</span>)</span><br><span class="line">            node._layoutWithoutResize();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      <span class="keyword">assert</span>(() &#123;</span><br><span class="line">        _debugDoingLayout = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">      &#125;());</span><br><span class="line">      <span class="keyword">if</span> (!kReleaseMode) &#123;</span><br><span class="line">        Timeline.finishSync();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">void</span> flushCompositingBits() &#123;</span><br><span class="line">    <span class="keyword">if</span> (!kReleaseMode) &#123;</span><br><span class="line">      Timeline.startSync(<span class="string">&#x27;UPDATING COMPOSITING BITS&#x27;</span>, arguments: timelineArgumentsIndicatingLandmarkEvent);</span><br><span class="line">    &#125;</span><br><span class="line">    _nodesNeedingCompositingBitsUpdate.sort((RenderObject a, RenderObject b) =&gt; a.depth - b.depth);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">final</span> RenderObject node <span class="keyword">in</span> _nodesNeedingCompositingBitsUpdate) &#123;</span><br><span class="line">      <span class="keyword">if</span> (node._needsCompositingBitsUpdate &amp;&amp; node.owner == <span class="keyword">this</span>)</span><br><span class="line">        node._updateCompositingBits();</span><br><span class="line">    &#125;</span><br><span class="line">    _nodesNeedingCompositingBitsUpdate.clear();</span><br><span class="line">    <span class="keyword">if</span> (!kReleaseMode) &#123;</span><br><span class="line">      Timeline.finishSync();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">void</span> flushPaint() &#123;</span><br><span class="line">    <span class="keyword">if</span> (!kReleaseMode) &#123;</span><br><span class="line">      <span class="built_in">Map</span>&lt;<span class="built_in">String</span>, <span class="built_in">String</span>&gt; debugTimelineArguments = timelineArgumentsIndicatingLandmarkEvent;</span><br><span class="line">      <span class="keyword">assert</span>(() &#123;</span><br><span class="line">        <span class="keyword">if</span> (debugProfilePaintsEnabled) &#123;</span><br><span class="line">          debugTimelineArguments = &lt;<span class="built_in">String</span>, <span class="built_in">String</span>&gt;&#123;</span><br><span class="line">            ...debugTimelineArguments,</span><br><span class="line">            <span class="string">&#x27;dirty count&#x27;</span>: <span class="string">&#x27;<span class="subst">$&#123;_nodesNeedingPaint.length&#125;</span>&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;dirty list&#x27;</span>: <span class="string">&#x27;<span class="subst">$_nodesNeedingPaint</span>&#x27;</span>,</span><br><span class="line">          &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">      &#125;());</span><br><span class="line">      Timeline.startSync(</span><br><span class="line">        <span class="string">&#x27;PAINT&#x27;</span>,</span><br><span class="line">        arguments: debugTimelineArguments,</span><br><span class="line">      );</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">assert</span>(() &#123;</span><br><span class="line">      _debugDoingPaint = <span class="keyword">true</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;());</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">final</span> <span class="built_in">List</span>&lt;RenderObject&gt; dirtyNodes = _nodesNeedingPaint;</span><br><span class="line">      _nodesNeedingPaint = &lt;RenderObject&gt;[];</span><br><span class="line">      <span class="comment">// Sort the dirty nodes in reverse order (deepest first).</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">final</span> RenderObject node <span class="keyword">in</span> dirtyNodes..sort((RenderObject a, RenderObject b) =&gt; b.depth - a.depth)) &#123;</span><br><span class="line">        <span class="keyword">assert</span>(node._layerHandle.layer != <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">if</span> (node._needsPaint &amp;&amp; node.owner == <span class="keyword">this</span>) &#123;</span><br><span class="line">          <span class="keyword">if</span> (node._layerHandle.layer!.attached) &#123;</span><br><span class="line">            PaintingContext.repaintCompositedChild(node);</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            node._skippedPaintingOnLayer();</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">assert</span>(_nodesNeedingPaint.isEmpty);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      <span class="keyword">assert</span>(() &#123;</span><br><span class="line">        _debugDoingPaint = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">      &#125;());</span><br><span class="line">      <span class="keyword">if</span> (!kReleaseMode) &#123;</span><br><span class="line">        Timeline.finishSync();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">void</span> flushSemantics() &#123;</span><br><span class="line">    <span class="keyword">if</span> (_semanticsOwner == <span class="keyword">null</span>)</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (!kReleaseMode) &#123;</span><br><span class="line">      Timeline.startSync(<span class="string">&#x27;SEMANTICS&#x27;</span>, arguments: timelineArgumentsIndicatingLandmarkEvent);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">assert</span>(_semanticsOwner != <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">assert</span>(() &#123;</span><br><span class="line">      _debugDoingSemantics = <span class="keyword">true</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;());</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">final</span> <span class="built_in">List</span>&lt;RenderObject&gt; nodesToProcess = _nodesNeedingSemantics.toList()</span><br><span class="line">        ..sort((RenderObject a, RenderObject b) =&gt; a.depth - b.depth);</span><br><span class="line">      _nodesNeedingSemantics.clear();</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">final</span> RenderObject node <span class="keyword">in</span> nodesToProcess) &#123;</span><br><span class="line">        <span class="keyword">if</span> (node._needsSemanticsUpdate &amp;&amp; node.owner == <span class="keyword">this</span>)</span><br><span class="line">          node._updateSemantics();</span><br><span class="line">      &#125;</span><br><span class="line">      _semanticsOwner!.sendSemanticsUpdate();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      <span class="keyword">assert</span>(_nodesNeedingSemantics.isEmpty);</span><br><span class="line">      <span class="keyword">assert</span>(() &#123;</span><br><span class="line">        _debugDoingSemantics = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">      &#125;());</span><br><span class="line">      <span class="keyword">if</span> (!kReleaseMode) &#123;</span><br><span class="line">        Timeline.finishSync();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>flushLayout</code>方法用于更新所有“脏”<code>RenderObject</code>的布局信息。该方法是渲染管线中的核心步骤之一。布局信息需要在绘制之前处理“干净”，这样<code>RenderObject</code>就可以在屏幕</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/11/30/Programer/Engine/Flutter/FlutterClipIOS/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:03
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Flutter/" title="Flutter">
+                        <b>#</b> Flutter
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Flutter/" title="Flutter">
+                        #Flutter
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/11/30/Programer/Engine/Flutter/FlutterMemoryLeakTool/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF"><span class="toc-text">渲染管线</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Flutter%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E5%88%86%E6%9E%90%EF%BC%9AFramework%E5%B1%82%E7%9A%84%E5%90%AF%E5%8A%A8 + '&url=' + http%3A%2F%2Fzentia.github.io%2F2023%2F11%2F30%2FProgramer%2FEngine%2FFlutter%2FFlutterFramework%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2023/11/30/Programer/Engine/Flutter/FlutterFramework/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

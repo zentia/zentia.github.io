@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      UnityRenderOptimize 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">UnityRenderOptimize</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:03
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Engine/" title="Engine">
+                    <b>#</b> Engine
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Engine/Unity/" title="Unity">
+                    <b>#</b> Unity
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="移动平台的特点"><a href="#移动平台的特点" class="headerlink" title="移动平台的特点"></a>移动平台的特点</h1><p>和PC平台相比，移动平台上的GPU架构有很大的不同。由于处理资源等条件的限制，移动设备上的GPU架构专注于尽可能使用更小的带宽和公共能，也由此带来许多和PC平台完全不同的现象。<br>例如，为了尽可能移除那些隐藏的表面，减少overdraw（即一个像素被绘制多次），PowerVR芯片（通常用于iOS设备和某些Android设备）使用了基于瓦片的延迟渲染（Tiled-based Deffered Rendering，TBDR）架构，把所有的渲染图像装入一个个瓦片（tile）中，再由硬件找到可见的片元，而只有这些可见片元才会执行片元着色器。另一些基于瓦片的GPU架构，如Adreno（高通的芯片）和Mali（ARM的芯片）则会使用Early-Z或相似的技术进行一个低精度的深度检测，来剔除那些不需要渲染的片元。还有一些GPU，如Tegra（英伟达的芯片），则使用了传统的架构设计，因为在这些设备上，overdraw更可能造成性能的瓶颈。<br>由于这些芯片架构造成的不同，一些游戏往往需要针对不通的芯片发布不同的版本，以便对每个芯片进行更有针对性的优化。尤其是在Android平台上，不通设备使用的硬件，如图形芯片、屏幕分辨率等，大相径庭，这对图形优化提出了更高的挑战。相比于Android平台，iOS平台的硬件条件则相对统一。</p>
+<h1 id="影响性能的因素"><a href="#影响性能的因素" class="headerlink" title="影响性能的因素"></a>影响性能的因素</h1><p>首先，在学习如何优化之前，我们得先了解影响游戏性能的因素有哪些。对于一个游戏来说，它主要需要使用两种计算资源：CPU和GPU。它们会互相合作，来让我们的游戏可以在预期的帧率和分辨率下工作。其中，CPU主要负责保证帧率，GPU主要负责分辨率相关的一些处理。<br>据此，可以把造成游戏性能瓶颈的主要原因分成以下几个方面。</p>
+<ol>
+<li>CPU<ul>
+<li>过多的draw call</li>
+<li>复杂的脚本或者物理模拟</li>
+</ul>
+</li>
+<li>GPU<ul>
+<li>顶点处理<ul>
+<li>过多的顶点</li>
+<li>过多的逐顶点计算</li>
+</ul>
+</li>
+<li>片元处理<ul>
+<li>过多的片元（既可能是由于分辨率造成的，也可能是由于overdraw造成的）。</li>
+<li>过多的逐片元计算。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>带宽<ul>
+<li>使用了尺寸很大且未压缩的纹理</li>
+<li>分辨率过高的帧缓存</li>
+</ul>
+</li>
+</ol>
+<p>对于CPU来说，限制它的主要是每一帧draw call的数目。简单来说，就是CPU在每次通知GPU进行渲染之前，都需要提前准备好顶点数据（如位置、法线、颜色、纹理坐标等），然后调用一系列API把它们放到GPU可以访问到的指定位置，最后，调用一个绘制命令，来告诉GPU。而调用一次绘制命令的时候，就会产生一个draw call。过多的draw call会造成CPU的性能瓶颈，这是因为每次调用draw call时，CPU往往都需要改变很多渲染状态的设置，而这些操作是非常耗时的。如果一帧中需要的draw call数目过多的话，就会导致CPU把大部分时间都花费在提交draw call的工作上面了。当然，其他原因也可能造成CPU瓶颈，例如物理、布料模拟、蒙皮、粒子模拟等，这些都是计算量很大的操作。<br>而对于GPU来说，它负责整个渲染流水线。它从处理CPU传递过来的模拟数据开始，进行顶点着色器、片元着色器等一系列工作，最后输出屏幕上的每个像素。因此，GPU的性能瓶颈和需要处理的顶点数目、屏幕分辨率、显存等因素有关。而相关的优化策略可以减少处理的数据（包括顶点数目和片元数目）、减少运算复杂度等方面入手。</p>
+<ol>
+<li>CPU优化<ul>
+<li>使用批处理技术减少draw call数目</li>
+</ul>
+</li>
+<li>GPU优化<ul>
+<li>减少需要处理的顶点数目。<ul>
+<li>优化几何体</li>
+<li>使用模型的LOD（Level of Detail）技术</li>
+<li>使用遮挡剔除（Ovvlusion Culling）技术</li>
+</ul>
+</li>
+<li>减少需要处理的片元数目<ul>
+<li>控制绘制顺序</li>
+<li>警惕透明物体</li>
+<li>减少实时光照</li>
+</ul>
+</li>
+<li>减少计算复杂度<ul>
+<li>使用Shader的LOD（Level Of Deail）技术</li>
+<li>代码方面的优化</li>
+</ul>
+</li>
+<li>节省内存带宽<ul>
+<li>减少纹理大小</li>
+<li>利用分辨率缩放</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>在开始优化之前，我们首先需要知道是哪个步骤造成了性能瓶颈。而这可以利用Unity提供的一些渲染分析工具来实现。</p>
+<h1 id="Unity中的渲染分析工具"><a href="#Unity中的渲染分析工具" class="headerlink" title="Unity中的渲染分析工具"></a>Unity中的渲染分析工具</h1><p>Unity内置了一些工具，来帮助我们方便地查看和渲染相关的各个统计数据。这些数据可以帮助我们分析游戏渲染性能，从而更有针对性的进行优化。这些工具包括了渲染统计窗口（Rendering Statistics Window）、性能分析器（Profiler），以及帧调试器（Frame Debugger）。需要注意的是，在不同的目标平台上，这些工具中显示的数据也会发生变化。</p>
+<h2 id="渲染统计窗口"><a href="#渲染统计窗口" class="headerlink" title="渲染统计窗口"></a>渲染统计窗口</h2><p>渲染统计窗口主要包含了音频（Audio）、图像（Graphics）。这里我们只关心图像相关的渲染统计结果。<br>渲染统计窗口中显示了很多重要的渲染数据，例如FPS、批处理数目、顶点和三角网格的数目等。</p>
+<table>
+<thead>
+<tr>
+<th>信息名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>每帧的时间和FPS</td>
+<td>在Graphic的右侧显示，给出了处理和渲染一帧所需的时间，以及FPS数目</td>
+</tr>
+<tr>
+<td>Batches</td>
+<td>一帧中需要进行的批处理数目</td>
+</tr>
+<tr>
+<td>Saved by batching</td>
+<td>合并的批处理数目，这个数字表明了批处理为我们节省了多少的draw call</td>
+</tr>
+<tr>
+<td>Tris和Verts</td>
+<td>需要绘制的三角面片和顶点数目</td>
+</tr>
+<tr>
+<td>Screen</td>
+<td>屏幕的大小，以及它占用的内存大小</td>
+</tr>
+<tr>
+<td>SetPass calls</td>
+<td>渲染使用的Pass的数目，每个Pass都需要Unity的runtime来绑定一个新的Shader，这可能造成CPU瓶颈</td>
+</tr>
+<tr>
+<td>Shadow casters</td>
+<td>场景中有多少可以投射阴影的物体，一般这些物体都作为场景中光源</td>
+</tr>
+<tr>
+<td>visible skinned meshed</td>
+<td>渲染皮肤网格的数量</td>
+</tr>
+<tr>
+<td>animations</td>
+<td>正在播放动画的数量</td>
+</tr>
+</tbody></table>
+<h2 id="性能分析器的渲染区域"><a href="#性能分析器的渲染区域" class="headerlink" title="性能分析器的渲染区域"></a>性能分析器的渲染区域</h2><img src="/2019/04/11/Programer/Engine/Unity/unity-render-optimize/1.jpg" class="">
+<p>性能分析器显示了绝大部分在渲染统计窗口中提供的信息，例如，绿线显示了批处理数目、蓝线显示了Pass数目等，同时还给出了许多其他非常有用的信息，例如，draw call数目、动态批处理&#x2F;静态批处理的数目、渲染纹理的数目和内存占用等。<br>结合渲染统计窗口和性能分析器，我们可以查看与渲染相关的绝大多数重要的数据。一个值得注意的想象是，性能分析器给出的draw call数目和批处理数目、Pass数目并不相等，并且看起来好像要大于我们估算的数目，这是因为Unity在背后需要进行很多工作，例如，初始化各个缓存、为阴影更新深度纹理和阴影映射纹理等，因此需要花费比“预期”更多的draw call。</p>
+<h2 id="帧调试器"><a href="#帧调试器" class="headerlink" title="帧调试器"></a>帧调试器</h2><div align="center"><img src="/2019/04/11/Programer/Engine/Unity/unity-render-optimize/2.jpg" class=""></div>
+帧调试器的调试面板上显示了渲染这一帧锁需要的所有的渲染时间，在本例中，事件数目为41，而其中包含了36个draw call事件（其他渲染时间多为清空缓存等）。通过单击面板上的每个事件，我们可以在Game视图查看该时间的绘制结果，同时渲染统计面上的数据也会显示成截至当前事件为止的各个渲染统计数据。
+## 其他性能分析工具
+对于Android平台来说，高通的Adreno分析工具可以对不同的测试机进行详细的性能分析。英伟达提供的NVPerfHUD工具来帮助我们得到几乎所有需要的性能分析数据，例如，每个draw call的GPU时间，每个shader话费的cycle数目等。
+对于iOS平台来说，Unity内置的分析器可以得到整个场景的花费的GPU时间。PowerVRaw的PVRUniSCo shader分析器也可以给出一个大致的性能评估。Xcode中的OpenGL ES Driver Instruments可以给出一些宏观上的性能信息，例如，设备利用率、渲染器利用率等。但相对于Android平台，对iOS的性能分析更加困难（工具较少）。而且PowerVR芯片采用了基于瓦片的延迟渲染器，因此，想要得到每个draw call话费的GPU时间是几乎不可能的。这是，一些宏观上统计数据可能更有参考价值。
+
+<h1 id="减少draw-call数目"><a href="#减少draw-call数目" class="headerlink" title="减少draw call数目"></a>减少draw call数目</h1><p>批处理的实现原理就是为了减少每一帧需要的draw call数目。为了把一个对象渲染到屏幕上，</p>
+<h4 id="动态批处理"><a href="#动态批处理" class="headerlink" title="动态批处理"></a>动态批处理</h4><p>基本原理：每一帧把可以进行批处理的模型网格进行合并，再把合并后的模型数据传递给GPU，然后使用同一个材质对其渲染。动态批处理的一个好处是实现方便，另一个好处是，经过批处理的物体仍然可以移动，这是由于在处理每帧时Unity都会重新合并一次网格。</p>
+<p>条件限制：</p>
+<ul>
+<li>能够进行动态批处理的网格的顶点属性规模要小于900。例如，如果shader中需要使用顶点位置、发现和纹理坐标这3个顶点属性，那么要想让模型能够被动态批处理，它的顶点数目不能超过300。</li>
+<li>多Pass的shader会中断批处理。在前向渲染中，我们有时需要使用额外的Pass来为模型添加更多的光照效果，但这样一来模型就不会被动态批处理了。</li>
+</ul>
+<h4 id="静态批处理"><a href="#静态批处理" class="headerlink" title="静态批处理"></a>静态批处理</h4><p>Unity提供了另一种批处理方式，即静态批处理。相比于动态批处理来说，静态批处理适用于任何大小的几何模式。它的实现原理是，只在运行开始阶段，把需要进行静态批处理的模型合并到一个新的网络结构中，这意味着这些模型不可以在运行时刻被移动。但由于它只需要进行一次合并操作，因此，比动态批处理更加高效。静态批处理的另一个缺点在与，它往往需要占用更多的内存来存储合并后的几何结构。这是因为，如果在静态批处理钱一些物体共享了相同的网格，那么在内存中每一个物体都会对应一个该网格的复制品，即一个网格会变成多个网格在发送给GPU。如果这类使用同一网格的对象很多，那么这就会成为一个性能瓶颈了。例如，如果在一个使用了1000个相同模型的森林中使用静态批处理，那么，就会多使用1000倍的内存，这会造成严重的内存影响。</p>
+<h4 id="共享材质"><a href="#共享材质" class="headerlink" title="共享材质"></a>共享材质</h4><p>无论是静态批处理还是动态批处理，都要求模型之间需要共享同一个材质。但不同的模型之间总会需要有不同的渲染属性，例如，使用不同的纹理、颜色等。这是，我们需要一些策略来尽可能地合并材质。<br>如果两个材质之间只有使用的纹理不同，我们可以把这些纹理合并到一张更大的纹理中，这张更大的纹理被称为是一张图集（atlas）。一旦使用了同一张纹理，我们就可以使用同一个材质，再使用不同的采样坐标对纹理采样即可。<br>但有时，除了纹理不同外，不同的物体在材质上还有一些微小的参数变化，例如，颜色不同、某些浮点属性不同。但是，不管是动态批处理还是静态批处理，它们的前提都是要使用同一个材质。是同一个，而不是使用了同一种Shader的材质，也就是说它们指向的材质必须是同一个实体。这意味着，只要我们调整了参数，就会影响所有使用这个材质的对象，那么想要微小的调整怎么办？一种常用的方法就是使用网格的顶点（最常见的就是顶点颜色数据）来存储这些参数。经过批处理后的物体会被处理成更大的VBO发送给GPU，VBO中的数据可以作为输入传递给顶点着色器，因此，我们可以巧妙地对VBO中的数据进行控制，从而达到不通效果的目的。一个例子是，森林场景中所有的树使用了同一种材质，我们希望它们可以通过批处理来减少draw call，但不同树的颜色可能不同。这么，我们可以利用网格的顶点的颜色数据来调整。</p>
+<h4 id="批处理的注意事项"><a href="#批处理的注意事项" class="headerlink" title="批处理的注意事项"></a>批处理的注意事项</h4><h3 id="减少需要处理的顶点数目"><a href="#减少需要处理的顶点数目" class="headerlink" title="减少需要处理的顶点数目"></a>减少需要处理的顶点数目</h3><h4 id="优化几何体"><a href="#优化几何体" class="headerlink" title="优化几何体"></a>优化几何体</h4><p>移除不必要的硬边以及纹理衔接，避免边界平滑和纹理分离。</p>
+<h4 id="模型的LOD技术"><a href="#模型的LOD技术" class="headerlink" title="模型的LOD技术"></a>模型的LOD技术</h4><h4 id="遮挡剔除技术"><a href="#遮挡剔除技术" class="headerlink" title="遮挡剔除技术"></a>遮挡剔除技术</h4><h3 id="减少需要处理的片元数目"><a href="#减少需要处理的片元数目" class="headerlink" title="减少需要处理的片元数目"></a>减少需要处理的片元数目</h3><h4 id="控制绘制顺序"><a href="#控制绘制顺序" class="headerlink" title="控制绘制顺序"></a>控制绘制顺序</h4><h4 id="时刻警惕透明物体"><a href="#时刻警惕透明物体" class="headerlink" title="时刻警惕透明物体"></a>时刻警惕透明物体</h4><h4 id="减少实时光照和阴影"><a href="#减少实时光照和阴影" class="headerlink" title="减少实时光照和阴影"></a>减少实时光照和阴影</h4><h3 id="节省带宽"><a href="#节省带宽" class="headerlink" title="节省带宽"></a>节省带宽</h3><h4 id="减少纹理大小"><a href="#减少纹理大小" class="headerlink" title="减少纹理大小"></a>减少纹理大小</h4><ul>
+<li>纹理的长宽比最好是正方形，长宽值最好是2的整数幂</li>
+<li>多级渐远纹理技术（mipmapping）和纹理压缩。</li>
+</ul>
+<h4 id="利用分辨率缩放"><a href="#利用分辨率缩放" class="headerlink" title="利用分辨率缩放"></a>利用分辨率缩放</h4><h3 id="减少计算复杂度"><a href="#减少计算复杂度" class="headerlink" title="减少计算复杂度"></a>减少计算复杂度</h3><h4 id="Shader的LOD技术"><a href="#Shader的LOD技术" class="headerlink" title="Shader的LOD技术"></a>Shader的LOD技术</h4><h4 id="代码方面的优化"><a href="#代码方面的优化" class="headerlink" title="代码方面的优化"></a>代码方面的优化</h4><h4 id="根据硬件进行缩放"><a href="#根据硬件进行缩放" class="headerlink" title="根据硬件进行缩放"></a>根据硬件进行缩放</h4>
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/04/11/Programer/Render/physics-base-render/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:03
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Engine/" title="Engine">
+                        <b>#</b> Engine
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Engine/Unity/" title="Unity">
+                        <b>#</b> Unity
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/04/12/Programer/RHI/RTR-4th-Chapter2/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-text">移动平台的特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E6%80%A7%E8%83%BD%E7%9A%84%E5%9B%A0%E7%B4%A0"><span class="toc-text">影响性能的因素</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Unity%E4%B8%AD%E7%9A%84%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7"><span class="toc-text">Unity中的渲染分析工具</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%B2%E6%9F%93%E7%BB%9F%E8%AE%A1%E7%AA%97%E5%8F%A3"><span class="toc-text">渲染统计窗口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%99%A8%E7%9A%84%E6%B8%B2%E6%9F%93%E5%8C%BA%E5%9F%9F"><span class="toc-text">性能分析器的渲染区域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%A7%E8%B0%83%E8%AF%95%E5%99%A8"><span class="toc-text">帧调试器</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%8F%E5%B0%91draw-call%E6%95%B0%E7%9B%AE"><span class="toc-text">减少draw call数目</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%89%B9%E5%A4%84%E7%90%86"><span class="toc-text">动态批处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%89%B9%E5%A4%84%E7%90%86"><span class="toc-text">静态批处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B1%E4%BA%AB%E6%9D%90%E8%B4%A8"><span class="toc-text">共享材质</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%B9%E5%A4%84%E7%90%86%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">批处理的注意事项</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%8F%E5%B0%91%E9%9C%80%E8%A6%81%E5%A4%84%E7%90%86%E7%9A%84%E9%A1%B6%E7%82%B9%E6%95%B0%E7%9B%AE"><span class="toc-text">减少需要处理的顶点数目</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%87%A0%E4%BD%95%E4%BD%93"><span class="toc-text">优化几何体</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E7%9A%84LOD%E6%8A%80%E6%9C%AF"><span class="toc-text">模型的LOD技术</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%81%AE%E6%8C%A1%E5%89%94%E9%99%A4%E6%8A%80%E6%9C%AF"><span class="toc-text">遮挡剔除技术</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%8F%E5%B0%91%E9%9C%80%E8%A6%81%E5%A4%84%E7%90%86%E7%9A%84%E7%89%87%E5%85%83%E6%95%B0%E7%9B%AE"><span class="toc-text">减少需要处理的片元数目</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E7%BB%98%E5%88%B6%E9%A1%BA%E5%BA%8F"><span class="toc-text">控制绘制顺序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E5%88%BB%E8%AD%A6%E6%83%95%E9%80%8F%E6%98%8E%E7%89%A9%E4%BD%93"><span class="toc-text">时刻警惕透明物体</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%87%8F%E5%B0%91%E5%AE%9E%E6%97%B6%E5%85%89%E7%85%A7%E5%92%8C%E9%98%B4%E5%BD%B1"><span class="toc-text">减少实时光照和阴影</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8A%82%E7%9C%81%E5%B8%A6%E5%AE%BD"><span class="toc-text">节省带宽</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%87%8F%E5%B0%91%E7%BA%B9%E7%90%86%E5%A4%A7%E5%B0%8F"><span class="toc-text">减少纹理大小</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E5%88%86%E8%BE%A8%E7%8E%87%E7%BC%A9%E6%94%BE"><span class="toc-text">利用分辨率缩放</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%8F%E5%B0%91%E8%AE%A1%E7%AE%97%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="toc-text">减少计算复杂度</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Shader%E7%9A%84LOD%E6%8A%80%E6%9C%AF"><span class="toc-text">Shader的LOD技术</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%96%B9%E9%9D%A2%E7%9A%84%E4%BC%98%E5%8C%96"><span class="toc-text">代码方面的优化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B9%E6%8D%AE%E7%A1%AC%E4%BB%B6%E8%BF%9B%E8%A1%8C%E7%BC%A9%E6%94%BE"><span class="toc-text">根据硬件进行缩放</span></a></li></ol></li></ol></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + UnityRenderOptimize + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F04%2F11%2FProgramer%2FEngine%2FUnity%2Funity-render-optimize%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/04/11/Programer/Engine/Unity/unity-render-optimize/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

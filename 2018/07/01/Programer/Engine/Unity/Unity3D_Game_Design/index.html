@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      Unity 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Unity</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:03
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Engine/" title="Engine">
+                    <b>#</b> Engine
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Engine/Unity/" title="Unity">
+                    <b>#</b> Unity
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h2 id="命名"><a href="#命名" class="headerlink" title="命名"></a>命名</h2><ol>
+<li>模型命名 Max文件中角色模型命名为skin@sk_001武器模型命名为skin@wq_001</li>
+<li>颜色贴图<a href="mailto:&#115;&#107;&#x69;&#x6e;&#64;&#x73;&#x74;&#x5f;&#48;&#48;&#49;&#46;&#x70;&#110;&#103;">&#115;&#107;&#x69;&#x6e;&#64;&#x73;&#x74;&#x5f;&#48;&#48;&#49;&#46;&#x70;&#110;&#103;</a> 高光贴图<a href="mailto:&#115;&#x6b;&#105;&#x6e;&#x40;&#x73;&#116;&#x5f;&#48;&#48;&#49;&#x5f;&#x63;&#x74;&#x72;&#x2e;&#x70;&#110;&#103;">&#115;&#x6b;&#105;&#x6e;&#x40;&#x73;&#116;&#x5f;&#48;&#48;&#49;&#x5f;&#x63;&#x74;&#x72;&#x2e;&#x70;&#110;&#103;</a></li>
+</ol>
+<h2 id="导入导出"><a href="#导入导出" class="headerlink" title="导入导出"></a>导入导出</h2><h3 id="能够从3DsMax导入Unity3D的资源"><a href="#能够从3DsMax导入Unity3D的资源" class="headerlink" title="能够从3DsMax导入Unity3D的资源"></a>能够从3DsMax导入Unity3D的资源</h3><ul>
+<li>所有节点的位移、旋转、锁方、轴心和命名都将导入</li>
+<li>网格模型包含顶点颜色、法线，一到两个UV通道</li>
+<li>材质包含贴图以及漫反射颜色，以及单个网格的多维材质</li>
+<li>动画（物体移动、旋转、缩放）</li>
+<li>骨骼动画（角色动画）</li>
+</ul>
+<h2 id="角色模型制作规范"><a href="#角色模型制作规范" class="headerlink" title="角色模型制作规范"></a>角色模型制作规范</h2><h3 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h3><ol>
+<li>选人界面模型面数约4500-5000左右</li>
+<li>游戏内主角模型面数2500-3000左右</li>
+<li>Boss模型面数根据体型大小3000-5000左右</li>
+<li>Npc模型面数900-1200造型简单面数没下限</li>
+<li>武器模型面数250-500 造型简单面数没下限</li>
+<li>模型在不是非常废面的情况下，转折的地方做出厚度，厚度适当夸张。</li>
+<li>地面部分制作成双面或是封闭，小布条类模型做成双面模型</li>
+<li>角色结构整体均衡 比如眼睛部分不需要细致刻画</li>
+</ol>
+<h3 id="贴图"><a href="#贴图" class="headerlink" title="贴图"></a>贴图</h3><p>主角 512*512 png<br>Boss 512*512 png<br>Npc 256*256 png</p>
+<p>武器体积较大的使用256*256 体积较小 128*128 png</p>
+<h4 id="尺寸设定"><a href="#尺寸设定" class="headerlink" title="尺寸设定"></a>尺寸设定</h4><p>制作模型前必须先确保模型尺寸，统一将显示单位与系统单位改为公尺。</p>
+<h3 id="注意正反面关系"><a href="#注意正反面关系" class="headerlink" title="注意正反面关系"></a>注意正反面关系</h3><p>每个模型都包含正面和反面，一般来说引擎只会显示模型的正面，如要反面也一起显示需透过shader来实现，但增加反面显示时会降低性能，因此尽量让模型单面显示就好，而在制作模型时必须确保要显示的模型面是正面即可。</p>
+<h3 id="不要存在破面和迭面"><a href="#不要存在破面和迭面" class="headerlink" title="不要存在破面和迭面"></a>不要存在破面和迭面</h3><p>制作模型时注意顶点是否焊接好，未焊接的顶点可能会导致模型有破面的情形，另外模型面与面之间最好保持距离，不然会发生迭面的情况。</p>
+<h3 id="不要存在多余的顶点和T点"><a href="#不要存在多余的顶点和T点" class="headerlink" title="不要存在多余的顶点和T点"></a>不要存在多余的顶点和T点</h3><p>删除一些没用的顶点，并且避免出现T点。</p>
+<h3 id="删除看不到的面"><a href="#删除看不到的面" class="headerlink" title="删除看不到的面"></a>删除看不到的面</h3><p>制作模型时有些面可能在低下或是在模型里面，都是在场景进行中看不到的面，这些面可以删除，以减少模型面数提高效能。</p>
+<h3 id="物体的轴心"><a href="#物体的轴心" class="headerlink" title="物体的轴心"></a>物体的轴心</h3><p>每个物体都有一个坐标轴心，宜据物体属性设计好物体轴心位置，一般来说轴心都会放置在中心的位置，其他情况如门的轴心可能会在低下角落的位置。</p>
+<h3 id="使用简单几何体来制作复杂对象"><a href="#使用简单几何体来制作复杂对象" class="headerlink" title="使用简单几何体来制作复杂对象"></a>使用简单几何体来制作复杂对象</h3><p>当遇到比较复杂的对象，且对象比较小，左乘模型反而增加了模型的面数，因此可以使用简单的平面模型结合透空贴图来实现复杂的造型，可以将图片存成PSD、PNG、TGA这种带有透明通道属性的贴图档。</p>
+<h3 id="重置模型（ResetXForm）"><a href="#重置模型（ResetXForm）" class="headerlink" title="重置模型（ResetXForm）"></a>重置模型（ResetXForm）</h3><p>制作模型时可能使用了缩放功能或镜像功能，这些指令会使得模型比例错乱以及出现负数轴向的情形，因此在模型制作完毕时最好进行ResetXForm指令，让模型回归最基本的状态。</p>
+<h3 id="制作虚拟碰撞体"><a href="#制作虚拟碰撞体" class="headerlink" title="制作虚拟碰撞体"></a>制作虚拟碰撞体</h3><p>可以为模型制作简单的几何体来当作物体的碰撞体，可以依据物体的重要性与精确性来设计几何体外观。</p>
+<h2 id="材质贴图和UV"><a href="#材质贴图和UV" class="headerlink" title="材质贴图和UV"></a>材质贴图和UV</h2><h3 id="Unity3D支持的Max材质"><a href="#Unity3D支持的Max材质" class="headerlink" title="Unity3D支持的Max材质"></a>Unity3D支持的Max材质</h3><p>Unity3D支持3dsmax的Standard(标准材质)与Muti&#x2F;Sub-Object(多维&#x2F;子物体材质)。</p>
+<h3 id="模型汇入Unity后没有贴图？"><a href="#模型汇入Unity后没有贴图？" class="headerlink" title="模型汇入Unity后没有贴图？"></a>模型汇入Unity后没有贴图？</h3><p>当模型汇入Unity前，可以先创建一个Texture文件夹，并事先将贴图导入，这样模型汇入后就会自动读取到贴图。</p>
+<h3 id="模型塌陷"><a href="#模型塌陷" class="headerlink" title="模型塌陷"></a>模型塌陷</h3><p>制作模型时，建议将模型以一栋建筑进行塌陷，接着对模型进行UV拆解，这样可以将一个模型使用一张贴图来完成。</p>
+<h3 id="避免拉伸UV"><a href="#避免拉伸UV" class="headerlink" title="避免拉伸UV"></a>避免拉伸UV</h3><p>调整UV前先将材质球使用棋格 (checkter) 贴图来观看UV比例，调整UV时尽量让棋格维持正方形的形状。</p>
+<h3 id="贴图尺寸"><a href="#贴图尺寸" class="headerlink" title="贴图尺寸"></a>贴图尺寸</h3><p>贴图必须是2的N词放（8、16、32、64、128、256），建议贴图不要超过1024*1024大小。</p>
+<h3 id="绘制UV出血"><a href="#绘制UV出血" class="headerlink" title="绘制UV出血"></a>绘制UV出血</h3><p>绘制材质时绘制出血边缘，可避免出现明显接缝线。</p>
+<h3 id="透空贴图在Unity里的使用"><a href="#透空贴图在Unity里的使用" class="headerlink" title="透空贴图在Unity里的使用"></a>透空贴图在Unity里的使用</h3><h3 id="透空贴图毛边处理技巧"><a href="#透空贴图毛边处理技巧" class="headerlink" title="透空贴图毛边处理技巧"></a>透空贴图毛边处理技巧</h3><h3 id="透空贴图毛边处理技巧（进阶）"><a href="#透空贴图毛边处理技巧（进阶）" class="headerlink" title="透空贴图毛边处理技巧（进阶）"></a>透空贴图毛边处理技巧（进阶）</h3><h3 id="材质与贴图命名"><a href="#材质与贴图命名" class="headerlink" title="材质与贴图命名"></a>材质与贴图命名</h3><h2 id="烘培贴图教学"><a href="#烘培贴图教学" class="headerlink" title="烘培贴图教学"></a>烘培贴图教学</h2><h3 id="3dsMax-LightMap-烘培贴图"><a href="#3dsMax-LightMap-烘培贴图" class="headerlink" title="3dsMax LightMap 烘培贴图"></a>3dsMax LightMap 烘培贴图</h3><h3 id="3dsMax-CompleteMap-烘培贴图"><a href="#3dsMax-CompleteMap-烘培贴图" class="headerlink" title="3dsMax CompleteMap 烘培贴图"></a>3dsMax CompleteMap 烘培贴图</h3><h2 id="Unity烘培贴图"><a href="#Unity烘培贴图" class="headerlink" title="Unity烘培贴图"></a>Unity烘培贴图</h2><h2 id="Unity3D地形制作"><a href="#Unity3D地形制作" class="headerlink" title="Unity3D地形制作"></a>Unity3D地形制作</h2><h3 id="地形编辑器基本功能介绍"><a href="#地形编辑器基本功能介绍" class="headerlink" title="地形编辑器基本功能介绍"></a>地形编辑器基本功能介绍</h3><h3 id="水系统介绍"><a href="#水系统介绍" class="headerlink" title="水系统介绍"></a>水系统介绍</h3><h3 id="天空盒系统介绍"><a href="#天空盒系统介绍" class="headerlink" title="天空盒系统介绍"></a>天空盒系统介绍</h3><h3 id="第一人称导览"><a href="#第一人称导览" class="headerlink" title="第一人称导览"></a>第一人称导览</h3><h2 id="3dsMax角色动画导入与基本控制"><a href="#3dsMax角色动画导入与基本控制" class="headerlink" title="3dsMax角色动画导入与基本控制"></a>3dsMax角色动画导入与基本控制</h2><h3 id="单个角色动画导入"><a href="#单个角色动画导入" class="headerlink" title="单个角色动画导入"></a>单个角色动画导入</h3><h3 id="多个角色动画导入"><a href="#多个角色动画导入" class="headerlink" title="多个角色动画导入"></a>多个角色动画导入</h3><h3 id="角色基本控制"><a href="#角色基本控制" class="headerlink" title="角色基本控制"></a>角色基本控制</h3><h2 id="第三人称角色控制"><a href="#第三人称角色控制" class="headerlink" title="第三人称角色控制"></a>第三人称角色控制</h2><h3 id="角色阴影"><a href="#角色阴影" class="headerlink" title="角色阴影"></a>角色阴影</h3><h2 id="树木与粒子系统"><a href="#树木与粒子系统" class="headerlink" title="树木与粒子系统"></a>树木与粒子系统</h2><h3 id="树木制作"><a href="#树木制作" class="headerlink" title="树木制作"></a>树木制作</h3><h2 id="粒子系统-繁星粒子效果"><a href="#粒子系统-繁星粒子效果" class="headerlink" title="粒子系统-繁星粒子效果"></a>粒子系统-繁星粒子效果</h2><h2 id="粒子系统-雪花粒子效果"><a href="#粒子系统-雪花粒子效果" class="headerlink" title="粒子系统-雪花粒子效果"></a>粒子系统-雪花粒子效果</h2><h2 id="粒子系统-火焰粒子效果"><a href="#粒子系统-火焰粒子效果" class="headerlink" title="粒子系统-火焰粒子效果"></a>粒子系统-火焰粒子效果</h2><h2 id="编辑界面介绍"><a href="#编辑界面介绍" class="headerlink" title="编辑界面介绍"></a>编辑界面介绍</h2><h3 id="创建工程"><a href="#创建工程" class="headerlink" title="创建工程"></a>创建工程</h3><h3 id="打开工程"><a href="#打开工程" class="headerlink" title="打开工程"></a>打开工程</h3><h3 id="Project视图"><a href="#Project视图" class="headerlink" title="Project视图"></a>Project视图</h3><h3 id="Hierarchy视图"><a href="#Hierarchy视图" class="headerlink" title="Hierarchy视图"></a>Hierarchy视图</h3><h3 id="Inspector视图"><a href="#Inspector视图" class="headerlink" title="Inspector视图"></a>Inspector视图</h3><h3 id="Scene视图"><a href="#Scene视图" class="headerlink" title="Scene视图"></a>Scene视图</h3><h4 id="视图介绍"><a href="#视图介绍" class="headerlink" title="视图介绍"></a>视图介绍</h4><h4 id="移动视图"><a href="#移动视图" class="headerlink" title="移动视图"></a>移动视图</h4><h4 id="移动模型"><a href="#移动模型" class="headerlink" title="移动模型"></a>移动模型</h4><h4 id="旋转模型"><a href="#旋转模型" class="headerlink" title="旋转模型"></a>旋转模型</h4><h4 id="缩放模型"><a href="#缩放模型" class="headerlink" title="缩放模型"></a>缩放模型</h4><h4 id="场景工具"><a href="#场景工具" class="headerlink" title="场景工具"></a>场景工具</h4><h4 id="Sence视图控制条"><a href="#Sence视图控制条" class="headerlink" title="Sence视图控制条"></a>Sence视图控制条</h4><h4 id="Game视图"><a href="#Game视图" class="headerlink" title="Game视图"></a>Game视图</h4><h4 id="Game视图控制条"><a href="#Game视图控制条" class="headerlink" title="Game视图控制条"></a>Game视图控制条</h4><h2 id="工程的打包"><a href="#工程的打包" class="headerlink" title="工程的打包"></a>工程的打包</h2><h3 id="导出与导入"><a href="#导出与导入" class="headerlink" title="导出与导入"></a>导出与导入</h3><h3 id="游戏案例1"><a href="#游戏案例1" class="headerlink" title="游戏案例1"></a>游戏案例1</h3><h2 id="Android和iOS版本发布"><a href="#Android和iOS版本发布" class="headerlink" title="Android和iOS版本发布"></a>Android和iOS版本发布</h2><h2 id="Unity3D脚本概述"><a href="#Unity3D脚本概述" class="headerlink" title="Unity3D脚本概述"></a>Unity3D脚本概述</h2><h3 id="Unity3D脚本概述-1"><a href="#Unity3D脚本概述-1" class="headerlink" title="Unity3D脚本概述"></a>Unity3D脚本概述</h3><h3 id="Unity3D的基本语法"><a href="#Unity3D的基本语法" class="headerlink" title="Unity3D的基本语法"></a>Unity3D的基本语法</h3><h4 id="访问其他组件"><a href="#访问其他组件" class="headerlink" title="访问其他组件"></a>访问其他组件</h4><h4 id="访问其他游戏对象"><a href="#访问其他游戏对象" class="headerlink" title="访问其他游戏对象"></a>访问其他游戏对象</h4><h4 id="向量"><a href="#向量" class="headerlink" title="向量"></a>向量</h4><h4 id="成员变量与全局变量"><a href="#成员变量与全局变量" class="headerlink" title="成员变量与全局变量"></a>成员变量与全局变量</h4><h4 id="实例化"><a href="#实例化" class="headerlink" title="实例化"></a>实例化</h4><h4 id="协同程序与中断"><a href="#协同程序与中断" class="headerlink" title="协同程序与中断"></a>协同程序与中断</h4><h4 id="创建游戏对象"><a href="#创建游戏对象" class="headerlink" title="创建游戏对象"></a>创建游戏对象</h4><h4 id="获取游戏对象"><a href="#获取游戏对象" class="headerlink" title="获取游戏对象"></a>获取游戏对象</h4><h4 id="添加组件与修改组件"><a href="#添加组件与修改组件" class="headerlink" title="添加组件与修改组件"></a>添加组件与修改组件</h4><h4 id="脚本组件"><a href="#脚本组件" class="headerlink" title="脚本组件"></a>脚本组件</h4><h4 id="克隆游戏对象"><a href="#克隆游戏对象" class="headerlink" title="克隆游戏对象"></a>克隆游戏对象</h4><h4 id="时间"><a href="#时间" class="headerlink" title="时间"></a>时间</h4><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    GUILayout.Label(<span class="string">&quot;当前游戏时间：&quot;</span> + Time.time);</span><br><span class="line">    GUILayout.Label(<span class="string">&quot;上一帧所消耗的时间：&quot;</span> + Time.deltaTime);</span><br><span class="line">    GUILayout.Label(<span class="string">&quot;固定增量时间：&quot;</span> + Time.fixedTime);</span><br><span class="line">    GUILayout.Label(<span class="string">&quot;上一帧所消耗的固定时间：&quot;</span> + Time.fixedDeltaTime);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="随机数"><a href="#随机数" class="headerlink" title="随机数"></a>随机数</h4><h4 id="四元数"><a href="#四元数" class="headerlink" title="四元数"></a>四元数</h4><h3 id="UGUI的网格重建、动静分离"><a href="#UGUI的网格重建、动静分离" class="headerlink" title="UGUI的网格重建、动静分离"></a>UGUI的网格重建、动静分离</h3><p>动静分离：也就是说同一个界面下的UI，可活动的元素放在一个Canvas下，不可活动的元素放在另一个Canvas下。虽然两个Canvas打断了合批，但是却减少了网格重建时间，总体上是有优化的。</p>
+<p>究其原因，是因为在同一个Canvas下的某个元素发生变化时，同一Canvas下的所有元素都会进行网格重建(ReBatch)。井静态的元素在逻辑上是不需要重建的，因为他们都没变过，所以需要分开。</p>
+<h4 id="群组视图"><a href="#群组视图" class="headerlink" title="群组视图"></a>群组视图</h4><h4 id="窗口"><a href="#窗口" class="headerlink" title="窗口"></a>窗口</h4><h4 id="图集制作-TexturePacket"><a href="#图集制作-TexturePacket" class="headerlink" title="图集制作(TexturePacket)"></a>图集制作(TexturePacket)</h4><h4 id="顶点动画"><a href="#顶点动画" class="headerlink" title="顶点动画"></a>顶点动画</h4><h3 id="GUI-Skin"><a href="#GUI-Skin" class="headerlink" title="GUI Skin"></a>GUI Skin</h3><h4 id="自定义风格组件"><a href="#自定义风格组件" class="headerlink" title="自定义风格组件"></a>自定义风格组件</h4><h2 id="Unity3D输入与控制"><a href="#Unity3D输入与控制" class="headerlink" title="Unity3D输入与控制"></a>Unity3D输入与控制</h2><h3 id="键盘事件"><a href="#键盘事件" class="headerlink" title="键盘事件"></a>键盘事件</h3><h4 id="键盘按下事件"><a href="#键盘按下事件" class="headerlink" title="键盘按下事件"></a>键盘按下事件</h4><h4 id="键盘抬起事件"><a href="#键盘抬起事件" class="headerlink" title="键盘抬起事件"></a>键盘抬起事件</h4><h4 id="键盘长按事件"><a href="#键盘长按事件" class="headerlink" title="键盘长按事件"></a>键盘长按事件</h4><h3 id="触摸事件"><a href="#触摸事件" class="headerlink" title="触摸事件"></a>触摸事件</h3><h4 id="触摸按下事件"><a href="#触摸按下事件" class="headerlink" title="触摸按下事件"></a>触摸按下事件</h4><h4 id="触摸抬起事件"><a href="#触摸抬起事件" class="headerlink" title="触摸抬起事件"></a>触摸抬起事件</h4><h4 id="触摸长按事件"><a href="#触摸长按事件" class="headerlink" title="触摸长按事件"></a>触摸长按事件</h4><h3 id="鼠标事件"><a href="#鼠标事件" class="headerlink" title="鼠标事件"></a>鼠标事件</h3><h4 id="鼠标按下事件"><a href="#鼠标按下事件" class="headerlink" title="鼠标按下事件"></a>鼠标按下事件</h4><h4 id="鼠标抬起事件"><a href="#鼠标抬起事件" class="headerlink" title="鼠标抬起事件"></a>鼠标抬起事件</h4><h4 id="鼠标长按事件"><a href="#鼠标长按事件" class="headerlink" title="鼠标长按事件"></a>鼠标长按事件</h4><h3 id="自定义事件"><a href="#自定义事件" class="headerlink" title="自定义事件"></a>自定义事件</h3><h4 id="输入管理器（InputHelper）"><a href="#输入管理器（InputHelper）" class="headerlink" title="输入管理器（InputHelper）"></a>输入管理器（InputHelper）</h4><h4 id="自定义按键事件"><a href="#自定义按键事件" class="headerlink" title="自定义按键事件"></a>自定义按键事件</h4><h4 id="自定义按键轴"><a href="#自定义按键轴" class="headerlink" title="自定义按键轴"></a>自定义按键轴</h4><h4 id="实例练习"><a href="#实例练习" class="headerlink" title="实例练习"></a>实例练习</h4><h3 id="角色模型与动画（Animation-Animator）"><a href="#角色模型与动画（Animation-Animator）" class="headerlink" title="角色模型与动画（Animation&amp;Animator）"></a>角色模型与动画（Animation&amp;Animator）</h3><h4 id="模型的载入"><a href="#模型的载入" class="headerlink" title="模型的载入"></a>模型的载入</h4><h4 id="设置角色动画"><a href="#设置角色动画" class="headerlink" title="设置角色动画"></a>设置角色动画</h4><h4 id="播放3D动画"><a href="#播放3D动画" class="headerlink" title="播放3D动画"></a>播放3D动画</h4><h4 id="动画裁切"><a href="#动画裁切" class="headerlink" title="动画裁切"></a>动画裁切</h4><h4 id="动画的帧"><a href="#动画的帧" class="headerlink" title="动画的帧"></a>动画的帧</h4><h4 id="Tween"><a href="#Tween" class="headerlink" title="Tween"></a>Tween</h4><h3 id="多媒体"><a href="#多媒体" class="headerlink" title="多媒体"></a>多媒体</h3><h4 id="音频"><a href="#音频" class="headerlink" title="音频"></a>音频</h4><h4 id="视频"><a href="#视频" class="headerlink" title="视频"></a>视频</h4>
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2018/06/26/Programer/Engine/Unity/Unity3D-Optimize/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:03
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Engine/" title="Engine">
+                        <b>#</b> Engine
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Engine/Unity/" title="Unity">
+                        <b>#</b> Unity
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2018/07/05/Programer/Render/presentandsync/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E5%90%8D"><span class="toc-text">命名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA"><span class="toc-text">导入导出</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%BD%E5%A4%9F%E4%BB%8E3DsMax%E5%AF%BC%E5%85%A5Unity3D%E7%9A%84%E8%B5%84%E6%BA%90"><span class="toc-text">能够从3DsMax导入Unity3D的资源</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%92%E8%89%B2%E6%A8%A1%E5%9E%8B%E5%88%B6%E4%BD%9C%E8%A7%84%E8%8C%83"><span class="toc-text">角色模型制作规范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B"><span class="toc-text">模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%B4%E5%9B%BE"><span class="toc-text">贴图</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%BA%E5%AF%B8%E8%AE%BE%E5%AE%9A"><span class="toc-text">尺寸设定</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E6%AD%A3%E5%8F%8D%E9%9D%A2%E5%85%B3%E7%B3%BB"><span class="toc-text">注意正反面关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E8%A6%81%E5%AD%98%E5%9C%A8%E7%A0%B4%E9%9D%A2%E5%92%8C%E8%BF%AD%E9%9D%A2"><span class="toc-text">不要存在破面和迭面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E8%A6%81%E5%AD%98%E5%9C%A8%E5%A4%9A%E4%BD%99%E7%9A%84%E9%A1%B6%E7%82%B9%E5%92%8CT%E7%82%B9"><span class="toc-text">不要存在多余的顶点和T点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E7%9C%8B%E4%B8%8D%E5%88%B0%E7%9A%84%E9%9D%A2"><span class="toc-text">删除看不到的面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%A9%E4%BD%93%E7%9A%84%E8%BD%B4%E5%BF%83"><span class="toc-text">物体的轴心</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%AE%80%E5%8D%95%E5%87%A0%E4%BD%95%E4%BD%93%E6%9D%A5%E5%88%B6%E4%BD%9C%E5%A4%8D%E6%9D%82%E5%AF%B9%E8%B1%A1"><span class="toc-text">使用简单几何体来制作复杂对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E7%BD%AE%E6%A8%A1%E5%9E%8B%EF%BC%88ResetXForm%EF%BC%89"><span class="toc-text">重置模型（ResetXForm）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%B6%E4%BD%9C%E8%99%9A%E6%8B%9F%E7%A2%B0%E6%92%9E%E4%BD%93"><span class="toc-text">制作虚拟碰撞体</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%90%E8%B4%A8%E8%B4%B4%E5%9B%BE%E5%92%8CUV"><span class="toc-text">材质贴图和UV</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Unity3D%E6%94%AF%E6%8C%81%E7%9A%84Max%E6%9D%90%E8%B4%A8"><span class="toc-text">Unity3D支持的Max材质</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E6%B1%87%E5%85%A5Unity%E5%90%8E%E6%B2%A1%E6%9C%89%E8%B4%B4%E5%9B%BE%EF%BC%9F"><span class="toc-text">模型汇入Unity后没有贴图？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%A1%8C%E9%99%B7"><span class="toc-text">模型塌陷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%81%BF%E5%85%8D%E6%8B%89%E4%BC%B8UV"><span class="toc-text">避免拉伸UV</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%B4%E5%9B%BE%E5%B0%BA%E5%AF%B8"><span class="toc-text">贴图尺寸</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%98%E5%88%B6UV%E5%87%BA%E8%A1%80"><span class="toc-text">绘制UV出血</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%8F%E7%A9%BA%E8%B4%B4%E5%9B%BE%E5%9C%A8Unity%E9%87%8C%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">透空贴图在Unity里的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%8F%E7%A9%BA%E8%B4%B4%E5%9B%BE%E6%AF%9B%E8%BE%B9%E5%A4%84%E7%90%86%E6%8A%80%E5%B7%A7"><span class="toc-text">透空贴图毛边处理技巧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%8F%E7%A9%BA%E8%B4%B4%E5%9B%BE%E6%AF%9B%E8%BE%B9%E5%A4%84%E7%90%86%E6%8A%80%E5%B7%A7%EF%BC%88%E8%BF%9B%E9%98%B6%EF%BC%89"><span class="toc-text">透空贴图毛边处理技巧（进阶）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%90%E8%B4%A8%E4%B8%8E%E8%B4%B4%E5%9B%BE%E5%91%BD%E5%90%8D"><span class="toc-text">材质与贴图命名</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%83%98%E5%9F%B9%E8%B4%B4%E5%9B%BE%E6%95%99%E5%AD%A6"><span class="toc-text">烘培贴图教学</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3dsMax-LightMap-%E7%83%98%E5%9F%B9%E8%B4%B4%E5%9B%BE"><span class="toc-text">3dsMax LightMap 烘培贴图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3dsMax-CompleteMap-%E7%83%98%E5%9F%B9%E8%B4%B4%E5%9B%BE"><span class="toc-text">3dsMax CompleteMap 烘培贴图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Unity%E7%83%98%E5%9F%B9%E8%B4%B4%E5%9B%BE"><span class="toc-text">Unity烘培贴图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Unity3D%E5%9C%B0%E5%BD%A2%E5%88%B6%E4%BD%9C"><span class="toc-text">Unity3D地形制作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%B0%E5%BD%A2%E7%BC%96%E8%BE%91%E5%99%A8%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D"><span class="toc-text">地形编辑器基本功能介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B0%B4%E7%B3%BB%E7%BB%9F%E4%BB%8B%E7%BB%8D"><span class="toc-text">水系统介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A9%E7%A9%BA%E7%9B%92%E7%B3%BB%E7%BB%9F%E4%BB%8B%E7%BB%8D"><span class="toc-text">天空盒系统介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E4%BA%BA%E7%A7%B0%E5%AF%BC%E8%A7%88"><span class="toc-text">第一人称导览</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3dsMax%E8%A7%92%E8%89%B2%E5%8A%A8%E7%94%BB%E5%AF%BC%E5%85%A5%E4%B8%8E%E5%9F%BA%E6%9C%AC%E6%8E%A7%E5%88%B6"><span class="toc-text">3dsMax角色动画导入与基本控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E4%B8%AA%E8%A7%92%E8%89%B2%E5%8A%A8%E7%94%BB%E5%AF%BC%E5%85%A5"><span class="toc-text">单个角色动画导入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E4%B8%AA%E8%A7%92%E8%89%B2%E5%8A%A8%E7%94%BB%E5%AF%BC%E5%85%A5"><span class="toc-text">多个角色动画导入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%92%E8%89%B2%E5%9F%BA%E6%9C%AC%E6%8E%A7%E5%88%B6"><span class="toc-text">角色基本控制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E8%A7%92%E8%89%B2%E6%8E%A7%E5%88%B6"><span class="toc-text">第三人称角色控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%92%E8%89%B2%E9%98%B4%E5%BD%B1"><span class="toc-text">角色阴影</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%91%E6%9C%A8%E4%B8%8E%E7%B2%92%E5%AD%90%E7%B3%BB%E7%BB%9F"><span class="toc-text">树木与粒子系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%91%E6%9C%A8%E5%88%B6%E4%BD%9C"><span class="toc-text">树木制作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B2%92%E5%AD%90%E7%B3%BB%E7%BB%9F-%E7%B9%81%E6%98%9F%E7%B2%92%E5%AD%90%E6%95%88%E6%9E%9C"><span class="toc-text">粒子系统-繁星粒子效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B2%92%E5%AD%90%E7%B3%BB%E7%BB%9F-%E9%9B%AA%E8%8A%B1%E7%B2%92%E5%AD%90%E6%95%88%E6%9E%9C"><span class="toc-text">粒子系统-雪花粒子效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B2%92%E5%AD%90%E7%B3%BB%E7%BB%9F-%E7%81%AB%E7%84%B0%E7%B2%92%E5%AD%90%E6%95%88%E6%9E%9C"><span class="toc-text">粒子系统-火焰粒子效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%BE%91%E7%95%8C%E9%9D%A2%E4%BB%8B%E7%BB%8D"><span class="toc-text">编辑界面介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%B7%A5%E7%A8%8B"><span class="toc-text">创建工程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%BC%80%E5%B7%A5%E7%A8%8B"><span class="toc-text">打开工程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Project%E8%A7%86%E5%9B%BE"><span class="toc-text">Project视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hierarchy%E8%A7%86%E5%9B%BE"><span class="toc-text">Hierarchy视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Inspector%E8%A7%86%E5%9B%BE"><span class="toc-text">Inspector视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Scene%E8%A7%86%E5%9B%BE"><span class="toc-text">Scene视图</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%86%E5%9B%BE%E4%BB%8B%E7%BB%8D"><span class="toc-text">视图介绍</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A7%BB%E5%8A%A8%E8%A7%86%E5%9B%BE"><span class="toc-text">移动视图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A7%BB%E5%8A%A8%E6%A8%A1%E5%9E%8B"><span class="toc-text">移动模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%8B%E8%BD%AC%E6%A8%A1%E5%9E%8B"><span class="toc-text">旋转模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%A9%E6%94%BE%E6%A8%A1%E5%9E%8B"><span class="toc-text">缩放模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E5%B7%A5%E5%85%B7"><span class="toc-text">场景工具</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Sence%E8%A7%86%E5%9B%BE%E6%8E%A7%E5%88%B6%E6%9D%A1"><span class="toc-text">Sence视图控制条</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Game%E8%A7%86%E5%9B%BE"><span class="toc-text">Game视图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Game%E8%A7%86%E5%9B%BE%E6%8E%A7%E5%88%B6%E6%9D%A1"><span class="toc-text">Game视图控制条</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E7%A8%8B%E7%9A%84%E6%89%93%E5%8C%85"><span class="toc-text">工程的打包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%BC%E5%87%BA%E4%B8%8E%E5%AF%BC%E5%85%A5"><span class="toc-text">导出与导入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%B8%E6%88%8F%E6%A1%88%E4%BE%8B1"><span class="toc-text">游戏案例1</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Android%E5%92%8CiOS%E7%89%88%E6%9C%AC%E5%8F%91%E5%B8%83"><span class="toc-text">Android和iOS版本发布</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Unity3D%E8%84%9A%E6%9C%AC%E6%A6%82%E8%BF%B0"><span class="toc-text">Unity3D脚本概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Unity3D%E8%84%9A%E6%9C%AC%E6%A6%82%E8%BF%B0-1"><span class="toc-text">Unity3D脚本概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Unity3D%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="toc-text">Unity3D的基本语法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E5%85%B6%E4%BB%96%E7%BB%84%E4%BB%B6"><span class="toc-text">访问其他组件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E5%85%B6%E4%BB%96%E6%B8%B8%E6%88%8F%E5%AF%B9%E8%B1%A1"><span class="toc-text">访问其他游戏对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%91%E9%87%8F"><span class="toc-text">向量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E4%B8%8E%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F"><span class="toc-text">成员变量与全局变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96"><span class="toc-text">实例化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%8F%E5%90%8C%E7%A8%8B%E5%BA%8F%E4%B8%8E%E4%B8%AD%E6%96%AD"><span class="toc-text">协同程序与中断</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B8%B8%E6%88%8F%E5%AF%B9%E8%B1%A1"><span class="toc-text">创建游戏对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E6%B8%B8%E6%88%8F%E5%AF%B9%E8%B1%A1"><span class="toc-text">获取游戏对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E7%BB%84%E4%BB%B6%E4%B8%8E%E4%BF%AE%E6%94%B9%E7%BB%84%E4%BB%B6"><span class="toc-text">添加组件与修改组件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%84%9A%E6%9C%AC%E7%BB%84%E4%BB%B6"><span class="toc-text">脚本组件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%8B%E9%9A%86%E6%B8%B8%E6%88%8F%E5%AF%B9%E8%B1%A1"><span class="toc-text">克隆游戏对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4"><span class="toc-text">时间</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E6%95%B0"><span class="toc-text">随机数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0"><span class="toc-text">四元数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UGUI%E7%9A%84%E7%BD%91%E6%A0%BC%E9%87%8D%E5%BB%BA%E3%80%81%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB"><span class="toc-text">UGUI的网格重建、动静分离</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BE%A4%E7%BB%84%E8%A7%86%E5%9B%BE"><span class="toc-text">群组视图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AA%97%E5%8F%A3"><span class="toc-text">窗口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BE%E9%9B%86%E5%88%B6%E4%BD%9C-TexturePacket"><span class="toc-text">图集制作(TexturePacket)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A1%B6%E7%82%B9%E5%8A%A8%E7%94%BB"><span class="toc-text">顶点动画</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GUI-Skin"><span class="toc-text">GUI Skin</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E9%A3%8E%E6%A0%BC%E7%BB%84%E4%BB%B6"><span class="toc-text">自定义风格组件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Unity3D%E8%BE%93%E5%85%A5%E4%B8%8E%E6%8E%A7%E5%88%B6"><span class="toc-text">Unity3D输入与控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%AE%E7%9B%98%E4%BA%8B%E4%BB%B6"><span class="toc-text">键盘事件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%94%AE%E7%9B%98%E6%8C%89%E4%B8%8B%E4%BA%8B%E4%BB%B6"><span class="toc-text">键盘按下事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%94%AE%E7%9B%98%E6%8A%AC%E8%B5%B7%E4%BA%8B%E4%BB%B6"><span class="toc-text">键盘抬起事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%94%AE%E7%9B%98%E9%95%BF%E6%8C%89%E4%BA%8B%E4%BB%B6"><span class="toc-text">键盘长按事件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A6%E6%91%B8%E4%BA%8B%E4%BB%B6"><span class="toc-text">触摸事件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A6%E6%91%B8%E6%8C%89%E4%B8%8B%E4%BA%8B%E4%BB%B6"><span class="toc-text">触摸按下事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A6%E6%91%B8%E6%8A%AC%E8%B5%B7%E4%BA%8B%E4%BB%B6"><span class="toc-text">触摸抬起事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A6%E6%91%B8%E9%95%BF%E6%8C%89%E4%BA%8B%E4%BB%B6"><span class="toc-text">触摸长按事件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%BC%A0%E6%A0%87%E4%BA%8B%E4%BB%B6"><span class="toc-text">鼠标事件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%BC%A0%E6%A0%87%E6%8C%89%E4%B8%8B%E4%BA%8B%E4%BB%B6"><span class="toc-text">鼠标按下事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%BC%A0%E6%A0%87%E6%8A%AC%E8%B5%B7%E4%BA%8B%E4%BB%B6"><span class="toc-text">鼠标抬起事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%BC%A0%E6%A0%87%E9%95%BF%E6%8C%89%E4%BA%8B%E4%BB%B6"><span class="toc-text">鼠标长按事件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BA%8B%E4%BB%B6"><span class="toc-text">自定义事件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E7%AE%A1%E7%90%86%E5%99%A8%EF%BC%88InputHelper%EF%BC%89"><span class="toc-text">输入管理器（InputHelper）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%89%E9%94%AE%E4%BA%8B%E4%BB%B6"><span class="toc-text">自定义按键事件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%89%E9%94%AE%E8%BD%B4"><span class="toc-text">自定义按键轴</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B%E7%BB%83%E4%B9%A0"><span class="toc-text">实例练习</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%92%E8%89%B2%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8A%A8%E7%94%BB%EF%BC%88Animation-Animator%EF%BC%89"><span class="toc-text">角色模型与动画（Animation&amp;Animator）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%BD%BD%E5%85%A5"><span class="toc-text">模型的载入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E8%A7%92%E8%89%B2%E5%8A%A8%E7%94%BB"><span class="toc-text">设置角色动画</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%92%AD%E6%94%BE3D%E5%8A%A8%E7%94%BB"><span class="toc-text">播放3D动画</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A8%E7%94%BB%E8%A3%81%E5%88%87"><span class="toc-text">动画裁切</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A8%E7%94%BB%E7%9A%84%E5%B8%A7"><span class="toc-text">动画的帧</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Tween"><span class="toc-text">Tween</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E5%AA%92%E4%BD%93"><span class="toc-text">多媒体</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91"><span class="toc-text">音频</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%86%E9%A2%91"><span class="toc-text">视频</span></a></li></ol></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Unity + '&url=' + http%3A%2F%2Fzentia.github.io%2F2018%2F07%2F01%2FProgramer%2FEngine%2FUnity%2FUnity3D_Game_Design%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2018/07/01/Programer/Engine/Unity/Unity3D_Game_Design/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

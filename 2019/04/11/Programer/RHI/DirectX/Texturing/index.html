@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      第六章 纹理(Texturing) 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">第六章 纹理(Texturing)</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/" title="RHI">
+                    <b>#</b> RHI
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/DirectX/" title="DirectX">
+                    <b>#</b> DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/RHI/" title="RHI">
+                    #RHI
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/DirectX/" title="DirectX">
+                    #DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>Direct3D使用一个纹理坐标系统，它是由用水平方向的u轴和竖直方向v轴构成。由u,v坐标决定纹理上的元素，它被叫做texel。注意v轴是向下的（如图6.2）。<br>　　<br>　　图6.2<br>同样，注意规格化的坐标间隔，[0，1]，它被使用是因为它给Direct3D一个固定的范围用于在不同尺寸的纹理上工作。<br>对每一个3D三角形，我们都希望在给它贴图的纹理上定义一个用相应的三角形。（如图6.3）。<br>　　<br>　　图6.3<br>　　  我们再一次修改原来的顶点结构，添加一个用于在纹理上定位的纹理坐标。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Vertex</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">float</span> _x, _y, _z;</span><br><span class="line">    <span class="type">float</span> _nx, _ny, _nz;</span><br><span class="line">    <span class="type">float</span> _u, _v; <span class="comment">// texture coordinates</span></span><br><span class="line">    <span class="type">static</span> <span class="type">const</span> DWORD FVF;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="type">const</span> DWORD Vertex::FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;</span><br></pre></td></tr></table></figure>
+<p>　　我们在顶点格式中添加了一个D3DFVF_TEX1，它是说我们的顶点结构中包含了一个纹理坐标。<br>　　现在每个三角形都通过顶点的三个对象来建立，同时也通过纹理坐标定义了一个相应的纹理三角形。<br>6.2创建并赋予材质<br>　　纹理数据通常是从存储在磁盘中的图片文件中读取的，且被读进IDirect3DTexture9对象中。我们能够使用下面的D3DX函数完成这项工作：<br>HRESULT D3DXCreateTextureFromFile(<br>    LPDIRECT3DDEVICE9 pDevice, &#x2F;&#x2F; device to create the texture<br>    LPCSTR pSrcFile, &#x2F;&#x2F; filename of image to load<br>    LPDIRECT3DTEXTURE9* ppTexture &#x2F;&#x2F; ptr to receive the created texture<br>);<br>这个函数能够读取下面图片格式中的任意一种：BMP,DDS,DIB,JPG,PNG,TGA。<br>　　例如，用一个名为stonewall.bmp的图片创建一个纹理，我们将按照下面的例子来写：<br>IDirect3Dtexture9* _stonewall;<br>D3DXCreateTextureFromFile(_device, “stonewall.bmp”, &amp;_stonewall);<br>　　设置当前纹理，我们使用下面的方法：<br>HRESULT IDirect3DDevice9::SetTexture(<br>    DWORD Stage, &#x2F;&#x2F; A value in the range 0-7 identifying the texture<br>                &#x2F;&#x2F; stage – see note on Texture Stages<br>    IDirect3DBaseTexture9* pTexture &#x2F;&#x2F; ptr to the texture to set<br>);<br>　　例子：<br>Device-&gt;SetTexture(0, _stonewall);<br>注意：在Direct3D中，你能够设置八个纹理，它们能够组合起来创建更多细节的图象。这又被叫做多重纹理。在本书的第四部分以前我们不会使用多重纹理；因此现在我们总是设置stage为0。<br>　　为了销毁一个纹理，我们设置pTexture为0。例如，假如不想用一个纹理来渲染物体，那么我们就这样写：<br>Device-&gt;SetTexture(0, 0);<br>renderObjectWithoutTexture();<br>假如场景中有使用不同纹理的三角形，我们就必须添加与下面类似的一些代码：<br>Device-&gt;SetTexture(0, _tex0);<br>drawTrisUsingTex0();</p>
+<p>Device-&gt;SetTexture(0, _tex1);<br>drawTrisUsingTex1();<br>6.3过滤器<br>    就象以前提及的，纹理被映射到屏幕中的三角形上。通常纹理三角形和屏幕三角形是不一样大的。当纹理三角形比屏幕三角形小时，纹理三角形会被适当放大。当纹理三角形比屏幕三角形大时，纹理三角形会被适当缩小。这两种情况，变形都将会出现。过滤（Filtering）是一种Direct3D用它来帮助这些变形变的平滑的技术。<br>    Direct3D提供了三种不同的过滤器；每种都提供了一个不同的品质级别。越好的品质越慢，因此你必须在品质与速度之间取得一个平衡。纹理过滤器是用IDirect3DDevice9::SetSamplerState方法来设置的。</p>
+<ul>
+<li>Nearest point sampling——这是默认的过滤方法且返回最差的效果，但是它的计算是最快的。下面的代码就是设置Nearest point sampling作为缩小放大的过滤器：<br>Device-&gt;SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);<br>Device-&gt;SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);</li>
+<li>Linear filtering——这种过滤产生还算比较好的效果，在今天的硬件上处理它还是非常快的。它是被推荐使用的。下面的代码就是设置Linear filtering作为缩小放大的过滤器。<br>Device-&gt;SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);<br>Device-&gt;SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);</li>
+<li>Anisotropic filtering——这种过滤产生最好的效果，但是处理时间也是最长的。下面的代码就是设置Anisotropic filtering作为缩小放大的过滤器。<br>Device-&gt;SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);<br>Device-&gt;SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);<br>当使用Anisotropic filtering时，我们必须设置D3DSAMP_MAXANISOTROPY等级，它决定处理的质量。该值越高处理的效果越好。检查D3DCAPS9结构确认你的显卡是否支持此功能。下面的代码设置该值为4：<br>Device-&gt;SetSamplerState(0, D3DSAMP_MAXANISOTROPY, 4);<br>6.4 Mipmaps<br>　　就象6.3节所说的，在屏幕上的三角形和纹理三角形通常是不一样大的。为了使这个大小差异变小，我们为纹理创建mipmaps链。也就是说将一个纹理创建成连续的变小的纹理，但是对它们等级进行定制过滤，因此对我们来说保存细节是很重要的（如图6.4）。</li>
+</ul>
+<p>　　<br>　　图6.4<br>6.4.1 Mipmaps过滤器<br>    mipmap过滤器是被用来控制Direct3D使用mipmaps的。设置mipmap过滤器，你可以这样写：<br>Device-&gt;SetSamplerState(0, D3DSAMP_MIPFILTER, Filter);<br>在Filter处你能用下面三个选项中的一个：</p>
+<ul>
+<li>D3DTEXF_NONE——不使用mipmap。</li>
+<li>D3DTEXF_POINT——通过使用这个过滤器，Direct3D将选择与屏幕三角形大小最接近的mipmap等级。一旦等级选定了，Direct3D就将按照指定的过滤器进行缩小和放大过滤。</li>
+<li>D3DTEXF_LINEAR——通过使用这个过滤器，Direct3D将选择两个最接近的mipmap等级，缩小和放大过滤每个等级，然后线性联合计算它们两个等级来得到最终的颜色值。<br>6.4.2 Direct3D中使用Mipmaps<br>  在Direct3D中使用Mipmaps是很简单的。假如你的显卡支持Mipmaps，那么使用D3DXCreateTextureFromFile将为你产生一个Mipmap链。Direct3D自动选择与屏幕三角形最匹配的Mipmap。因此Mipmap有非常广泛的应用，且它能被自动设置。<br>6.5 寻址模式<br>  以前，我们规定纹理坐标必须指定在[0，1]之间。从技术上来说这是不正确的；他们能够超出这个范围。纹理坐标也可以在[0，1]的范围之外，它通过Direct3D的寻址模式来定义。这里有四种寻址模式：环绕纹理寻址模式、边框颜色纹理寻址模式、截取纹理寻址模式、镜像纹理寻址模式，这里分别给出了它们的示意图6.5，6.6，6.7，6.8。</li>
+</ul>
+<p>图6.5（环绕）                          图6.6（边框）</p>
+<p>图6.7（截取）                          图6.8（镜像）<br>在这些图片中，纹理坐标通过（0,0）（0,3）（3,0）（3,3）顶点来定义。在u轴和v轴上方块又被分成子块放进3×3的矩阵中。假如，你想让纹理按5×5的方格来平铺，你就应该指定环绕纹理寻址模式并且纹理坐标因该设置为（0,0）（0,5）（5,0）（5,5）。<br>    下面的代码片段列举的是怎样设置这四种寻址模式：<br>&#x2F;&#x2F; set wrap address mode<br>if( ::GetAsyncKeyState(‘W’) &amp; 0x8000f )<br>{<br>    Device-&gt;SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);<br>    Device-&gt;SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);<br>}<br>&#x2F;&#x2F; set border color address mode<br>if( ::GetAsyncKeyState(‘B’) &amp; 0x8000f )<br>{<br>    Device-&gt;SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);<br>    Device-&gt;SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_BORDER);<br>    Device-&gt;SetSamplerState(0, D3DSAMP_BORDERCOLOR, 0x000000ff);<br>}<br>&#x2F;&#x2F; set clamp address mode<br>if( ::GetAsyncKeyState(‘C’) &amp; 0x8000f )<br>{<br>    Device-&gt;SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);<br>    Device-&gt;SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);<br>}<br>&#x2F;&#x2F; set mirror address mode<br>if( ::GetAsyncKeyState(‘M’) &amp; 0x8000f )<br>{<br>    Device-&gt;SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_MIRROR);<br>    Device-&gt;SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_MIRROR);<br>}<br>6.6实例程序：有纹理的方块<br>    这个例子是怎样为方块加上纹理以及设置一个纹理过滤器（如图6.9）。假如你的显卡支持，通过D3DXCreateTextureFromFile函数一个mipmap链将被自动创建。</p>
+<p>图6.9<br>注意：还提供了其他两个例子大家就自己看看了。<br>为一个场景增加纹理的必要步骤是：</p>
+<ol>
+<li>用纹理坐标指定的，创建物体的顶点。</li>
+<li>用D3DXCreateTextureFromFile函数读取一个纹理到IDirect3DTexture9接口中。</li>
+<li>设置缩小倍数，放大倍数以及mipmap过滤器。</li>
+<li>在你绘制一个物体前，用IDirect3DDevice9::SetTexture设置与物体关联的纹理。<br>我们先定义几个全局变量；一个是顶点缓存，它存储方块的顶点。另外一个是我们为方块映射的纹理：<br>IDirect3DVertexBuffer9* Quad &#x3D; 0;<br>IDirect3DTexture9*      Tex  &#x3D; 0;<br>Setup程序是很容易读懂的；我们用已经定义了纹理坐标的两个三角形创建一个方块。然后把文件dx5_logo.bmp读进IDirect3DTexture9接口中。接着使用SetTexture方法赋予纹理。最后设置缩小和放大过滤器进行线性过滤，我们也可以设置mipmap过滤器来进行D3DTEXF_POINT: <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">Setup</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Create the quad vertex buffer and fill it with the</span></span><br><span class="line">    <span class="comment">// quad geoemtry.</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    Device-&gt;<span class="built_in">CreateVertexBuffer</span>(</span><br><span class="line">        <span class="number">6</span> * <span class="built_in">sizeof</span>(Vertex), </span><br><span class="line">        D3DUSAGE_WRITEONLY,</span><br><span class="line">        Vertex::FVF,</span><br><span class="line">        D3DPOOL_MANAGED,</span><br><span class="line">        &amp;Quad,</span><br><span class="line">        <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    Vertex* v;</span><br><span class="line">    Quad-&gt;<span class="built_in">Lock</span>(<span class="number">0</span>, <span class="number">0</span>, (<span class="type">void</span>**)&amp;v, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// quad built from two triangles, note texture coordinates:</span></span><br><span class="line">    v[<span class="number">0</span>] = <span class="built_in">Vertex</span>(<span class="number">-1.0f</span>, <span class="number">-1.0f</span>, <span class="number">1.25f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>);</span><br><span class="line">    v[<span class="number">1</span>] = <span class="built_in">Vertex</span>(<span class="number">-1.0f</span>,  <span class="number">1.0f</span>, <span class="number">1.25f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>);</span><br><span class="line">    v[<span class="number">2</span>] = <span class="built_in">Vertex</span>( <span class="number">1.0f</span>,  <span class="number">1.0f</span>, <span class="number">1.25f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>);</span><br><span class="line"></span><br><span class="line">    v[<span class="number">3</span>] = <span class="built_in">Vertex</span>(<span class="number">-1.0f</span>, <span class="number">-1.0f</span>, <span class="number">1.25f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>);</span><br><span class="line">    v[<span class="number">4</span>] = <span class="built_in">Vertex</span>( <span class="number">1.0f</span>,  <span class="number">1.0f</span>, <span class="number">1.25f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>);</span><br><span class="line">    v[<span class="number">5</span>] = <span class="built_in">Vertex</span>( <span class="number">1.0f</span>, <span class="number">-1.0f</span>, <span class="number">1.25f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">1.0f</span>, <span class="number">1.0f</span>);</span><br><span class="line"></span><br><span class="line">    Quad-&gt;<span class="built_in">Unlock</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Create the texture and set filters.</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">D3DXCreateTextureFromFile</span>(</span><br><span class="line">        Device,</span><br><span class="line">        <span class="string">&quot;dx5_logo.bmp&quot;</span>,</span><br><span class="line">        &amp;Tex);</span><br><span class="line"></span><br><span class="line">    Device-&gt;<span class="built_in">SetTexture</span>(<span class="number">0</span>, Tex);</span><br><span class="line"></span><br><span class="line">    Device-&gt;<span class="built_in">SetSamplerState</span>(<span class="number">0</span>, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);</span><br><span class="line">    Device-&gt;<span class="built_in">SetSamplerState</span>(<span class="number">0</span>, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);</span><br><span class="line">    Device-&gt;<span class="built_in">SetSamplerState</span>(<span class="number">0</span>, D3DSAMP_MIPFILTER, D3DTEXF_POINT);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Don&#x27;t use lighting for this sample.</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    Device-&gt;<span class="built_in">SetRenderState</span>(D3DRS_LIGHTING, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Set the projection matrix.</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    D3DXMATRIX proj;</span><br><span class="line">    <span class="built_in">D3DXMatrixPerspectiveFovLH</span>(</span><br><span class="line">            &amp;proj,</span><br><span class="line">            D3DX_PI * <span class="number">0.5f</span>, <span class="comment">// 90 - degree</span></span><br><span class="line">            (<span class="type">float</span>)Width / (<span class="type">float</span>)Height,</span><br><span class="line">            <span class="number">1.0f</span>,</span><br><span class="line">            <span class="number">1000.0f</span>);</span><br><span class="line">    Device-&gt;<span class="built_in">SetTransform</span>(D3DTS_PROJECTION, &amp;proj);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+我们现在可以渲染方块了，且通常已经为它赋予了纹理：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">Display</span><span class="params">(<span class="type">float</span> timeDelta)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>( Device )</span><br><span class="line">    &#123;</span><br><span class="line">        Device-&gt;<span class="built_in">Clear</span>(<span class="number">0</span>, <span class="number">0</span>, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, <span class="number">0xffffffff</span>, <span class="number">1.0f</span>, <span class="number">0</span>);</span><br><span class="line">        Device-&gt;<span class="built_in">BeginScene</span>();</span><br><span class="line"></span><br><span class="line">        Device-&gt;<span class="built_in">SetStreamSource</span>(<span class="number">0</span>, Quad, <span class="number">0</span>, <span class="built_in">sizeof</span>(Vertex));</span><br><span class="line">        Device-&gt;<span class="built_in">SetFVF</span>(Vertex::FVF);</span><br><span class="line">        Device-&gt;<span class="built_in">DrawPrimitive</span>(D3DPT_TRIANGLELIST, <span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        Device-&gt;<span class="built_in">EndScene</span>();</span><br><span class="line">        Device-&gt;<span class="built_in">Present</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/Lighting/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/" title="RHI">
+                        <b>#</b> RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/DirectX/" title="DirectX">
+                        <b>#</b> DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/RHI/" title="RHI">
+                        #RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/DirectX/" title="DirectX">
+                        #DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/Blending/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E7%AC%AC%E5%85%AD%E7%AB%A0%20%E7%BA%B9%E7%90%86(Texturing) + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F04%2F11%2FProgramer%2FRHI%2FDirectX%2FTexturing%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/04/11/Programer/RHI/DirectX/Texturing/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

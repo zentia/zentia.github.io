@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      光线跟踪 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">光线跟踪</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Render/" title="Render">
+                    <b>#</b> Render
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Render/" title="Render">
+                    #Render
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="RayTracying"><a href="#RayTracying" class="headerlink" title="RayTracying"></a>RayTracying</h1><p>RayTracying最关键的点是： </p>
+<p>👁看出去的世界</p>
+<p>而非世界如何达到👁</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/raytracing.png" alt="raytracing"></p>
+<p>这也是这个算法叫做ray tracying - 光线跟踪的原因。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="1-预备知识"><a href="#1-预备知识" class="headerlink" title="1.预备知识"></a>1.预备知识</h2><h3 id="1-1-屏幕坐标-vs-画布坐标"><a href="#1-1-屏幕坐标-vs-画布坐标" class="headerlink" title="1.1 屏幕坐标 vs 画布坐标"></a>1.1 屏幕坐标 vs 画布坐标</h3><p>一般来说屏幕坐标都是始于左上角，然后朝右和下延伸。</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/screen_coordinate.png" alt="screen_coordinate"></p>
+<p>不过这里为了作图方便，我们把坐标系按照数学中更常见的方式把原点放于屏幕中央，x和y的延伸方向按照平时的习惯来放。</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/canvas_coordinate.png" alt="screen_coordinate"><br>这样可以知道屏幕坐标系$S_x$和画布坐标系$C_x$的变换:</p>
+<p>$$<br>S_x &#x3D; \frac{C_w}{2} + C_x<br>$$<br>$$<br>S_y &#x3D; \frac{C_h}{2} - C_y<br>$$</p>
+<h3 id="1-2-画布-vs-窗户"><a href="#1-2-画布-vs-窗户" class="headerlink" title="1.2 画布 vs 窗户"></a>1.2 画布 vs 窗户</h3><p>因为我们屏幕是二维的，无论我们怎样模拟，实际上都是要把物体画在一个二维的平面（画布）上，我们这里就假设我们把👁放在原点上，而有一扇窗户在坐标轴 z &#x3D; d 处 ，我们眼睛能看到的也就是窗户出去的世界。</p>
+<p>那么对于画布上的任意一点，在窗户上都有一个对应的位置，因为它们是中心相同平面平行。</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/window.png" alt="window"></p>
+<p>所以对画布上的每一个点$C_x, C_y$我们都能找到窗户上的对应点$V_x, V_y$，加上上一段话中的对应关系，实际上就是一个比例的问题，所以我们可以继续知道画布坐标系$C_x, C_y$在窗户上的对应坐标$V_x, V_y$为：</p>
+<p>$$<br>V_x &#x3D; C_x\frac{V_w}{C_w}<br>$$<br>$$<br>V_y &#x3D; C_y\frac{V_h}{C_h}<br>$$</p>
+<p>同时因为窗户放在 z &#x3D; d 处，我们知道：</p>
+<p>$$<br>V_z &#x3D; d<br>$$</p>
+<p>这就有了如何将画布上的每一点转化为窗户上的每一点的坐标变换。</p>
+<h3 id="1-3-窗户-vs-空间"><a href="#1-3-窗户-vs-空间" class="headerlink" title="1.3 窗户 vs 空间"></a>1.3 窗户 vs 空间</h3><p>从眼睛👁射出的光线，我们都可以看成是$\overrightarrow{OP}$。</p>
+<p>同时P点位置也可以写成： $P &#x3D; O + t(V-O)$, 令$\overrightarrow{D}$为$V-O$，也就是其方向的向量，如下图：</p>
+<p>$$<br>P &#x3D; O + t\overrightarrow{D}<br>$$</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/vector.png" alt="vector"><br><img src="/2019/05/27/Programer/Render/RayTracying/vector2.png" alt="vector2"></p>
+<p>这里需要注意的是: O,P,V是位置，$\overrightarrow{OP}， \overrightarrow{D}$是向量。</p>
+<p>同时知道：</p>
+<ul>
+<li>t &lt; 0: 逆向于光线上的点</li>
+<li>t &#x3D; 0: 原点</li>
+<li>t &gt; 0 &amp;&amp; t &lt; 1: 原点到V点之间的点，也就是原点到窗户之间的点</li>
+<li>t &#x3D; 1: V点</li>
+<li>t &gt; 1: V点之后，依旧在射出的光线之上，当t取某个值为P点</li>
+</ul>
+<h2 id="2-空间放物体"><a href="#2-空间放物体" class="headerlink" title="2.空间放物体"></a>2.空间放物体</h2><p>这里我们在空间中放置一个球体</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/sphere.png" alt="sphere"></p>
+<p>球心为C，那么球上点P需要满足方程：</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/sphere2.png" alt="sphere2"></p>
+<p>$$<br>|P - C| &#x3D; r<br>$$</p>
+<h2 id="3-处理交互-跟踪光线"><a href="#3-处理交互-跟踪光线" class="headerlink" title="3. 处理交互 跟踪光线"></a>3. 处理交互 跟踪光线</h2><p>假设OP就是我们看出去的光线，来追踪它，当看向球体时，它会与球体产生交互，图中这条光线就是和球体相遇了：</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/raymeetsphere0.png" alt="raymeetsphere0"><br>球上的属于这条光线的P点应该满足：</p>
+<p>$$<br>P &#x3D; O + t\overrightarrow{D}<br>$$</p>
+<p>$$<br>|P - C| &#x3D; r<br>$$</p>
+<p>代入1式进2式：</p>
+<p>$$<br>| O + t\overrightarrow{D} - C| &#x3D; r<br>$$<br>$$<br>| t\overrightarrow{D} + \overrightarrow{OC}| &#x3D; r<br>$$</p>
+<p>来解方程：</p>
+<p>$$<br>(t\overrightarrow{OD} + \overrightarrow{OC})(t\overrightarrow{OD} +\overrightarrow{OC}) &#x3D; r^2<br>$$</p>
+<p>展开：</p>
+<p>$$<br>t^2|\overrightarrow{OD}|^2 + 2 t\overrightarrow{OD}\cdot\overrightarrow{OC} + |\overrightarrow{OC}|^2 -r^2 &#x3D; 0<br>$$</p>
+<p>令 </p>
+<p>$$<br>k_1 &#x3D; |\overrightarrow{OD}|^2 ​<br>$$</p>
+<p>$$<br>k_2 &#x3D; 2 \overrightarrow{OD}\cdot\overrightarrow{OC}​<br>$$</p>
+<p>$$<br>k_3 &#x3D; |\overrightarrow{OC}|^2 -r^2<br>$$</p>
+<p>这就变成解关于t的一元二次方程：</p>
+<p>$$<br>{t_1, t_2}<br>&#x3D; \begin{equation}<br>\frac{ -k_2 \pm \sqrt{k_2^2 - 4k_1k_3} }<br>{2k_1}<br>\end{equation}<br>$$</p>
+<p>会出现：</p>
+<ul>
+<li>$k_2^2 - 4k_1k_3 &gt; 0$ ： 两个解</li>
+<li>$k_2^2 - 4k_1k_3 &#x3D; 0$ ： 一个解</li>
+<li>$k_2^2 - 4k_1k_3 &lt; 0$ ： 无解</li>
+</ul>
+<p>对应的就是下图的状况：</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/raymeetsphere2.png" alt="raymeetsphere2"></p>
+<p>所以问题就变简单了，如果我们有交互，那么我们应该展示的是近的点$t_1$的颜色，如果我们没有交互，那么我们展示的就是背景色。</p>
+<p>以上就是光线追踪的根本原理。</p>
+<h2 id="至此の伪码"><a href="#至此の伪码" class="headerlink" title="至此の伪码"></a>至此の伪码</h2><h3 id="跟踪光线与球相交-IntersectRaySphere"><a href="#跟踪光线与球相交-IntersectRaySphere" class="headerlink" title="跟踪光线与球相交 IntersectRaySphere"></a>跟踪光线与球相交 IntersectRaySphere</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">IntersectRaySphere(O, D, sphere)&#123;</span><br><span class="line">    C = sphere.center</span><br><span class="line">    r = sphere.radius</span><br><span class="line">    oc = O - C</span><br><span class="line">    </span><br><span class="line">    k1 = dot(OD, OD)</span><br><span class="line">    k2 = 2 * dot(OC, OD)</span><br><span class="line">    k3 = dot(OC,OC) - r*r</span><br><span class="line">    </span><br><span class="line">    discriminant = k2 * k2 - 4 * k1 * k3</span><br><span class="line">    if discriminant &lt; 0:</span><br><span class="line">        return inf, inf</span><br><span class="line">    </span><br><span class="line">    t1 = (-k2 + sqrt(discriminant))/(2*k1)</span><br><span class="line">    t2 = (-k2 - sqrt(discriminant))/(2*k1)</span><br><span class="line">    return t1, t2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="t1-的颜色TraceRay"><a href="#t1-的颜色TraceRay" class="headerlink" title="t1 的颜色TraceRay"></a>t1 的颜色TraceRay</h3><p>这里我们在空间里放入好几个球体，然后计算t1处的颜色伪码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">TraceRay(O, D, t_min, t_max)&#123;</span><br><span class="line">    closest_t = inf</span><br><span class="line">    closest_sphere = NULL</span><br><span class="line">    for sphere in scene.Spheres &#123;</span><br><span class="line">        t1, t2 = IntersectRaySphere(O, D, sphere)</span><br><span class="line">        if t1 in [t_min, t_max] &amp;&amp; t1 &lt; closest_t</span><br><span class="line">            closest_t = t1</span><br><span class="line">            closest_sphere = sphere</span><br><span class="line">        if t2 in [t_min, t_max] &amp;&amp; t2 &lt; closest_t</span><br><span class="line">            closest_t = t2</span><br><span class="line">            closest_sphere = sphere</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if closest_sphere == NULL</span><br><span class="line">        return BACKGROUND_COLOR</span><br><span class="line">    </span><br><span class="line">    return closest_sphere.color </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们在空间中放入三个小球：</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/3spheres.png" alt="3spheres"></p>
+<h3 id="画到画布上"><a href="#画到画布上" class="headerlink" title="画到画布上"></a>画到画布上</h3><p>在上述三个伪码函数中，最终是TraceRay这个函数调用了其余两个函数，那么我们现在需要来设定它的参数。</p>
+<h4 id="D"><a href="#D" class="headerlink" title="D"></a>D</h4><p>D这个实际上之前已经写到，就是从O到V的向量，那么我们的V又由最早的画布到窗户可以得知，所以我们可以有函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CanvasToViewport(x, y)&#123;</span><br><span class="line">    return (x * Vw/Cw, y * Vh/Ch, d)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="t-min-t-max"><a href="#t-min-t-max" class="headerlink" title="t_min, t_max"></a>t_min, t_max</h3><p>t &#x3D; 1 是V，是在窗户上，t &gt; 1 是窗户之后，是场景，所以我们需要取的值是 t_min &#x3D; 1,我们并不需要摄像头和窗户之间的颜色，因为我们也没有放任何东西在那里，我们需要的是窗户之后的景色，所以 t_min &#x3D; 1, t_max &#x3D; inf</p>
+<h4 id="组装"><a href="#组装" class="headerlink" title="组装"></a>组装</h4><p>最后，我们需要的是来做循环，把所有的代码组装在一起，放在屏幕上，所以伪码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">O = &lt;0,0,0&gt;</span><br><span class="line"></span><br><span class="line">for x in [-Cw/2, Cw/2]&#123;</span><br><span class="line">    for y in [-Ch/2, Ch/2]&#123;</span><br><span class="line">        D = CanvasToViewport(x, y)</span><br><span class="line">        color = TraceRay(O, D, t_min, t_max)</span><br><span class="line">        canvas.putPixel(x, y, color)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>对应的窗户大小和距离都可以在代码中看到，看结果：</p>
+<p><img src="/2019/05/27/Programer/Render/RayTracying/raytracying01.png" alt="raytracying01"></p>
+<p>这根本看起来不3d，很简单，因为我们并没有考虑<strong>光</strong>的作用。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/zentia/computer-graphics-from-scratch-Notes/blob/master/raytracying01.py">代码链接</a></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/05/27/Programer/RHI/opengl/opengldrawline/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Render/" title="Render">
+                        <b>#</b> Render
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Render/" title="Render">
+                        #Render
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/05/27/Programer/Render/DrawLine/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RayTracying"><span class="toc-text">RayTracying</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-text">例子</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="toc-text">1.预备知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%B1%8F%E5%B9%95%E5%9D%90%E6%A0%87-vs-%E7%94%BB%E5%B8%83%E5%9D%90%E6%A0%87"><span class="toc-text">1.1 屏幕坐标 vs 画布坐标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E7%94%BB%E5%B8%83-vs-%E7%AA%97%E6%88%B7"><span class="toc-text">1.2 画布 vs 窗户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E7%AA%97%E6%88%B7-vs-%E7%A9%BA%E9%97%B4"><span class="toc-text">1.3 窗户 vs 空间</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%A9%BA%E9%97%B4%E6%94%BE%E7%89%A9%E4%BD%93"><span class="toc-text">2.空间放物体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%A4%84%E7%90%86%E4%BA%A4%E4%BA%92-%E8%B7%9F%E8%B8%AA%E5%85%89%E7%BA%BF"><span class="toc-text">3. 处理交互 跟踪光线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%B3%E6%AD%A4%E3%81%AE%E4%BC%AA%E7%A0%81"><span class="toc-text">至此の伪码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%9F%E8%B8%AA%E5%85%89%E7%BA%BF%E4%B8%8E%E7%90%83%E7%9B%B8%E4%BA%A4-IntersectRaySphere"><span class="toc-text">跟踪光线与球相交 IntersectRaySphere</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#t1-%E7%9A%84%E9%A2%9C%E8%89%B2TraceRay"><span class="toc-text">t1 的颜色TraceRay</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%BB%E5%88%B0%E7%94%BB%E5%B8%83%E4%B8%8A"><span class="toc-text">画到画布上</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#D"><span class="toc-text">D</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#t-min-t-max"><span class="toc-text">t_min, t_max</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%84%E8%A3%85"><span class="toc-text">组装</span></a></li></ol></li></ol></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%85%89%E7%BA%BF%E8%B7%9F%E8%B8%AA + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F05%2F27%2FProgramer%2FRender%2FRayTracying%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/05/27/Programer/Render/RayTracying/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

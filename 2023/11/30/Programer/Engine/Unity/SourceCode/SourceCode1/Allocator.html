@@ -1,0 +1,12 @@
+<hr>
+<h2 id="title-内存分配categories-Engine-Unity-SourceCode"><a href="#title-内存分配categories-Engine-Unity-SourceCode" class="headerlink" title="title: 内存分配categories:- Engine- Unity- SourceCode"></a>title: 内存分配<br>categories:<br>- Engine<br>- Unity<br>- SourceCode</h2><h1 id="ALLOC-TEMP-AUTO"><a href="#ALLOC-TEMP-AUTO" class="headerlink" title="ALLOC_TEMP_AUTO"></a>ALLOC_TEMP_AUTO</h1><pre><code class="C++">#define ALLOC_TEMP_AUTO(PTR_, COUNT_) \
+    ALLOC_TEMP_ALIGNED_AUTO(PTR_, COUNT_, GetTypeAlignmentFromPointer(PTR_))
+</code></pre>
+<p>业务层使用的内存分配器，这是一个栈分配器，阅后即焚。</p>
+<h1 id="UNITY-MALLOC-UNITY-FREE"><a href="#UNITY-MALLOC-UNITY-FREE" class="headerlink" title="UNITY_MALLOC UNITY_FREE"></a>UNITY_MALLOC UNITY_FREE</h1><p>这是一个堆分配器，自己管理申请和释放</p>
+<pre><code class="C++">#define UNITY_MALLOC(label, size)                   malloc_internal(size, kDefaultMemoryAlignment, label, kAllocateOptionNone, __FILE_STRIPPED__, __LINE__)
+// 这是一个带对齐方式的堆内存分配器
+#define UNITY_MALLOC_ALIGNED(label, size, align)    malloc_internal(size, align, label, kAllocateOptionNone, __FILE_STRIPPED__, __FILE__)
+#define UNITY_FREE(label, ptr)                      free_alloc_internal(ptr, label)
+</code></pre>
+<p>标签的定义在<code>AllocatorLabelNames.h</code></p>

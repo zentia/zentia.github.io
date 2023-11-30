@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      makefile 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">makefile</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Server/" title="Server">
+                    <b>#</b> Server
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Server/Linux/" title="Linux">
+                    <b>#</b> Linux
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Server/" title="Server">
+                    #Server
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Linux/" title="Linux">
+                    #Linux
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="make-Nothing-to-be-done-for-xxxx"><a href="#make-Nothing-to-be-done-for-xxxx" class="headerlink" title="make: Nothing to be done for xxxx"></a>make: Nothing to be done for xxxx</h1><h1 id="中间文件、链接文件"><a href="#中间文件、链接文件" class="headerlink" title="中间文件、链接文件"></a>中间文件、链接文件</h1><p>C、C++要把源文件编译成中间代码文件，在Windows是.obj文件，在Linux是.o文件，即Object File，这一步叫做编译。然后把这些Object File合成可执行文件，这一步叫做链接(link)。<br>编译时，编译器需要的是语法正确，函数和变量声明正确，然后编译中中间目标文件。一般来说每个源文件都对应一个中间目标文件（O文件或者OBJ文件）。链接主要是链接函数和全局变量，所以我们可以使用这些中间目标文件来链接我们的可执行文件。链接器并不考虑源文件，只考虑中间目标文件（OBJ文件），大点的项目文件成千上百，导致会变成生成太多的中间文件，而链接时需要明确指出中间目标文件名，这对于编译很不方便，所以出现了库文件来合并这些目标文件windows下“库文件”（Library File）.lib文件，在Liunx下叫Archive File（.a）文件，所以一般包Link 错误就是指没有找到这个中间文件，即没有找到该声明的实现（一般情况下）。</p>
+<h1 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h1><p>make命令执行时，需要一个Makefile（一般是.mk 缺省Makefile或者makefile，作者习惯Makefile.mk）文件，告诉make命令如何编译和链接程序。<br>规则：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">target ... : prerequisites ...</span><br><span class="line">    command</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>target也就是一个目标文件，可是是Object File，也可以是执行文件。还可以是一个标签（Label）。<br>prerequisites就是，要生成那个target所需要的文件或目标。<br>command是make需要执行的命令。（Shell命令）<br>这是一个依赖关系，就是说，target这一个或多个目标文件依赖于prerequisties中的文件，而规则是由command决定的。也就是说，prerequisites中如果有一个以上的文件比target文件要新的话，command所定义的命令就会被执行。这就是Makefile的规则。</p>
+<ol>
+<li>ifeq的用法<br> ifeq($(SRCFILE),)<br> else ifeq()<br> endif<br>如果没有变量值，则判断是否定义，有则判断是否相等<br>.&#x2F;test.sh -f config.conf -v –prefix&#x3D;&#x2F;home<br>我们称-f为选项，它需要一个参数，即config.conf，-v也是一个选项，但它不需要参数。<br>–prefix我们称之为长选项，即选项本身多余一个字符，它也需要一个参数，用等号连接，当然等号不是必须的，&#x2F;home可以直接卸载–prefix后面，即–prefix&#x2F;home。</li>
+</ol>
+<h1 id="伪目标、虚目标"><a href="#伪目标、虚目标" class="headerlink" title="伪目标、虚目标"></a>伪目标、虚目标</h1><p>伪目标不是一个真正的文件名，在执行make时可以指定这个目标执行</p>
+<ol>
+<li><p>如果我们需要书写这样一个规则：规则所定义的命令不是去创建目标文件，而是使用make指定具体的目标来执行一些特定的命令。像下边那样：<br> clean:<br> rm *.o temp<br>规则中”rm”不是创建文件”clean”的命令，只是删除当前目录下的所有.O文件和temp文件。在工作目录下不存在”clean”这个文件时，我们输入”make clean”后，”rm *.o temp”总会被执行。这是我们的初衷。<br>但当前工作目录下存在”clean”时情况就不一样了，在我们输入”make clean”时。规则没有依赖文件，所以目标被认为是最新的而不去执行规则所定义的命令，命令”rm”将不会被执行。这并不是我们的初衷。为了避免这个问题，我们可以将目标”clean”明确声明为伪目标。讲一个目标声明为伪目标需要将它作为特殊目标.PHONY的依赖。如下：<br> .PHONY: dummy_help all dep obj cleanobj cleanint cleanout clean veryclean verycleanint install dirint dirout dirs pch cleanpch<br>这样dummy_help等就是一些伪目标或者说是虚目标，无论当前目录下是否存在”clean”这个文件。我们输入”make clean”之后，”rm”命令都会被执行。而且当一个目标被声明为伪目标后，make在执行规则时不会试图去查找隐含规则来创建这个目标。这样也提高了make的执行效率，同时我们也不用担心由于目标和文件名重名而使我们的期望失败。在书写伪目标规则时，首先需要声明目标是一个伪目标，之后才是伪目标的规则定义。目标”clean”书写格式应该如下：<br> .PHONY: clean<br> cleanint: cleanobj</p>
+<h1 id="移除所有临时文件-目标文件、依赖文件"><a href="#移除所有临时文件-目标文件、依赖文件" class="headerlink" title="移除所有临时文件(目标文件、依赖文件)"></a>移除所有临时文件(目标文件、依赖文件)</h1><pre><code> $(RM) -f $(DEPFILE_TO_DEL)
+</code></pre>
+<p> cleanout:<br> ifeq ($(ISWHAT),LIB)</p>
+<h1 id="库"><a href="#库" class="headerlink" title="库"></a>库</h1><pre><code>     $(RM) -f $(TargetOutFile).*
+</code></pre>
+<p> else<br> ifeq ($(ISWHAT),EXE)</p>
+<h1 id="EXE文件"><a href="#EXE文件" class="headerlink" title="EXE文件"></a>EXE文件</h1><pre><code>     $(RM) -f $(TargetOutFile)
+</code></pre>
+<p> else</p>
+<h1 id="DLL或其他"><a href="#DLL或其他" class="headerlink" title="DLL或其他"></a>DLL或其他</h1><pre><code>     $(RM) -f $(TargetOutFile).*
+</code></pre>
+<p> ifneq ($(OutDirLib),)<br>     $(RM) -f $(TargetOutFileLib).*<br> endif<br> endif<br> endif</p>
+<p> cleanpch:<br>     $(RM) -f $(PchFile)<br> clean: cleanint cleanout cleanpch<br>     @echo &#x3D;&#x3D;&#x3D;&#x3D; clean now &#x3D;&#x3D;&#x3D;&#x3D;</p>
+</li>
+</ol>
+<h1 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h1><p>通配符是一种特殊语句，主要有星号(*)和问号(?)，用来模糊搜索文件</p>
+<h1 id="Makefile中的wildcard用法"><a href="#Makefile中的wildcard用法" class="headerlink" title="Makefile中的wildcard用法"></a>Makefile中的wildcard用法</h1><p>在Makefile规则中，通配符会被自动展开。但在变量的定义和函数引用时，通配符将失效。这种情况下如果需要通配符有效，就需要使用函数”wildcard”，它的用法是：$(wildcard PATTERN…)。在Makefile中，它被展开为已经存在的、使用空格分开的、匹配此模式的所有文件列表。如果不存在任何符合此模式的文件，函数会忽略模式字符并返回空。需要</p>
+<h1 id="Linux-make-保存错误日志"><a href="#Linux-make-保存错误日志" class="headerlink" title="Linux make 保存错误日志"></a>Linux make 保存错误日志</h1><p>$mkdbg all 2&gt;&amp;1|tee xxx.log<br>这条命令是编译并保存打印信息。在Linux Shell的设备定义中，“0”表示标准输入，“1”表示标准输出，“2”表示标准出错信息输出。2&gt;&amp;1表示把2设备的信息重定向到1设 备；“|”是管道符号，把标准输出的信息直接传递给后面的命令；tee是创建文件并保存信息的工具；xxx.log是文件名。<br>这种管道的用法在Linux Shell命令中使用非常普遍。编译过程中都可以使用这个方法，生成日志文件，保存到buildlogs目录下。<br>  1 # 编译模式名<br>  2 ConfigurationName               :&#x3D; debug<br>  3 # 用于体现该编译模式的文件标记<br>  4 # (对于debug版来说，比如目标文件后缀就会变成._do)<br>  5 CfgFileTag                              :&#x3D; _d<br>  6 # 编译选项<br>  7 #CCFlag                                 :&#x3D; -Wall -g -D_DEBUG -march&#x3D;native<br>  8 CFlag                                   :&#x3D; -Wall -Wno-multichar -g -D_DEBUG -DPG_MEMORY_DISABLE_POOL -march&#x3D;core2 -m32 -rdynamic<br>  9 CCFlag                                  :&#x3D; $(CFlag) -std&#x3D;c++0x<br> 10<br> 11 #CCFlag                                 :&#x3D; -finput-charset&#x3D;gb2312 -Wall -g -D_DEBUG<br> 12 # 连接选项<br> 13 #LNFlag                                 :&#x3D; -lpthread -march&#x3D;native<br> 14 LNFlag                                  :&#x3D; -lpthread -ldl -lrt -march&#x3D;prescott</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2017/10/15/Programer/Language/C/gdb/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Server/" title="Server">
+                        <b>#</b> Server
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Server/Linux/" title="Linux">
+                        <b>#</b> Linux
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Server/" title="Server">
+                        #Server
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Linux/" title="Linux">
+                        #Linux
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2017/10/16/Programer/Render/Jenkins/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#make-Nothing-to-be-done-for-xxxx"><span class="toc-text">make: Nothing to be done for xxxx</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%AD%E9%97%B4%E6%96%87%E4%BB%B6%E3%80%81%E9%93%BE%E6%8E%A5%E6%96%87%E4%BB%B6"><span class="toc-text">中间文件、链接文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Makefile"><span class="toc-text">Makefile</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BC%AA%E7%9B%AE%E6%A0%87%E3%80%81%E8%99%9A%E7%9B%AE%E6%A0%87"><span class="toc-text">伪目标、虚目标</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A7%BB%E9%99%A4%E6%89%80%E6%9C%89%E4%B8%B4%E6%97%B6%E6%96%87%E4%BB%B6-%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6%E3%80%81%E4%BE%9D%E8%B5%96%E6%96%87%E4%BB%B6"><span class="toc-text">移除所有临时文件(目标文件、依赖文件)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BA%93"><span class="toc-text">库</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#EXE%E6%96%87%E4%BB%B6"><span class="toc-text">EXE文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DLL%E6%88%96%E5%85%B6%E4%BB%96"><span class="toc-text">DLL或其他</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%80%9A%E9%85%8D%E7%AC%A6"><span class="toc-text">通配符</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Makefile%E4%B8%AD%E7%9A%84wildcard%E7%94%A8%E6%B3%95"><span class="toc-text">Makefile中的wildcard用法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-make-%E4%BF%9D%E5%AD%98%E9%94%99%E8%AF%AF%E6%97%A5%E5%BF%97"><span class="toc-text">Linux make 保存错误日志</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + makefile + '&url=' + http%3A%2F%2Fzentia.github.io%2F2017%2F10%2F15%2FProgramer%2FServer%2FLinux%2Fmakefile%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2017/10/15/Programer/Server/Linux/makefile/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

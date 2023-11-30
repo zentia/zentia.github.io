@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      LevelSequencer基础操作 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">LevelSequencer基础操作</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:03
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Engine/" title="Engine">
+                    <b>#</b> Engine
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Engine/Unreal/" title="Unreal">
+                    <b>#</b> Unreal
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/Engine/Unreal/Sequencer/" title="Sequencer">
+                    <b>#</b> Sequencer
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Unreal/" title="Unreal">
+                    #Unreal
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Engine/" title="Engine">
+                    #Engine
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Sequencer/" title="Sequencer">
+                    #Sequencer
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV16y4y1S7yk?spm_id_from=333.999.0.0">https://www.bilibili.com/video/BV16y4y1S7yk?spm_id_from=333.999.0.0</a><br><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1YV411a7SV/?p=2&spm_id_from=pageDriver">https://www.bilibili.com/video/BV1YV411a7SV/?p=2&amp;spm_id_from=pageDriver</a></p>
+<ol>
+<li>LevelSequencer的<code>CutCameraTrack</code>的意思是用来切换相机的，且<code>MovieScene</code>会有一条单独的<code>CutSceneTrack</code>去管理。</li>
+<li>LevelSequencer文件分类是由<code>TrackEditor</code>，<code>Track</code>，<code>Section</code>，<code>Channel</code>，<code>Template</code>等组成。<ol>
+<li>有一个<code>MovieScene3DTransform</code>但是这个文件彷佛是一个误导逻辑，实际的求值不会走。</li>
+<li><code>(&amp;GetComponentTransform, &amp;SetComponentTransformAndVelocity);</code>这两个函数才是真正会走的地方。</li>
+<li>LevelSequencer是多线程的，调试经常容易卡死。</li>
+</ol>
+</li>
+</ol>
+<h1 id="LevelSequence（关卡序列）使用说明"><a href="#LevelSequence（关卡序列）使用说明" class="headerlink" title="LevelSequence（关卡序列）使用说明"></a>LevelSequence（关卡序列）使用说明</h1><p>以下文档都来自官方文档</p>
+<h2 id="基础操作"><a href="#基础操作" class="headerlink" title="基础操作"></a>基础操作</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/5.3/zh-CN/sequencer-cinematic-editor-unreal-engine/">https://docs.unrealengine.com/5.3/zh-CN/sequencer-cinematic-editor-unreal-engine/</a></p>
+<p>仔细看文档，基础操作，没啥说的，但是要注意，文档和引擎有些许差异，影响不大。</p>
+<h2 id="从摄像机导轨拍摄"><a href="#从摄像机导轨拍摄" class="headerlink" title="从摄像机导轨拍摄"></a>从摄像机导轨拍摄</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/CameraRigRail/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/CameraRigRail/</a></p>
+<h2 id="在Sequencer中使用帧标记"><a href="#在Sequencer中使用帧标记" class="headerlink" title="在Sequencer中使用帧标记"></a>在Sequencer中使用帧标记</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/FrameMarkers/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/FrameMarkers/</a><br>一个书签的东西，运行时不会用，随便搞。</p>
+<p>挺有意思的，但是感觉可以用其它方式代替。不过可以试试。</p>
+<h2 id="切换Sequencer中Actor的材质"><a href="#切换Sequencer中Actor的材质" class="headerlink" title="切换Sequencer中Actor的材质"></a>切换Sequencer中Actor的材质</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/MaterialAnimation/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/MaterialAnimation/</a></p>
+<h2 id="混合动画属性"><a href="#混合动画属性" class="headerlink" title="混合动画属性"></a>混合动画属性</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/CharacterAnimation/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/CharacterAnimation/</a></p>
+<h2 id="使用模板序列"><a href="#使用模板序列" class="headerlink" title="使用模板序列"></a>使用模板序列</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TemplateSequences/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TemplateSequences/</a></p>
+<p>单个轨道复用的，相当于做一个template sequencer可以给多个level sequencer使用。<br>制作的时候可以想清楚，如果有复用的情况下可以用这个。</p>
+<p>没啥好说的，两个动画做blend，可以选如何插值。</p>
+<h2 id="CineCameraActor（电影摄像机Actor）"><a href="#CineCameraActor（电影摄像机Actor）" class="headerlink" title="CineCameraActor（电影摄像机Actor）"></a>CineCameraActor（电影摄像机Actor）</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/CineCameraActors/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/CineCameraActors/</a></p>
+<p>这个镜头我还是非常喜欢的，如果项目中可以使用，我是极力推荐的。</p>
+<ul>
+<li>启用观看跟踪（Enable Look at Tracking） -选取此选项可以让摄像机跟踪Actor。</li>
+<li>提取调试观看跟踪位置（Draw Debug Look at Tracking Position）-选取此项可以让我们看到摄像机正在观看的位置。</li>
+<li>要跟踪的Actor（Actor to Track）-将此项设置为ThirdPersonCharacter，因为我们希望在镜头中跟踪此角色。</li>
+<li>相对偏移（Relative Offset）-将Z设置为60以将跟踪位置从默认跟踪位置稍微提高。<br>在CineCameraActor的细节（Details）面板中，将菲林版设置（Filmback Settings）设置为使用Super 16mm。菲林板设置（Filmback Settings）提供了不同的格式，虽然我没看懂是啥意思，但是实验了一下，感觉镜头拉的更近了。</li>
+</ul>
+<h2 id="淡入淡出场景"><a href="#淡入淡出场景" class="headerlink" title="淡入淡出场景"></a>淡入淡出场景</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksFade/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksFade/</a></p>
+<p>使用的轨道是Fade Track</p>
+<h2 id="关卡可见性轨道（项目包装可能与此不同，谨慎使用）"><a href="#关卡可见性轨道（项目包装可能与此不同，谨慎使用）" class="headerlink" title="关卡可见性轨道（项目包装可能与此不同，谨慎使用）"></a>关卡可见性轨道（项目包装可能与此不同，谨慎使用）</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksLevelVisibility/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksLevelVisibility/</a></p>
+<p>使用的轨道是Level Visibility Track<br>简单来说其实就是卸载一个关卡，在加载另一个关卡的表现形式，但是项目的关卡定义方式可能会与此不同，不过即使不同，我们应该也会有类似的实现方式。所以原理可以参考。<br>做过长动画用这个感觉挺好的。</p>
+<h2 id="为材质参数集（Material-Parameter-Collections）设置动画"><a href="#为材质参数集（Material-Parameter-Collections）设置动画" class="headerlink" title="为材质参数集（Material Parameter Collections）设置动画"></a>为材质参数集（Material Parameter Collections）设置动画</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksMaterialParameter/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksMaterialParameter/</a></p>
+<p>使用的轨道是Material Parameter Collection Track<br>设置材质的一些参数。</p>
+<h2 id="调整场景的播放速率"><a href="#调整场景的播放速率" class="headerlink" title="调整场景的播放速率"></a>调整场景的播放速率</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksPlayRate/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksPlayRate/</a></p>
+<p>使用的轨道是Time Dilation，这有点坑，文档上面写着是Play Rate，用的时候要注意，这个之前磊子哥用的挺多的，在AGE中叫SetTimeScale。</p>
+<h2 id="创建镜头和副镜头"><a href="#创建镜头和副镜头" class="headerlink" title="创建镜头和副镜头"></a>创建镜头和副镜头</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksShot/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksShot/</a></p>
+<h2 id="关于蒙太奇"><a href="#关于蒙太奇" class="headerlink" title="关于蒙太奇"></a>关于蒙太奇</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/MatineeConversionTool/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/MatineeConversionTool/</a></p>
+<p>上面这个文档没啥用，他的意思是说之前有蒙太奇的过场动画，说是一个轻量的，但是后来官方不维护了，就没用了。一堆废话，总之，代码还在，但是我们不用了。<br>跟着官方做，没有找到方法，但是找了一个可以把蒙太奇录入到subsequence里面，也是蛮方便的。录入的前提是需要在运行中录入的，非运行时录入应该也可以，但是这时候你如果可以把这个蒙太奇动起来就可以录入吧，我猜的。</p>
+<p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/SequenceRecorder/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/SequenceRecorder/</a></p>
+<p>真正的是看这个文档，说的很清楚就是运行游戏，然后开始录制，不过这个不是录制视频，而是level sequencer，挺好的。感觉可以做新手引导之类的东西，或者找一个样本，然后二次加工。</p>
+<h2 id="使用音频轨迹"><a href="#使用音频轨迹" class="headerlink" title="使用音频轨迹"></a>使用音频轨迹</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksAudio/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksAudio/</a></p>
+<p>说是要用wwise，做demo感觉可以用这个，不过不管吧，毕竟没啥需求，将来加了wwise，可以在加一个wwise的音频轨道，也好加。</p>
+<h2 id="自动关键帧"><a href="#自动关键帧" class="headerlink" title="自动关键帧"></a>自动关键帧</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/UsingAutoKey/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/UsingAutoKey/</a></p>
+<p>没啥可说的，K帧最基本的东西。</p>
+<h2 id="保留或存储通过Sequencer进行的修改"><a href="#保留或存储通过Sequencer进行的修改" class="headerlink" title="保留或存储通过Sequencer进行的修改"></a>保留或存储通过Sequencer进行的修改</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/WhenFinished/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/WhenFinished/</a></p>
+<p>没啥可说的，播完之后选择如何设置绑定对象或者全局的状态。</p>
+<h2 id="媒体轨道"><a href="#媒体轨道" class="headerlink" title="媒体轨道"></a>媒体轨道</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/UsingMediaTracks/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/UsingMediaTracks/</a></p>
+<h2 id="使用摄像机镜头切换"><a href="#使用摄像机镜头切换" class="headerlink" title="使用摄像机镜头切换"></a>使用摄像机镜头切换</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksCameraCut/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/TracksCameraCut/</a></p>
+<p>这个东西，反正我挺喜欢的，不过按照AGE来说，我们可能只会用一个镜头，但是说实在的，一个镜头却是靠操控性会差很多。而且程序这边还需要传一个主相机。<br>其实level sequencer和age来比，或者age和其它编辑器来说，最大的优势其实是多种坐标系这个概念，让发生的过场动画，跟你的环境不是受太大的影响。然后引导你去这种编辑一些东西。<br>但是其实这种不太好。美术做的东西本来就很容易受环境影响，不同的环境表现力肯定是不相同的，所以我比较倾向程序尽量少传递这些比如镜头和角色等之类的东西，如果在性能可以hold的情况下。</p>
+<h2 id="使用动态变形创建关卡序列"><a href="#使用动态变形创建关卡序列" class="headerlink" title="使用动态变形创建关卡序列"></a>使用动态变形创建关卡序列</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/DynamicTransforms/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/DynamicTransforms/</a></p>
+<p>标题有点难受，其实就是指定坐标原点，相对坐标系那种思路。但是这个是个全局的概念，而不是age那种可以指向到某个轨道上去。</p>
+<h2 id="通过Sequencer混合动画蓝图"><a href="#通过Sequencer混合动画蓝图" class="headerlink" title="通过Sequencer混合动画蓝图"></a>通过Sequencer混合动画蓝图</h2><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/BlendingAnimBPs/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/BlendingAnimBPs/</a></p>
+<p>讲道理来说，我们项目是不推荐使用自带蓝图的，在项目自己的蓝图中没有出来的时候，可以使用这种方式。</p>
+<h2 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h2><h3 id="使用几何体缓存轨迹"><a href="#使用几何体缓存轨迹" class="headerlink" title="使用几何体缓存轨迹"></a>使用几何体缓存轨迹</h3><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/GeometryCacheTrack/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/HowTo/GeometryCacheTrack/</a></p>
+<p>有点秀操作的东西，但是我们应该用不上。</p>
+<h3 id="非线性动画和混合工具"><a href="#非线性动画和混合工具" class="headerlink" title="非线性动画和混合工具"></a>非线性动画和混合工具</h3><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/AnimationBlendingTools/">https://docs.unrealengine.com/4.26/zh-CN/AnimatingObjects/Sequencer/AnimationBlendingTools/</a></p>
+<p>反正官方说是测试功能，不建议使用，我们也就不要使用了吧。大概意思是说，在动画的过渡区域，普通的混合会出现由于骨骼的控制权的归属和权重控制问题导致的错乱。而这个主要是处理这个问题的。但是由于是测试功能，说明还是有些坑没有解决掉的。</p>
+<p>MovieSceneSkeletalAnimationTemplate.cpp 575<br>求值器演算驱动器<br>FMovieSceneSkeletalAnimationSectionTemplate::Evaluate<br>MovieSceneSkeletalAnimationTemplate.cpp 271<br>&#x2F;&#x2F; 驱动器去执行真正的逻辑<br>virtual void Actuate()</p>
+<p>MovieSceneBlendingAccumulator.cpp<br>&#x2F;&#x2F; 累加器进行步进收集执行<br>void FMovieSceneBlendingAccumulator::Apply()<br>MovieSceneAccumulatedBlendState.h 180<br>&#x2F;&#x2F; 令牌数不足导致无法进行驱动<br>TArray&lt;TInlineValue&lt;FTokenEntry, 125&gt;&gt; TokensToBlend;<br>MovieSceneBlendingAccumulator.h &#x2F;&#x2F;混合增加令牌<br>BlendToken</p>
+<p>MovieSceneAccumulatedBlendState.cpp<br>void FMovieSceneAccumulatedBlendState::Consolidate()</p>
+<p>void FMovieSceneObjectCache::UpdateBindings(const FGuid&amp; InGuid, IMovieScenePlayer&amp; Player)</p>
+<h1 id="使用动态变形创建关卡序列-1"><a href="#使用动态变形创建关卡序列-1" class="headerlink" title="使用动态变形创建关卡序列"></a><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.27/zh-CN/AnimatingObjects/Sequencer/HowTo/DynamicTransforms/">使用动态变形创建关卡序列</a></h1><p>必须保证初始值设置为0，Sequencer的设置为增量设置。</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2020/01/03/Programer/Engine/Unreal/SpatialOS/SpatialOS/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:03
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Engine/" title="Engine">
+                        <b>#</b> Engine
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Engine/Unreal/" title="Unreal">
+                        <b>#</b> Unreal
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Engine/Unreal/Sequencer/" title="Sequencer">
+                        <b>#</b> Sequencer
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Unreal/" title="Unreal">
+                        #Unreal
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Engine/" title="Engine">
+                        #Engine
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Sequencer/" title="Sequencer">
+                        #Sequencer
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2021/06/29/Programer/Engine/Unreal/Other/Macro/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#LevelSequence%EF%BC%88%E5%85%B3%E5%8D%A1%E5%BA%8F%E5%88%97%EF%BC%89%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E"><span class="toc-text">LevelSequence（关卡序列）使用说明</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C"><span class="toc-text">基础操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E6%91%84%E5%83%8F%E6%9C%BA%E5%AF%BC%E8%BD%A8%E6%8B%8D%E6%91%84"><span class="toc-text">从摄像机导轨拍摄</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8Sequencer%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%B8%A7%E6%A0%87%E8%AE%B0"><span class="toc-text">在Sequencer中使用帧标记</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%87%E6%8D%A2Sequencer%E4%B8%ADActor%E7%9A%84%E6%9D%90%E8%B4%A8"><span class="toc-text">切换Sequencer中Actor的材质</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%8A%A8%E7%94%BB%E5%B1%9E%E6%80%A7"><span class="toc-text">混合动画属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%A8%A1%E6%9D%BF%E5%BA%8F%E5%88%97"><span class="toc-text">使用模板序列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CineCameraActor%EF%BC%88%E7%94%B5%E5%BD%B1%E6%91%84%E5%83%8F%E6%9C%BAActor%EF%BC%89"><span class="toc-text">CineCameraActor（电影摄像机Actor）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%A1%E5%85%A5%E6%B7%A1%E5%87%BA%E5%9C%BA%E6%99%AF"><span class="toc-text">淡入淡出场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E5%8D%A1%E5%8F%AF%E8%A7%81%E6%80%A7%E8%BD%A8%E9%81%93%EF%BC%88%E9%A1%B9%E7%9B%AE%E5%8C%85%E8%A3%85%E5%8F%AF%E8%83%BD%E4%B8%8E%E6%AD%A4%E4%B8%8D%E5%90%8C%EF%BC%8C%E8%B0%A8%E6%85%8E%E4%BD%BF%E7%94%A8%EF%BC%89"><span class="toc-text">关卡可见性轨道（项目包装可能与此不同，谨慎使用）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E6%9D%90%E8%B4%A8%E5%8F%82%E6%95%B0%E9%9B%86%EF%BC%88Material-Parameter-Collections%EF%BC%89%E8%AE%BE%E7%BD%AE%E5%8A%A8%E7%94%BB"><span class="toc-text">为材质参数集（Material Parameter Collections）设置动画</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E6%95%B4%E5%9C%BA%E6%99%AF%E7%9A%84%E6%92%AD%E6%94%BE%E9%80%9F%E7%8E%87"><span class="toc-text">调整场景的播放速率</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E9%95%9C%E5%A4%B4%E5%92%8C%E5%89%AF%E9%95%9C%E5%A4%B4"><span class="toc-text">创建镜头和副镜头</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%92%99%E5%A4%AA%E5%A5%87"><span class="toc-text">关于蒙太奇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%9F%B3%E9%A2%91%E8%BD%A8%E8%BF%B9"><span class="toc-text">使用音频轨迹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E5%85%B3%E9%94%AE%E5%B8%A7"><span class="toc-text">自动关键帧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%9D%E7%95%99%E6%88%96%E5%AD%98%E5%82%A8%E9%80%9A%E8%BF%87Sequencer%E8%BF%9B%E8%A1%8C%E7%9A%84%E4%BF%AE%E6%94%B9"><span class="toc-text">保留或存储通过Sequencer进行的修改</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AA%92%E4%BD%93%E8%BD%A8%E9%81%93"><span class="toc-text">媒体轨道</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%91%84%E5%83%8F%E6%9C%BA%E9%95%9C%E5%A4%B4%E5%88%87%E6%8D%A2"><span class="toc-text">使用摄像机镜头切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%8A%A8%E6%80%81%E5%8F%98%E5%BD%A2%E5%88%9B%E5%BB%BA%E5%85%B3%E5%8D%A1%E5%BA%8F%E5%88%97"><span class="toc-text">使用动态变形创建关卡序列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87Sequencer%E6%B7%B7%E5%90%88%E5%8A%A8%E7%94%BB%E8%93%9D%E5%9B%BE"><span class="toc-text">通过Sequencer混合动画蓝图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95"><span class="toc-text">扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%87%A0%E4%BD%95%E4%BD%93%E7%BC%93%E5%AD%98%E8%BD%A8%E8%BF%B9"><span class="toc-text">使用几何体缓存轨迹</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E7%BA%BF%E6%80%A7%E5%8A%A8%E7%94%BB%E5%92%8C%E6%B7%B7%E5%90%88%E5%B7%A5%E5%85%B7"><span class="toc-text">非线性动画和混合工具</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%8A%A8%E6%80%81%E5%8F%98%E5%BD%A2%E5%88%9B%E5%BB%BA%E5%85%B3%E5%8D%A1%E5%BA%8F%E5%88%97-1"><span class="toc-text">使用动态变形创建关卡序列</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + LevelSequencer%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C + '&url=' + http%3A%2F%2Fzentia.github.io%2F2021%2F06%2F29%2FProgramer%2FEngine%2FUnreal%2FSequence%2FSequencer%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2021/06/29/Programer/Engine/Unreal/Sequence/Sequencer/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

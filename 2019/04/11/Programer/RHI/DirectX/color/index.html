@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      色彩(Color) 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">色彩(Color)</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/" title="RHI">
+                    <b>#</b> RHI
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/DirectX/" title="DirectX">
+                    <b>#</b> DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/RHI/" title="RHI">
+                    #RHI
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/DirectX/" title="DirectX">
+                    #DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="颜色表示法"><a href="#颜色表示法" class="headerlink" title="颜色表示法"></a>颜色表示法</h1><p>　　在Direct3D中，颜色是使用RGB三部分来描述的。也就是说，我们要分别指定红、绿和蓝三种颜色的值。混合这三个颜色决定最终的颜色。利用这三种颜色我们能够表现数万种颜色。<br>　　我们使用两种不同的结构来存储RGB数据。这第一种是D3DCOLOR，它实际上一个DWORD即32位。在D3DCOLOR类型中的这些位按照8-bit被分为4个部分，每一部分存储的是该色的亮度值。如图4.1所示。<br>　　<br>　　图4.1<br>　　每种颜色占用内存的一个字节，各颜色亮度值的取值范围是0-255。这个值越接近0就越暗，越接近255就越亮。<br>注意：现在不要管alpha部分；它被用在alpha混合中——在第7章中会讲解。<br>　　指定其中的每一部分并且把它放到D3DCOLOR中适当的位置需要使用到一些位操作。Direct3D为我们提供了一个完成这个任务的宏D3DCOLOR_ARGB.它使用包含每种颜色以及alpha位一共4个参数。每一个参数的取值必须在0-255之间，如：<br>D3DCOLOR brightRed &#x3D; D3DCOLOR_ARGB(255, 255, 0, 0);<br>D3DCOLOR someColor &#x3D; D3DCOLOR_ARGB(255, 144, 87, 201);<br>    另外，我们也能使用D3DCOLOR_XRGB宏，它与刚才的宏类似只不过不必指定alpha部分；不过我们最好还是把alpha指定为0xff（255）。<br>#define D3DCOLOR_XRGB(r,g,b) D3DCOLOR_ARGB(0xff,r,g,b)<br>　　在Direct3D中另外一种存储颜色的结构是D3DCOLORVALUE。在这个结构中，我们分别使用一个浮点数来表示每一部分的亮度值。其取值范围是0-1，0表示没有亮度，1表示最大亮度。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">_D3DCOLORVALUE</span> &#123;</span><br><span class="line">    <span class="type">float</span> r; <span class="comment">// the red component, range 0.0-1.0</span></span><br><span class="line">    <span class="type">float</span> g; <span class="comment">// the green component, range 0.0-1.0</span></span><br><span class="line">    <span class="type">float</span> b; <span class="comment">// the blue component, range 0.0-1.0</span></span><br><span class="line">    <span class="type">float</span> a; <span class="comment">// the alpha component, range 0.0-1.0</span></span><br><span class="line">&#125; D3DCOLORVALUE;</span><br></pre></td></tr></table></figure>
+<p>　　另外，我们能够使用D3DXCOLOR结构，就象D3DCOLORVALUE包含同样的数据成员一样。同时提供有用的构造函数和重载操作符，这将让颜色处理更容易。D3DXCOLOR的定义如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">D3DXCOLOR</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="meta">#<span class="keyword">ifdef</span> __cplusplus</span></span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">D3DXCOLOR</span>() &#123;&#125;</span><br><span class="line">        <span class="built_in">D3DXCOLOR</span>( DWORD argb );</span><br><span class="line">        <span class="built_in">D3DXCOLOR</span>( CONST FLOAT * );</span><br><span class="line">        <span class="built_in">D3DXCOLOR</span>( CONST D3DXFLOAT16 * );</span><br><span class="line">        <span class="built_in">D3DXCOLOR</span>( CONST D3DCOLORVALUE&amp; );</span><br><span class="line">        <span class="built_in">D3DXCOLOR</span>( FLOAT r, FLOAT g, FLOAT b, FLOAT a );</span><br><span class="line"></span><br><span class="line">        <span class="comment">// casting</span></span><br><span class="line">        <span class="function"><span class="keyword">operator</span> <span class="title">DWORD</span> <span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">operator</span> FLOAT* ();</span><br><span class="line">        <span class="keyword">operator</span> CONST FLOAT* () <span class="type">const</span>;</span><br><span class="line">        <span class="keyword">operator</span> D3DCOLORVALUE* ();</span><br><span class="line">        <span class="keyword">operator</span> CONST D3DCOLORVALUE* () <span class="type">const</span>;</span><br><span class="line">        <span class="keyword">operator</span> D3DCOLORVALUE&amp; ();</span><br><span class="line">        <span class="keyword">operator</span> CONST D3DCOLORVALUE&amp; () <span class="type">const</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// assignment operators</span></span><br><span class="line">        D3DXCOLOR&amp; <span class="keyword">operator</span> += ( CONST D3DXCOLOR&amp; );</span><br><span class="line">        D3DXCOLOR&amp; <span class="keyword">operator</span> -= ( CONST D3DXCOLOR&amp; );</span><br><span class="line">        D3DXCOLOR&amp; <span class="keyword">operator</span> *= ( FLOAT );</span><br><span class="line">        D3DXCOLOR&amp; <span class="keyword">operator</span> /= ( FLOAT );</span><br><span class="line"></span><br><span class="line">        <span class="comment">// unary operators</span></span><br><span class="line">        D3DXCOLOR <span class="keyword">operator</span> + () <span class="type">const</span>;</span><br><span class="line">        D3DXCOLOR <span class="keyword">operator</span> - () <span class="type">const</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// binary operators</span></span><br><span class="line">        D3DXCOLOR <span class="keyword">operator</span> + ( CONST D3DXCOLOR&amp; ) <span class="type">const</span>;</span><br><span class="line">        D3DXCOLOR <span class="keyword">operator</span> - ( CONST D3DXCOLOR&amp; ) <span class="type">const</span>;</span><br><span class="line">        D3DXCOLOR <span class="keyword">operator</span> * ( FLOAT ) <span class="type">const</span>;</span><br><span class="line">        D3DXCOLOR <span class="keyword">operator</span> / ( FLOAT ) <span class="type">const</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">friend</span> D3DXCOLOR <span class="keyword">operator</span> * (FLOAT, CONST D3DXCOLOR&amp; );</span><br><span class="line"></span><br><span class="line">        BOOL <span class="keyword">operator</span> == ( CONST D3DXCOLOR&amp; ) <span class="type">const</span>;</span><br><span class="line">        BOOL <span class="keyword">operator</span> != ( CONST D3DXCOLOR&amp; ) <span class="type">const</span>;</span><br><span class="line">    <span class="meta">#<span class="keyword">endif</span> <span class="comment">//__cplusplus</span></span></span><br><span class="line">    FLOAT r, g, b, a;</span><br><span class="line">&#125; D3DXCOLOR, *LPD3DXCOLOR;</span><br></pre></td></tr></table></figure>
+
+<p>注意：D3DCOLORVALUE和D3DXCOLOR结构都有4个浮点数成员。这使我们的颜色处理符号能象4D向量一样。颜色向量能被加，减以及缩放。另一方面点积和叉积不能用于颜色向量，但是颜色成员相乘是可以的。因此在D3DXCOLOR类中执行的乘法就是成员相乘。它的定义如下：</p>
+<p>现在使用下面全局颜色常量更新我们的d3dUtility.h文件：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> d3d</span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="type">const</span> D3DXCOLOR <span class="title">WHITE</span><span class="params">( D3DCOLOR_XRGB(<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>) )</span></span>;</span><br><span class="line">    <span class="function"><span class="type">const</span> D3DXCOLOR <span class="title">BLACK</span><span class="params">( D3DCOLOR_XRGB( <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>) )</span></span>;</span><br><span class="line">    <span class="function"><span class="type">const</span> D3DXCOLOR <span class="title">RED</span><span class="params">( D3DCOLOR_XRGB(<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>) )</span></span>;</span><br><span class="line">    <span class="function"><span class="type">const</span> D3DXCOLOR <span class="title">GREEN</span><span class="params">( D3DCOLOR_XRGB( <span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>) )</span></span>;</span><br><span class="line">    <span class="function"><span class="type">const</span> D3DXCOLOR <span class="title">BLUE</span><span class="params">( D3DCOLOR_XRGB( <span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>) )</span></span>;</span><br><span class="line">    <span class="function"><span class="type">const</span> D3DXCOLOR <span class="title">YELLOW</span><span class="params">( D3DCOLOR_XRGB(<span class="number">255</span>, <span class="number">255</span>, <span class="number">0</span>) )</span></span>;</span><br><span class="line">    <span class="function"><span class="type">const</span> D3DXCOLOR <span class="title">CYAN</span><span class="params">( D3DCOLOR_XRGB( <span class="number">0</span>, <span class="number">255</span>, <span class="number">255</span>) )</span></span>;</span><br><span class="line">    <span class="function"><span class="type">const</span> D3DXCOLOR <span class="title">MAGENTA</span><span class="params">( D3DCOLOR_XRGB(<span class="number">255</span>, <span class="number">0</span>, <span class="number">255</span>) )</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="顶点颜色"><a href="#顶点颜色" class="headerlink" title="顶点颜色"></a>顶点颜色</h1><p>图元的颜色是由构成它的顶点的颜色决定的。因此，我们必须把一个颜色成员加入到我们的顶点数据结构中。注意D3DCOLORVALUE类型不能用在这里，因为Direct3D希望用一个32位的值来描述顶点的颜色。（通过使用顶点着色器我们能为顶点颜色使用4D颜色向量，它能提供一个128位的颜色，但是对于我们现在的水平来说那太超前了。顶点着色器将在17章中介绍。）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">ColorVertex</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">float</span> _x, _y, _z;</span><br><span class="line">    D3DCOLOR _color;</span><br><span class="line">    <span class="type">static</span> <span class="type">const</span> DWORD FVF;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>const DWORD ColorVertex::FVF &#x3D; D3DFVF_XYZ | D3DFVF_DIFFUSE;</p>
+<h1 id="着色处理"><a href="#着色处理" class="headerlink" title="着色处理"></a>着色处理</h1><p>着色处理发生在光栅化和指定图元上的顶点颜色怎样被计算成像素颜色之间。目前这里有2种着色处理模式可用：平面着色（flat shading）和高洛德着色（Gouraud shading）。<br>平面着色，图元像素的颜色是均匀的，且就是指定图元第一个顶点的颜色。因此一旦三角形的第一个顶点被指定成红色，那么它的其他三个顶点也将会是红色。通过使用平面着色来为第二和第三个顶点着色。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ColorVertex t[<span class="number">3</span>];</span><br><span class="line">t[<span class="number">0</span>]._color = <span class="built_in">D3DCOLOR_XRGB</span>(<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">t[<span class="number">1</span>]._color = <span class="built_in">D3DCOLOR_XRGB</span>(<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>);</span><br><span class="line">t[<span class="number">2</span>]._color = <span class="built_in">D3DCOLOR_XRGB</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>);</span><br></pre></td></tr></table></figure>
+<p>平面着色使物体呈现是斑驳的，因为没有从一个颜色到另一个颜色的平滑过渡。一个更好的着色模式叫做高洛德着色（也被叫做平滑着色）。高洛德着色，图元表面的颜色是由每个顶点通过线性插值来赋予。图4.2显示了分别使用平面着色和高洛德着色处理的红色三角形。</p>
+<p>图4.2<br>就象Direct3D中很多东西一样，着色处理模式是受Direct3D设置状态决定的。<br>&#x2F;&#x2F; set flat shading<br>Device-&gt;SetRenderState(D3DRS_SHADEMODE, D3DSHADE_FLAT);<br>&#x2F;&#x2F; set Gouraud shading<br>Device-&gt;SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);</p>
+<h1 id="实例程序：彩色三角形"><a href="#实例程序：彩色三角形" class="headerlink" title="实例程序：彩色三角形"></a>实例程序：彩色三角形</h1><p>这个实例程序展示了分别使用本章中的平面着色和高洛德着色处理的三角形。渲染出的图片如图4.2所示。首先我们定义如下的全局变量：<br>D3DXMATRIX World;<br>IDirect3DVertexBuffer9* Triangle &#x3D; 0;<br>    我们包含一个D3DXMATRIX，它将存储我们将要绘制的三角形在世界坐标中的变换信息。Triangle变量是存储三角形顶点数据的顶点缓存。注意，我们只需要存储一个三角形，因为我们能用它在世界坐标系中不同位置绘制若干次。<br>    Setup方法创建顶点缓存同时填充上带颜色信息的三角形顶点数据。三角形的第一个顶点填充为全亮度红色（255）第二个填充全亮度绿色（255），第三个填充全亮度蓝色（255）。最后，在这个例子中我们屏蔽掉灯光。值得注意的是该例子使用的是一个新的ColorVertex结构，就象在4.2节中说明的一样。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">Setup</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// create vertex buffer</span></span><br><span class="line">    Device-&gt;<span class="built_in">CreateVertexBuffer</span>(</span><br><span class="line">        <span class="number">3</span> * <span class="built_in">sizeof</span>(ColorVertex),</span><br><span class="line">        D3DUSAGE_WRITEONLY,</span><br><span class="line">        ColorVertex::FVF,</span><br><span class="line">        D3DPOOL_MANAGED,</span><br><span class="line">        &amp;Triangle,</span><br><span class="line">        <span class="number">0</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// fill the buffers with the triangle data</span></span><br><span class="line">    ColorVertex* v;</span><br><span class="line">    Triangle-&gt;<span class="built_in">Lock</span>(<span class="number">0</span>, <span class="number">0</span>, (<span class="type">void</span>**)&amp;v, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    v[<span class="number">0</span>] = <span class="built_in">ColorVertex</span>(<span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">2.0f</span>, <span class="built_in">D3DCOLOR_XRGB</span>(<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>));</span><br><span class="line">    v[<span class="number">1</span>] = <span class="built_in">ColorVertex</span>( <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">2.0f</span>, <span class="built_in">D3DCOLOR_XRGB</span>( <span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>));</span><br><span class="line">    v[<span class="number">2</span>] = <span class="built_in">ColorVertex</span>( <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">2.0f</span>, <span class="built_in">D3DCOLOR_XRGB</span>( <span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>));</span><br><span class="line"></span><br><span class="line">    Triangle-&gt;<span class="built_in">Unlock</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// set projection matrix</span></span><br><span class="line">    D3DXMATRIX proj;</span><br><span class="line">    <span class="built_in">D3DXMatrixPerspectiveFovLH</span>(</span><br><span class="line">        &amp;proj,</span><br><span class="line">        D3DX_PI * <span class="number">0.5f</span>, <span class="comment">// 90 - degree</span></span><br><span class="line">        (<span class="type">float</span>)Width / (<span class="type">float</span>)Height,</span><br><span class="line">        <span class="number">1.0f</span>,</span><br><span class="line">        <span class="number">1000.0f</span>);</span><br><span class="line">    Device-&gt;<span class="built_in">SetTransform</span>(D3DTS_PROJECTION, &amp;proj);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// set the render states</span></span><br><span class="line">    Device-&gt;<span class="built_in">SetRenderState</span>(D3DRS_LIGHTING, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Display函数使用不同的着色模式在两个不同的地方分别绘制2个Triangle。每个三角形的位置由世界矩阵World来决定。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">Display</span><span class="params">(<span class="type">float</span> timeDelta)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>( Device )</span><br><span class="line">    &#123;</span><br><span class="line">        Device-&gt;<span class="built_in">Clear</span>(<span class="number">0</span>, <span class="number">0</span>, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, <span class="number">0xffffffff</span>, <span class="number">1.0f</span>, <span class="number">0</span>);</span><br><span class="line">        Device-&gt;<span class="built_in">BeginScene</span>();</span><br><span class="line"></span><br><span class="line">        Device-&gt;<span class="built_in">SetFVF</span>(ColorVertex::FVF);</span><br><span class="line">        Device-&gt;<span class="built_in">SetStreamSource</span>(<span class="number">0</span>, Triangle, <span class="number">0</span>, <span class="built_in">sizeof</span>(ColorVertex));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// draw the triangle to the left with flat shading</span></span><br><span class="line">        <span class="built_in">D3DXMatrixTranslation</span>(&amp;World, <span class="number">-1.25f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>);</span><br><span class="line">        Device-&gt;<span class="built_in">SetTransform</span>(D3DTS_WORLD, &amp;World);</span><br><span class="line"></span><br><span class="line">        Device-&gt;<span class="built_in">SetRenderState</span>(D3DRS_SHADEMODE, D3DSHADE_FLAT);</span><br><span class="line">        Device-&gt;<span class="built_in">DrawPrimitive</span>(D3DPT_TRIANGLELIST, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// draw the triangle to the right with gouraud shading</span></span><br><span class="line">        <span class="built_in">D3DXMatrixTranslation</span>(&amp;World, <span class="number">1.25f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>);</span><br><span class="line">        Device-&gt;<span class="built_in">SetTransform</span>(D3DTS_WORLD, &amp;World);</span><br><span class="line"></span><br><span class="line">        Device-&gt;<span class="built_in">SetRenderState</span>(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);</span><br><span class="line">        Device-&gt;<span class="built_in">DrawPrimitive</span>(D3DPT_TRIANGLELIST, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        Device-&gt;<span class="built_in">EndScene</span>();</span><br><span class="line">        Device-&gt;<span class="built_in">Present</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/drawing-in-direct3d/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/" title="RHI">
+                        <b>#</b> RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/DirectX/" title="DirectX">
+                        <b>#</b> DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/RHI/" title="RHI">
+                        #RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/DirectX/" title="DirectX">
+                        #DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/Lighting/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A2%9C%E8%89%B2%E8%A1%A8%E7%A4%BA%E6%B3%95"><span class="toc-text">颜色表示法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A1%B6%E7%82%B9%E9%A2%9C%E8%89%B2"><span class="toc-text">顶点颜色</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%9D%80%E8%89%B2%E5%A4%84%E7%90%86"><span class="toc-text">着色处理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B%E7%A8%8B%E5%BA%8F%EF%BC%9A%E5%BD%A9%E8%89%B2%E4%B8%89%E8%A7%92%E5%BD%A2"><span class="toc-text">实例程序：彩色三角形</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E8%89%B2%E5%BD%A9(Color) + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F04%2F11%2FProgramer%2FRHI%2FDirectX%2Fcolor%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/04/11/Programer/RHI/DirectX/color/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

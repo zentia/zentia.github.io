@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      第十五章 选取(Picking) 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">第十五章 选取(Picking)</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/" title="RHI">
+                    <b>#</b> RHI
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/DirectX/" title="DirectX">
+                    <b>#</b> DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/RHI/" title="RHI">
+                    #RHI
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/DirectX/" title="DirectX">
+                    #DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="概览-OVERVIEW"><a href="#概览-OVERVIEW" class="headerlink" title="概览(OVERVIEW)"></a>概览(OVERVIEW)</h1><p>   如果用户点击了屏幕上的点 s &#x3D; (x, y)。 从图15.1 我们能看到用户选取了茶壶。 无论如何，应用程序无法根据给定的s点就立即确定茶壶是被选取。所以，我们必须拿出计算这个动作技巧来，叫做选取技巧。</p>
+<p>   图15.1 用户正在选择茶壶</p>
+<p>   我们知道一些知识：关于茶壶和它的关联点s，茶壶投影在围绕s点的区域，更准确的说是：它投影到投影窗口上围绕p点的区域，与它对应的屏幕点是s。因为这个问题依赖于3D物体与它的投影之间的关系，我们看图15.2就可以了解。</p>
+<p>图15.2放射线穿过点p点将会相交于围绕p点投影的对象。 注意：在投影窗口上的点 p与荧屏上被按下了点s相关联。</p>
+<p>   图15.2我们看到如果我们发射一条选取射线，从原点发出，经过点p，会与围绕p点投影的对象相交，即茶壶。所以一旦我们计算选取射线，我们可以遍例场景中的每个对象并测试，看射线是否与它相交。与射线相交的对象即是用户选择的对象，在这个例子中用户选取的对象是茶壶。<br>   上面的例子讲解了点s与茶壶的关系。通常我们任意点击屏幕上的点，我们遍例场景中的每个对象，如果对象与射线相交，那么这个对象就是用户选取的对象。例如，图15.1中，如果用户没有点击5个对象中的一个，而是点击了白色的背景区域，射线将不能相交任何对象。因此，结论是：如果射线没有与场景中的任何对象相交，则用户没有点击任何一个对象，其它的我们不关心。<br>   “选取”适用于所有种类的游戏和3D程序。例如，玩家通过用鼠标点击来影响3D世界中的不同对象，玩家可能点击向敌人射击，或点击拾取物品。好的程序会适当做出反应，程序需要知道哪个对象被选取（是敌人还是物品），和在3D空间中的位置（开枪会击中哪？或玩家将要移动到哪去拾取物品？）。选取回答了我们这些问题。</p>
+<p>目标<br>学习如何计算选取算法并了解它是如何工作的，我们将选取分解成四步：</p>
+<ol>
+<li>给一个屏幕点s，找出它在投影窗口上相交的点，即p。</li>
+<li>计算射线，它是从原点出发并经过点p。</li>
+<li>转换射线与模型到同一空间。</li>
+<li>测试与射线相交的对象，相交的对象即是屏幕上点击的对象。<br>15.1 屏幕到投影窗口的转换<br>首先，转换屏幕点到投影窗口，视口变换矩阵是：</li>
+</ol>
+<p>根据屏幕上的点s &#x3D; (sx, sy)，通过视口转换，得到在投影窗口上的点p &#x3D; (px, py, pz)：</p>
+<p>回忆一下2D图形部分：视口转换后z轴是不用保存的，而被保存在z缓存中。<br>给出屏幕点s，我们要找到点p，使用下列公式：</p>
+<p>假定视口成员x和y都是0，通常我们能进一步得到：</p>
+<p>因为前面的定义，投影窗口就是z&#x3D;1的平面，所以pz &#x3D; 1。</p>
+<p>可是我们还什么都没做，投影矩阵缩放投影窗口上的点，来模拟不同的视角。为了返回缩放前的点值，我们必须用与缩放相反的操作来转换点。P是投影矩阵，因为P00 和 P11转换距阵缩放点的x和y坐标，我们得到：</p>
+<p>15.2 计算射线<br>   回忆一下，射线能够描述参数方程：p(t) &#x3D; p0 + tu。其中p0是射线的起点，用来描述它的位置，u是向量，用来描述它的方向。<br>   如图15.2，我们知道射线的起点总是视图空间的原点，所以p0 &#x3D; (0, 0, 0)，如果p是射线穿过投影窗口上的点，方向向量u给出：u &#x3D; p - p0 &#x3D; (px, py, 1) - (0, 0, 0) &#x3D; p。<br>   下面的方法用来计算选取射线（从屏幕空间点击的点所对应的视图空间的点x、y坐标）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">d3d::Ray <span class="title">CalcPickingRay</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">     <span class="type">float</span> px = <span class="number">0.0f</span>;</span><br><span class="line">     <span class="type">float</span> py = <span class="number">0.0f</span>;</span><br><span class="line"></span><br><span class="line">     D3DVIEWPORT9 vp;</span><br><span class="line">     Device-&gt;<span class="built_in">GetViewport</span>(&amp;vp);</span><br><span class="line">     D3DXMATRIX proj;</span><br><span class="line">     Device-&gt;<span class="built_in">GetTransform</span>(D3DTS_PROJECTION, &amp;proj);</span><br><span class="line"></span><br><span class="line">     px = ((( <span class="number">2.0f</span>*x) / vp.Width)  - <span class="number">1.0f</span>) / <span class="built_in">proj</span>(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">     py = (((<span class="number">-2.0f</span>*y) / vp.Height) + <span class="number">1.0f</span>) / <span class="built_in">proj</span>(<span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">     d3d::Ray ray;</span><br><span class="line">     ray._origin    = <span class="built_in">D3DXVECTOR3</span>(<span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>);</span><br><span class="line">     ray._direction = <span class="built_in">D3DXVECTOR3</span>(px, py, <span class="number">1.0f</span>);</span><br><span class="line"></span><br><span class="line">     <span class="keyword">return</span> ray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>where Ray is defined as:<br>struct Ray<br>{<br>     D3DXVECTOR3 _origin;<br>     D3DXVECTOR3 _direction;<br>};<br>   我们更新d3dUtility.h文件，在d3d命名空间中加入选取射线Ray。</p>
+<p>15.3 变换射线<br>   上一节讲到，选取射线的计算被描述在视图空间，为了完成射线的相交的测试，射线和对象必须在同一个坐标系统。通常转换射线到世界空间（甚至对象在本地空间）要好于将所有对象转换到视图空间。<br>   我们能够将一个变换矩阵转换为一条原点为p0，方向为u的射线r(t) &#x3D; p0 + tu，注意：原点转换为一个点，方向转换为一个向量，在本章的选取例子中，下列函数转换一条射线：<br>void TransformRay(d3d::Ray* ray, D3DXMATRIX* T)<br>{<br>      &#x2F;&#x2F; transform the ray’s origin, w &#x3D; 1.<br>      D3DXVec3TransformCoord(<br>           &amp;ray-&gt;_origin,<br>           &amp;ray-&gt;_origin,<br>           T);</p>
+<pre><code>  // transform the ray&#39;s direction, w = 0.
+  D3DXVec3TransformNormal(
+       &amp;ray-&gt;_direction,
+       &amp;ray-&gt;_direction,
+       T);
+
+  // normalize the direction
+  D3DXVec3Normalize(&amp;ray-&gt;_direction, &amp;ray-&gt;_direction);
+</code></pre>
+<p>}<br>   D3DXVec3TransformCoord和D3DXVec3TransformNormal接受一个Ray类型参数（包含二个3D向量成员）。 D3DXVec3TransformCoord函数中，射线的原点（_origin）向量的第四部分w &#x3D; 1。相反，函数D3DXVec3TransformNormal中，射线的方向（_direction）向量的第四部分w &#x3D; 0。<br>   这样，当我们向世界空间转换时，能够用D3DXVec3TransformCoord转换一个点，用D3DXVec3TransformNormal转换一个向量。</p>
+<p>15.4 射线－对象 交点<br>   我们将射线和对象转换到同一坐标系统后，准备测试哪个对象与射线相交。因为我们将对象描述为三角形组成的网络，下面详细说明这种方法。遍例场景中每个对象的三角形列表并测试，如果射线相交于一个三角形，它就与三角形所在的对象相交。<br>   然而，通过遍例场景中的每个三角形来实现射线相交在计算上会增加时间，一种比较快的方法，虽然准确性会差一点。它将每个对象围成一个近似的球形（边界球），这样我们就能通过遍例每个边界球来测试射线相交。用边界球来描述相交的对象。<br>   注意：射线可能相交多个对象，然而离照相机近的对象会被选取。因为近距离对象遮挡了后面的对象。<br>   给出一个边界球的圆心c和半径r，使用下列恒等式能够测试点p是否在边界球上：<br>   ||p-c||-r &#x3D; 0<br>   如果恒等式满足，则点p在边界球上。如图15.3</p>
+<p>   图15.3 向量p到c的长度表示为：||p - c||，如果等于半径则表示点p在边界球上。注意：我们使用边界球是为了方便，但这将扩展出三个种情况。<br>   假定射线p(t) &#x3D; p0 + tu相交于边界球，我们将射线代入球的恒等式中，使参数t满足了球的恒等式，给出了满足相交点的参数。</p>
+<p>将射线p(t) &#x3D; p0 + tu代入球的恒等式：<br>||p(t) - c|| - r &#x3D; 0   –&gt;   ||p0 + tu - c|| - r &#x3D; 0</p>
+<p>通过以上推导，我们得到二次方程：<br>At2 + Bt + C &#x3D; 0</p>
+<p>其中A &#x3D; u · u, B &#x3D; 2(u · (p0 - c))，而C &#x3D; (p0 - c) . (p0 - c) – r 2。<br>如果u是标准化的，那么A &#x3D; 1。<br>因为u是标准化的，我们解t0 和 t1：</p>
+<p>   图15.4显示可能返回的t0 和 t1，并显示了一些返回值的几何意义：</p>
+<p>   图15.4 (a)射线从球边上擦过；(b)射线在球前；(c)射线在球的内部；(d)射线相交于球；(e)射线是球的切线。<br>   下列方法射线通过并与边界球相交，返回true；射线错过边界球，返回false。<br> bool PickApp::raySphereIntersectionTest(Ray* ray,<br>                                        BoundingSphere* sphere)<br>{<br>     D3DXVECTOR3 v &#x3D; ray-&gt;_origin - sphere-&gt;_center;<br>     float b &#x3D; 2.0f * D3DXVec3Dot(&amp;ray-&gt;_direction, &amp;v);<br>     float c &#x3D; D3DXVec3Dot(&amp;v, &amp;v) - (sphere-&gt;_radius * sphere-&gt;<br>                                      _radius);</p>
+<pre><code> // find the discriminant
+ float discriminant = (b * b) - (4.0f * c);
+
+ // test for imaginary number
+ if( discriminant &lt; 0.0f )
+      return false;
+
+ discriminant = sqrtf(discriminant);
+
+ float s0 = (-b + discriminant) / 2.0f;
+ float s1 = (-b - discriminant) / 2.0f;
+
+ // if a solution is &gt;= 0, then we intersected the sphere
+ if( s0 &gt;= 0.0f || s1 &gt;= 0.0f )
+      return true;
+
+ return false;
+</code></pre>
+<p>}<br>   当然，我们已经准备了一个边界球，为了便于理解我们再次显示它的定义：<br>bool PickApp::raySphereIntersectionTest(Ray* ray,<br>                                        BoundingSphere* sphere)<br>{<br>struct BoundingSphere<br>{<br>     BoundingSphere();</p>
+<pre><code> D3DXVECTOR3 _center;
+ float       _radius;
+</code></pre>
+<p>};</p>
+<p>15.5 例子程序：选取<br>图15.5显示了本章例子程序的屏幕截图，茶壶绕着屏幕移动，你可以用鼠标试着点击它。如果你点击到茶壶的边界球上，一个消息框将弹出，表示你点中了。我们通过测试WM_LBUTTONDOWN消息来处理鼠标点击事件：<br>case WM_LBUTTONDOWN:</p>
+<p>&#x2F;&#x2F; compute the ray in view space given the clicked screen point<br>d3d::Ray ray &#x3D; CalcPickingRay(LOWORD(lParam), HIWORD(lParam));</p>
+<p>&#x2F;&#x2F; transform the ray to world space<br>D3DXMATRIX view;<br>Device-&gt;GetTransform(D3DTS_VIEW, &amp;view);</p>
+<p>D3DXMATRIX viewInverse;<br>D3DXMatrixInverse(&amp;viewInverse, 0, &amp;view);</p>
+<p>TransformRay(&amp;ray, &amp;viewInverse);</p>
+<p>&#x2F;&#x2F; test for a hit<br>if( RaySphereIntTest(&amp;ray, &amp;BSphere) )<br>     ::MessageBox(0, “Hit!”, “HIT”, 0);</p>
+<p>break;</p>
+<p>图15.5 这章例子程序的屏幕截图</p>
+<p>15.6 摘要</p>
+<ul>
+<li>选取技巧通过鼠标点击，来确定与3D对象对应的屏幕上显示的2D投影对象。</li>
+<li>选取线是一个射线，源自视图空间的原点，穿过投影窗口上的点关联到屏幕上点击的点。</li>
+<li>我们能够变换一个射线r(t) &#x3D; p0 + tu，通过变换原点p0和通过矩阵变换得到方向u。注意：原点变换自一个（w&#x3D;1）的点，方向是（w&#x3D;0）的向量。</li>
+<li>测试射线与对象相交，我们能测试射线是否相交于组成对象的三角形，或测试射线是否相交于围绕对象的一个体积，比如边界球。</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/Particle-System/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/" title="RHI">
+                        <b>#</b> RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/DirectX/" title="DirectX">
+                        <b>#</b> DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/RHI/" title="RHI">
+                        #RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/DirectX/" title="DirectX">
+                        #DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/HLSL/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%A7%88-OVERVIEW"><span class="toc-text">概览(OVERVIEW)</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E7%AC%AC%E5%8D%81%E4%BA%94%E7%AB%A0%20%E9%80%89%E5%8F%96(Picking) + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F04%2F11%2FProgramer%2FRHI%2FDirectX%2FPicking%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/04/11/Programer/RHI/DirectX/Picking/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

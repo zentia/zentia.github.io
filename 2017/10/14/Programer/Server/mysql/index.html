@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      Mysql 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Mysql</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Server/" title="Server">
+                    #Server
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="修改mysql密码"><a href="#修改mysql密码" class="headerlink" title="修改mysql密码"></a>修改mysql密码</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p</span><br><span class="line">use mysql;</span><br><span class="line">UPDATE user SET password=password(&quot;123456&quot;) WHERE user=&#x27;root&#x27;; </span><br><span class="line">flush privileges;</span><br><span class="line">exit;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW DATABASES;</span><br></pre></td></tr></table></figure>
+
+<p>首先CentOS7 已经不支持mysql，因为收费了你懂得，所以内部集成了mariadb，而安装mysql的话会和mariadb的文件冲突，所以需要先卸载掉mariadb，以下为卸载mariadb，安装mysql的步骤。</p>
+<h1 id="列出所有被安装的rpm-package"><a href="#列出所有被安装的rpm-package" class="headerlink" title="列出所有被安装的rpm package"></a>列出所有被安装的rpm package</h1><p>rpm -qa | grep mariadb</p>
+<h1 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h1><p>rpm -e mariadb-libs-5.5.37-1.el7_0.x86_64<br>错误：依赖检测失败：<br>libmysqlclient.so.18()(64bit) 被 (已安裝) postfix-2:2.10.1-6.el7.x86_64 需要<br>libmysqlclient.so.18(libmysqlclient_18)(64bit) 被 (已安裝) postfix-2:2.10.1-6.el7.x86_64 需要</p>
+<p>#强制卸载，因为没有–nodeps<br>rpm -e –nodeps mariadb-libs-5.5.37-1.el7_0.x86_64</p>
+<h1 id="安装mysql依赖"><a href="#安装mysql依赖" class="headerlink" title="安装mysql依赖"></a>安装mysql依赖</h1><p>yum install vim libaio net-tools</p>
+<p>其他情况：</p>
+<p>1、centos下yum暂时没有mysql-server直接安装包；<br>MariaDB是MySQL社区开发的分支，也是一个增强型的替代品;</p>
+<p>2、安装MariaDB（目前还是先不要安装了）<br>yum -y install mariadb-server mariadb mariadb-devel<br>systemctl start mariadb<br>systemctl enable mariadb<br>mysql_secure_installation<br>firewall-cmd –permanent –add-service mysql<br>systemctl restart firewalld.service<br>iptables -L -n|grep 3306</p>
+<p>CentOS7的yum源中默认好像是没有mysql的。为了解决这个问题，我们要先下载mysql的repo源。</p>
+<ol>
+<li>下载mysql的repo源</li>
+</ol>
+<p>$ wget <a target="_blank" rel="noopener" href="http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm">http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm</a></p>
+<ol start="2">
+<li>安装mysql-community-release-el7-5.noarch.rpm包</li>
+</ol>
+<p>$ sudo rpm -ivh mysql-community-release-el7-5.noarch.rpm</p>
+<p>安装这个包后，会获得两个mysql的yum repo源：&#x2F;etc&#x2F;yum.repos.d&#x2F;mysql-community.repo，&#x2F;etc&#x2F;yum.repos.d&#x2F;mysql-community-source.repo。</p>
+<ol start="3">
+<li>安装mysql</li>
+</ol>
+<p>$ sudo yum install mysql-server<br>根据步骤安装就可以了，不过安装完成后，没有密码，需要重置密码。<br>4. 重置密码<br>重置密码前，首先要登录<br>$ mysql -u root<br>登录时有可能报这样的错：ERROR 2002 (HY000): Can‘t connect to local MySQL server through socket ‘&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;mysql.sock‘ (2)，原因是&#x2F;var&#x2F;lib&#x2F;mysql的访问权限问题。下面的命令把&#x2F;var&#x2F;lib&#x2F;mysql的拥有者改为当前用户：<br>$ sudo chown -R openscanner:openscanner &#x2F;var&#x2F;lib&#x2F;mysql<br>然后，重启服务：<br>$ service mysqld restart</p>
+<ol start="5">
+<li><p>开放3306端口<br>$ sudo vim &#x2F;etc&#x2F;sysconfig&#x2F;iptables<br>添加以下内容：<br>-A INPUT -p tcp -m state –state NEW -m tcp –dport 3306 -j ACCEPT<br>保存后重启防火墙：<br>$ sudo service iptables restart<br>这样从其它客户机也可以连接上mysql服务了。<br>MYSQL启动后报：ERROR! The server quit without updating PID file错误的问题解决<br>MYSQL日志：Can’t find file: ‘.&#x2F;mysql&#x2F;plugin.frm’ (errno: 13 - Permission denied)</p>
+</li>
+<li><p>权限不够：chown -R mysql:mysql &#x2F;home&#x2F;mysql&#x2F;data”  chmod -R 755 &#x2F;home&#x2F;mysql&#x2F;data</p>
+</li>
+<li><p>centos7的selinux问题：打开&#x2F;etc&#x2F;selinux&#x2F;config，把SELINUX&#x3D;enforcing改为SELINUX&#x3D;disabled后存盘退出重启机器。<br>查看存储过程的创建代码<br>show create procedure proc_name;</p>
+</li>
+</ol>
+<h1 id="ERROR-1728-HY000-Cannot-load-from-mysql-proc-The-table-is-probably-corrupted"><a href="#ERROR-1728-HY000-Cannot-load-from-mysql-proc-The-table-is-probably-corrupted" class="headerlink" title="ERROR 1728 (HY000): Cannot load from mysql.proc. The table is probably corrupted"></a>ERROR 1728 (HY000): Cannot load from mysql.proc. The table is probably corrupted</h1><p>【错误过程】：MySQL从5.1升级至5.5后在调用存储过程时报出“Cannot load from mysql.proc. The table is probably corrupted。”<br>【造成原因】：MySQL升级完成后未对相关数据库执行升级.<br>【解决办法】：在命令行中执行mysql_upgrade -uroot -p 即可~</p>
+<h1 id="查看Mysql端口"><a href="#查看Mysql端口" class="headerlink" title="查看Mysql端口"></a>查看Mysql端口</h1><pre><code>show global variables like &#39;port&#39;;
+</code></pre>
+<h1 id="字符集"><a href="#字符集" class="headerlink" title="字符集"></a>字符集</h1><h2 id="系统变量"><a href="#系统变量" class="headerlink" title="系统变量"></a>系统变量</h2><ul>
+<li>character_set_server          默认的内部操作字符集</li>
+<li>character_set_client          客户端来源数据使用的字符集</li>
+<li>character_set_connection      连接层字符集</li>
+<li>character_set_results         查询结果字符集</li>
+<li>character_set_database        当前选中数据库的默认字符集</li>
+<li>character_set_system          系统元数据（字段名等）字符集</li>
+</ul>
+<h2 id="查看"><a href="#查看" class="headerlink" title="查看"></a>查看</h2><pre><code>show variables like &#39;character_set_database&#39;;
+show variables like &#39;%character%&#39;;
+show variables like &#39;collation%&#39;;
+</code></pre>
+<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><h3 id="临时修改"><a href="#临时修改" class="headerlink" title="临时修改"></a>临时修改</h3><pre><code>alter database xxx CHARACTER SET gb2312; // 修改库的字符集
+SET character_set_client = utf8;
+</code></pre>
+<h3 id="永久修改"><a href="#永久修改" class="headerlink" title="永久修改"></a>永久修改</h3><p>修改my.cnf 位置在&#x2F;etc&#x2F;my.cnf<br>在[mysqld]上面加下面两句话</p>
+<pre><code>[client]
+default-character-set=utf8
+</code></pre>
+<p>在[mysqld]最下面加入下面几句话</p>
+<pre><code>default-storage-engine=INNODB
+character-set-server=utf8
+collation-server=utf8_general_ci
+</code></pre>
+<p>然后保存</p>
+<p>重启Mysql</p>
+<pre><code>service mysqld restart
+</code></pre>
+<h2 id="查看MYSQL所支持的字符集"><a href="#查看MYSQL所支持的字符集" class="headerlink" title="查看MYSQL所支持的字符集"></a>查看MYSQL所支持的字符集</h2><pre><code>show charset;
+</code></pre>
+<h2 id="查看库的字符集"><a href="#查看库的字符集" class="headerlink" title="查看库的字符集"></a>查看库的字符集</h2><pre><code>show create database db_xxsy_game_1004\G;
+</code></pre>
+<h2 id="查看表的字符集"><a href="#查看表的字符集" class="headerlink" title="查看表的字符集"></a>查看表的字符集</h2><pre><code>show table status from db_xxsy_game_1004 like &#39;common_accounts&#39;;
+</code></pre>
+<h1 id="CentOS7-开放3306端口访问"><a href="#CentOS7-开放3306端口访问" class="headerlink" title="CentOS7 开放3306端口访问"></a>CentOS7 开放3306端口访问</h1><p>CentOS 7.0默认使用的是firewall作为防火墙，这里改为iptables防火墙。<br>1、关闭firewall：<br>systemctl stop firewalld.service<br>systemctl disable firewalld.service<br>systemctl mask firewalld.service</p>
+<p>2、安装iptables防火墙<br>yum install iptables-services -y</p>
+<p>3.启动设置防火墙</p>
+<pre><code># systemctl enable iptables
+# systemctl start iptables
+</code></pre>
+<p>4.查看防火墙状态</p>
+<p>systemctl status iptables</p>
+<p>5编辑防火墙，增加端口<br>vi &#x2F;etc&#x2F;sysconfig&#x2F;iptables #编辑防火墙配置文件<br>-A INPUT -m state –state NEW -m tcp -p tcp –dport 22 -j ACCEPT<br>-A INPUT -m state –state NEW -m tcp -p tcp –dport 80 -j ACCEPT<br>-A INPUT -m state –state NEW -m tcp -p tcp –dport 3306 -j ACCEPT<br>:wq! #保存退出</p>
+<p>3.重启配置，重启系统<br>systemctl restart iptables.service #重启防火墙使配置生效<br>systemctl enable iptables.service #设置防火墙开机启动</p>
+<h1 id="Host-‘192-168-171-128’-is-not-allowed-to-connect-to-this-MySQL-server"><a href="#Host-‘192-168-171-128’-is-not-allowed-to-connect-to-this-MySQL-server" class="headerlink" title="Host ‘192.168.171.128’ is not allowed to connect to this MySQL server"></a>Host ‘192.168.171.128’ is not allowed to connect to this MySQL server</h1><h1 id="ERROR-1044-42000-Access-denied-for-user-‘‘-’localhost’-to-database-‘mysql’"><a href="#ERROR-1044-42000-Access-denied-for-user-‘‘-’localhost’-to-database-‘mysql’" class="headerlink" title="ERROR 1044 (42000):Access denied for user ‘‘@’localhost’ to database ‘mysql’"></a>ERROR 1044 (42000):Access denied for user ‘‘@’localhost’ to database ‘mysql’</h1><p>在mysql数据库的user表里，存在用户名为空的账户即为匿名账户，导致登陆的时候虽然用的时root，但实际时匿名登陆的。<br>解决办法：</p>
+<ol>
+<li>关闭mysql<br>service mysqld stop</li>
+<li>屏蔽权限<br>mysqld_safe –skip-grant-table</li>
+<li>新开一个终端<br>mysql -u root mysql<br>delete from user where user&#x3D;’’;<br>flush privileges;</li>
+</ol>
+<h1 id="mysql-h-no-found-file-or-directory"><a href="#mysql-h-no-found-file-or-directory" class="headerlink" title="mysql.h no found file or directory"></a>mysql.h no found file or directory</h1><p>yum install mysql-devel</p>
+<table>
+<thead>
+<tr>
+<th align="left">数据类型</th>
+<th align="left">解释</th>
+<th align="left">存储范围</th>
+<th align="left">字节</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">TINYINT</td>
+<td align="left">有符号值:-128到127<br>unsigned : [0 255]</td>
+<td align="left">1</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">SMALLINT</td>
+<td align="left">signed[-32768,32767]<br>unsigned [0,65535]</td>
+<td align="left">2</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">BINARY</td>
+<td align="left">用来表示二进制数据</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">VARBINARY</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<p>大小写忽略</p>
+<h3 id="CHAR和VARCHAR类型"><a href="#CHAR和VARCHAR类型" class="headerlink" title="CHAR和VARCHAR类型"></a>CHAR和VARCHAR类型</h3><p>都用来存储字符串<br>VARCHAR 可以存储可变长度的字符串<br>CHAR    存储定长字符串<br>定义如下<br>CHAR(M)或者VARCHAR(M)<br>M指的是字符串的最大长度<br>比如<br>插入值’ab’<br>CHAR(4) 需要4个字节<br>VARCHAR(4) 需要3个字节<br>当数据为CHAR(M)类型时，不管插入值的长度是多少，所占用的存储空间都是M个字节。<br>当为VARCHAR(M)类型时，所占用的字节数为实际长度加1。</p>
+<h3 id="BINARY和VARBINARY类型"><a href="#BINARY和VARBINARY类型" class="headerlink" title="BINARY和VARBINARY类型"></a>BINARY和VARBINARY类型</h3><p>类似于CHAR和VARCHAR<br>用来表示二进制数据<br>定义如下<br>BINARY(M)或者VARBINARY(M)<br>M指的是二进制数据的最大字节长度<br>注意<br>BINARY类型的长度是固定的，如果数据的长度不足最大长度，在后面用”\0”补齐。<br>比如，数据类型为BINARY(3)，当插入a时，实际存储的时”a\0\0”</p>
+<h1 id="Centos7安装Mysql"><a href="#Centos7安装Mysql" class="headerlink" title="Centos7安装Mysql"></a>Centos7安装Mysql</h1><pre><code>yum install mysql
+yum install mysql-devel
+yum install mariadb-server mariadb
+systemctl start mariadb
+</code></pre>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2017/10/13/Programer/Server/ssh-key/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Server/" title="Server">
+                        #Server
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2017/10/15/Programer/Server/Linux/linux/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9mysql%E5%AF%86%E7%A0%81"><span class="toc-text">修改mysql密码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89%E8%A2%AB%E5%AE%89%E8%A3%85%E7%9A%84rpm-package"><span class="toc-text">列出所有被安装的rpm package</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%B8%E8%BD%BD"><span class="toc-text">卸载</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85mysql%E4%BE%9D%E8%B5%96"><span class="toc-text">安装mysql依赖</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ERROR-1728-HY000-Cannot-load-from-mysql-proc-The-table-is-probably-corrupted"><span class="toc-text">ERROR 1728 (HY000): Cannot load from mysql.proc. The table is probably corrupted</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8BMysql%E7%AB%AF%E5%8F%A3"><span class="toc-text">查看Mysql端口</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E9%9B%86"><span class="toc-text">字符集</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F"><span class="toc-text">系统变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B"><span class="toc-text">查看</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9"><span class="toc-text">修改</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%B4%E6%97%B6%E4%BF%AE%E6%94%B9"><span class="toc-text">临时修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B0%B8%E4%B9%85%E4%BF%AE%E6%94%B9"><span class="toc-text">永久修改</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8BMYSQL%E6%89%80%E6%94%AF%E6%8C%81%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86"><span class="toc-text">查看MYSQL所支持的字符集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%BA%93%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86"><span class="toc-text">查看库的字符集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E8%A1%A8%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86"><span class="toc-text">查看表的字符集</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CentOS7-%E5%BC%80%E6%94%BE3306%E7%AB%AF%E5%8F%A3%E8%AE%BF%E9%97%AE"><span class="toc-text">CentOS7 开放3306端口访问</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Host-%E2%80%98192-168-171-128%E2%80%99-is-not-allowed-to-connect-to-this-MySQL-server"><span class="toc-text">Host ‘192.168.171.128’ is not allowed to connect to this MySQL server</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ERROR-1044-42000-Access-denied-for-user-%E2%80%98%E2%80%98-%E2%80%99localhost%E2%80%99-to-database-%E2%80%98mysql%E2%80%99"><span class="toc-text">ERROR 1044 (42000):Access denied for user ‘‘@’localhost’ to database ‘mysql’</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql-h-no-found-file-or-directory"><span class="toc-text">mysql.h no found file or directory</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CHAR%E5%92%8CVARCHAR%E7%B1%BB%E5%9E%8B"><span class="toc-text">CHAR和VARCHAR类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BINARY%E5%92%8CVARBINARY%E7%B1%BB%E5%9E%8B"><span class="toc-text">BINARY和VARBINARY类型</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Centos7%E5%AE%89%E8%A3%85Mysql"><span class="toc-text">Centos7安装Mysql</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Mysql + '&url=' + http%3A%2F%2Fzentia.github.io%2F2017%2F10%2F14%2FProgramer%2FServer%2Fmysql%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2017/10/14/Programer/Server/mysql/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      DS 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">DS</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:03
+        </span>
+        
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Unreal/" title="Unreal">
+                    #Unreal
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>三方：玩家本地、服务器、其他客户端。对于你的游戏内角色，在三方都有一份。<br>可复制<br>在构造函数内加上bReplicates&#x3D;true;<br>加上之后，客户端生成该类的对象时，会自动的在所有客户端生成一个相同的对象。同时也是属性同步的必备条件。<br>Role、RemoteRole<br>Role是本地的角色，RemoteRole是远端的角色。<br>对于客户端来说，RemoteRole处于服务端。反之亦然。<br>Replicate&#x2F;属性同步<br>属性同步&#x2F;复制，是一种状态同步的架构，既有一些属性在第三方的Actor内保持一致，Role和RemoteRole保持一直。本地获取玩家输入，通过DedicatedServer，同步至其他服务器。</p>
+<h1 id="客户端服务器模式"><a href="#客户端服务器模式" class="headerlink" title="客户端服务器模式"></a>客户端服务器模式</h1><p><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.27/zh-CN/InteractiveExperiences/Networking/Server/">https://docs.unrealengine.com/4.27/zh-CN/InteractiveExperiences/Networking/Server/</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 当前游戏运行的网络模式</span></span><br><span class="line"><span class="comment"> * @see https://docs.unrealengine.com/latest/INT/Gameplay/Networking/Overview/</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">ENetMode</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">/** 独立：游戏作为服务器运行，不接受远程客户端连接。参与游戏的玩家必须为本地玩家。此模式用于单人游戏和本地多人游戏。其将运行本地玩家使用的服务器逻辑和客户端逻辑。多个手柄 */</span></span><br><span class="line">    NM_Standalone,</span><br><span class="line">    <span class="comment">/** DS模式，没有本地玩家，在服务器上运行 */</span></span><br><span class="line">    NM_DedicatedServer,</span><br><span class="line">    <span class="comment">/** 服务器运行。接受远程客户端连接，且直接在服务器上拥有本地玩家。此模式通常用于临时合作和竞技多人游戏，局域网游戏，红警，War3那种 */</span></span><br><span class="line">    NM_ListenServer,</span><br><span class="line">    <span class="comment">/** 网络多人游戏绘画中与服务器连接的客户端运行。其不会运行服务器逻辑 */</span></span><br><span class="line">    NM_Client,</span><br><span class="line">    NM_MAX,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="编译时确定的网络模式"><a href="#编译时确定的网络模式" class="headerlink" title="编译时确定的网络模式"></a>编译时确定的网络模式</h1><p>虚幻中有一堆宏来控制编译，和网络模式相关有如下几个</p>
+<ul>
+<li><code>UE_SERVER</code>: 开了这个宏的肯定是服务器了，编译时就会把客户端相关的模块给剔除掉，比如渲染相关的</li>
+<li><code>WITH_SERVER_CODE</code>: 这个宏来控制网络逻辑代码的开关，如果是<code>!WITH_SERVER_CODE</code>，那就是纯客户端了，在<code>PlatformProperties.h</code>中，<code>FWindowsPlatformProperties/FMacPlatformProperties/FLinuxPlatformProperties</code>，这三个模板类的<code>IS_CLIENT_ONLY</code>参数传的就是<code>!WITH_SERVER_CODE</code></li>
+</ul>
+<p><code>FPlatformProperties</code>中封装了几个函数来判断编译是一什么模式来编译的</p>
+<ul>
+<li><code>IsServerOnly</code>:如果是true则表示编译的时候是以<code>DedicatedServer</code>的模式来编译代码，会剔除客户端相关的代码，比如渲染模块，也不包含<code>Editor</code>相关的代码</li>
+<li><code>IsGameOnly</code>:如果是true则表示编译时剔除<code>Editor</code>相关的代码</li>
+<li><code>IsClientOnly</code>:如果是true则表示编译时剔除了服务器和<code>Editor</code>相关的代码，这里需要注意的时，在以<code>xxx client</code>模式来出包，如果出的是<code>Windows/Mac/Linux</code>，则这个函数返回的是true，如果出的移动端的包，则返回false，因为<code>FIOSPlatformProperties/FAndroidPlatfromProperties</code>，没有覆盖掉父类中的默认<code>IsClientOnly</code>实现，父类的默认实现返回的false，不明白这里为啥行为不一致</li>
+</ul>
+<h1 id="IsRunningDedicatedServer-IsRunningGame-IsRunningClientOnly"><a href="#IsRunningDedicatedServer-IsRunningGame-IsRunningClientOnly" class="headerlink" title="IsRunningDedicatedServer&#x2F;IsRunningGame&#x2F;IsRunningClientOnly"></a>IsRunningDedicatedServer&#x2F;IsRunningGame&#x2F;IsRunningClientOnly</h1><p>这几个函数和上面的三个函数类似，在非<code>Editor</code>模式下的返回值和上面三个函数一致，区别在于当运行<code>Editor</code>时，可以通过命令行来切换运行模式，具体如下</p>
+<ul>
+<li>命令行中包含<code>SERVER</code>或者<code>RUN=SERVER</code>时，以<code>DedicatedServer</code>模式模拟运行</li>
+<li>命令行中包含<code>GAME</code>时，以无<code>Editor</code>模式模拟运行</li>
+<li>命令行中包含<code>GAME</code>和<code>ClientOnly</code>时，以纯客户端模式模拟运行</li>
+</ul>
+<h1 id="编译配置和GetNetMode的关系"><a href="#编译配置和GetNetMode的关系" class="headerlink" title="编译配置和GetNetMode的关系"></a>编译配置和GetNetMode的关系</h1><p>编译配置联机模式（主机）GetNetMode返回值联机模式（客户端）GetNetMode返回值单机模式GetNetMode返回值xxx Client无此模式<code>NM_ClientNM_Standalone</code>xxx<br>Server<code>NM_DedicatedServer</code>无此模式<br>Debug&#x2F;DebugGame&#x2F;Development&#x2F;Shipping <code>NM_ListenServerNM_ClientNM_Standalone</code></p>
+<h1 id="搭建DS服务器"><a href="#搭建DS服务器" class="headerlink" title="搭建DS服务器"></a>搭建DS服务器</h1><p>Actor的所有权-ROLE<br>UE将Actor的控制权分成了三类，分别是：</p>
+<ul>
+<li>ROLE_None：这个None就是我们平常理解的None，不属于下面三种的都是None</li>
+<li>ROLE_Authority: 服务器拥有所有 Actor的控制权，即所有的Actor的服务端的控制权都是ROLE_Authority</li>
+<li>ROLE_AutonomousProxy:客户端对本地Actor拥有这个控制权</li>
+<li>ROLE_SimulatedProxy:客户端对网络Actor,即其他端的Actor，拥有这个控制权</li>
+</ul>
+<p>这三个属性是UE设计Actor时就为Actor设计好的固有属性，可以用于判断一个Actor所在位置，因为UE的服务器代码和客户端代码是一体的，所以Actor设计这个属性是十分必要的。<br><img src="/2022/01/03/Programer/Engine/Unreal/DS/DS/SwitchLevel.svg"></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/01/03/Programer/Render/Caustics/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:03
+            </span>
+            
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Unreal/" title="Unreal">
+                        #Unreal
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/01/03/Programer/Engine/Unreal/Ability/SkillSync/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%A8%A1%E5%BC%8F"><span class="toc-text">客户端服务器模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E6%97%B6%E7%A1%AE%E5%AE%9A%E7%9A%84%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%BC%8F"><span class="toc-text">编译时确定的网络模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#IsRunningDedicatedServer-IsRunningGame-IsRunningClientOnly"><span class="toc-text">IsRunningDedicatedServer&#x2F;IsRunningGame&#x2F;IsRunningClientOnly</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E9%85%8D%E7%BD%AE%E5%92%8CGetNetMode%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">编译配置和GetNetMode的关系</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%90%AD%E5%BB%BADS%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-text">搭建DS服务器</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + DS + '&url=' + http%3A%2F%2Fzentia.github.io%2F2022%2F01%2F03%2FProgramer%2FEngine%2FUnreal%2FDS%2FDS%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2022/01/03/Programer/Engine/Unreal/DS/DS/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

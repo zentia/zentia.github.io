@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      Figma 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Figma</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:03
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Figma/" title="Figma">
+                    <b>#</b> Figma
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Figma/" title="Figma">
+                    #Figma
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>Page是由Frame构成的</p>
+<h1 id="Plugin-APIs"><a href="#Plugin-APIs" class="headerlink" title="Plugin APIs"></a>Plugin APIs</h1><h2 id="Global-Objects"><a href="#Global-Objects" class="headerlink" title="Global Objects"></a>Global Objects</h2><h3 id="figma"><a href="#figma" class="headerlink" title="figma"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/figma/">figma</a></h3><h4 id="ui"><a href="#ui" class="headerlink" title="ui"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/figma-ui/">ui</a></h4><p>ui是通过<a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-showui/">figma.showUI</a>创建的。</p>
+<h5 id="onmessage"><a href="#onmessage" class="headerlink" title="onmessage"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-ui-onmessage/">onmessage</a></h5><h4 id="figma-codegen"><a href="#figma-codegen" class="headerlink" title="figma.codegen"></a>figma.codegen</h4><h4 id="figma-timer"><a href="#figma-timer" class="headerlink" title="figma.timer"></a>figma.timer</h4><h4 id="viewport"><a href="#viewport" class="headerlink" title="viewport"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/figma-viewport/">viewport</a></h4><h4 id="clientStorage"><a href="#clientStorage" class="headerlink" title="clientStorage"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/figma-clientStorage/">clientStorage</a></h4><h4 id="figma-paramters"><a href="#figma-paramters" class="headerlink" title="figma.paramters"></a>figma.paramters</h4><h4 id="figma-variables"><a href="#figma-variables" class="headerlink" title="figma.variables"></a>figma.variables</h4><h4 id="figma-teamLibarry"><a href="#figma-teamLibarry" class="headerlink" title="figma.teamLibarry"></a>figma.teamLibarry</h4><h4 id="figma-textreview"><a href="#figma-textreview" class="headerlink" title="figma.textreview"></a>figma.textreview</h4><h4 id="figma-createReactangle"><a href="#figma-createReactangle" class="headerlink" title="figma.createReactangle"></a>figma.createReactangle</h4><h4 id="figma-createPage"><a href="#figma-createPage" class="headerlink" title="figma.createPage"></a>figma.createPage</h4><h4 id="figma-createStar-StarNode"><a href="#figma-createStar-StarNode" class="headerlink" title="figma.createStar(): StarNode"></a>figma.createStar(): StarNode</h4><h4 id="showUI"><a href="#showUI" class="headerlink" title="showUI"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-showui/">showUI</a></h4><h4 id="createRectangle"><a href="#createRectangle" class="headerlink" title="createRectangle"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-createrectangle/">createRectangle</a></h4><p>createRectangle(): <a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/RectangleNode/">RectangleNode</a></p>
+<h4 id="createFrame"><a href="#createFrame" class="headerlink" title="createFrame"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-createframe/">createFrame</a></h4><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">createFrame</span>(): <span class="title class_">FrameNode</span></span><br></pre></td></tr></table></figure>
+<h4 id="createComponent"><a href="#createComponent" class="headerlink" title="createComponent"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-createcomponent/">createComponent</a></h4><p>createComponent(): <a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/ComponentNode/">ComponentNode</a></p>
+<h4 id="createPage"><a href="#createPage" class="headerlink" title="createPage"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-createpage/">createPage</a></h4><p><code>createPage(): PageNode</code></p>
+<h4 id="loadFontAsync"><a href="#loadFontAsync" class="headerlink" title="loadFontAsync"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-loadfontasync/">loadFontAsync</a></h4><p>loadFontAsync(fontName: <a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/FontName/">FontName</a>): Promise<void></p>
+<h4 id="createImage"><a href="#createImage" class="headerlink" title="createImage"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-createimage/">createImage</a></h4><h4 id="notify"><a href="#notify" class="headerlink" title="notify"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-notify/">notify</a></h4><p>在屏幕的下面弹出提示<br>notify(message: string, options?: NotificationOptions): NotificationHandler</p>
+<h4 id="on"><a href="#on" class="headerlink" title="on"></a>on</h4><h5 id="ArgFreeEventType"><a href="#ArgFreeEventType" class="headerlink" title="ArgFreeEventType"></a>ArgFreeEventType</h5><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">ArgFreeEventType</span> =</span><br><span class="line">  | <span class="string">&#x27;selectionchange&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;currentpagechange&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;close&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;timerstart&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;timerstop&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;timerpause&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;timerresume&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;timeradjust&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;timerdone&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">on</span>(<span class="attr">type</span>: <span class="title class_">ArgFreeEventType</span>, <span class="attr">callback</span>: <span class="function">() =&gt;</span> <span class="built_in">void</span>): <span class="built_in">void</span></span><br><span class="line"><span class="title function_">on</span>(<span class="attr">type</span>: <span class="string">&#x27;run&#x27;</span>, <span class="attr">callback</span>: <span class="function">(<span class="params">event: RunEvent</span>) =&gt;</span> <span class="built_in">void</span>): <span class="built_in">void</span></span><br><span class="line"><span class="title function_">on</span>(<span class="attr">type</span>: <span class="string">&#x27;drop&#x27;</span>, <span class="attr">callback</span>: <span class="function">(<span class="params">event: DropEvent</span>) =&gt;</span> <span class="built_in">boolean</span>): <span class="built_in">void</span></span><br><span class="line"><span class="title function_">on</span>(<span class="attr">type</span>: <span class="string">&#x27;documentchange&#x27;</span>, <span class="attr">callback</span>: <span class="function">(<span class="params">event: DocumentChangeEvent</span>) =&gt;</span> <span class="built_in">void</span>): <span class="built_in">void</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> star = figma.<span class="title function_">createStar</span>()</span><br></pre></td></tr></table></figure>
+<h4 id="once"><a href="#once" class="headerlink" title="once"></a>once</h4><h4 id="off"><a href="#off" class="headerlink" title="off"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-off/">off</a></h4><h4 id="group"><a href="#group" class="headerlink" title="group"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-group/">group</a></h4><p>打组</p>
+<h4 id="ungroup"><a href="#ungroup" class="headerlink" title="ungroup"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/figma-ungroup/">ungroup</a></h4><h3 id="fetch"><a href="#fetch" class="headerlink" title="fetch"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/properties/global-fetch/">fetch</a></h3><p>网络能力</p>
+<h2 id="MODE-Types"><a href="#MODE-Types" class="headerlink" title="MODE Types"></a>MODE Types</h2><h2 id="SHARED-NODE-PROPERTIES"><a href="#SHARED-NODE-PROPERTIES" class="headerlink" title="SHARED NODE PROPERTIES"></a>SHARED NODE PROPERTIES</h2><h2 id="DATA-TYPES"><a href="#DATA-TYPES" class="headerlink" title="DATA TYPES"></a>DATA TYPES</h2><h3 id="RectangleNode"><a href="#RectangleNode" class="headerlink" title="RectangleNode"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/RectangleNode/">RectangleNode</a></h3><h3 id="FontName"><a href="#FontName" class="headerlink" title="FontName"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/FontName/">FontName</a></h3><h3 id="StarNode"><a href="#StarNode" class="headerlink" title="StarNode"></a>StarNode</h3><h3 id="InstanceNode"><a href="#InstanceNode" class="headerlink" title="InstanceNode"></a><a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/InstanceNode/">InstanceNode</a></h3><p>实例是组件的复制体</p>
+<h1 id="Widget-APIs"><a href="#Widget-APIs" class="headerlink" title="Widget APIs"></a>Widget APIs</h1><p>The Widget API enables you to create custom interactive on-canvas nodes with rich user interfaces that can be applied to the Figma or FigJam canvas.</p>
+<h2 id="Global-Objects-1"><a href="#Global-Objects-1" class="headerlink" title="Global Objects"></a>Global Objects</h2><h3 id="figma-widget"><a href="#figma-widget" class="headerlink" title="figma.widget"></a>figma.widget</h3><h4 id="figma-widget-register-component-FunctionalWidget-void"><a href="#figma-widget-register-component-FunctionalWidget-void" class="headerlink" title="figma.widget.register(component: FunctionalWidget): void"></a>figma.widget.register(component: FunctionalWidget<any>): void</h4><h2 id="Component-Types"><a href="#Component-Types" class="headerlink" title="Component Types"></a>Component Types</h2><p>组件和实例：组件是母体，实例是复制体，组件可以删除和修改，不可逆向为组。</p>
+<h3 id="AutoLayout"><a href="#AutoLayout" class="headerlink" title="AutoLayout"></a>AutoLayout</h3><h3 id="Frame"><a href="#Frame" class="headerlink" title="Frame"></a>Frame</h3><h3 id="Text"><a href="#Text" class="headerlink" title="Text"></a><a target="_blank" rel="noopener" href="https://www.figma.com/widget-docs/api/component-Text/">Text</a></h3><figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="title class_">Text</span> fontFamily=<span class="string">&quot;Inter&quot;</span> fontSize=&#123;<span class="number">20</span>&#125;&gt;</span><br><span class="line">    <span class="title class_">Hello</span> <span class="title class_">Widget</span></span><br><span class="line">&lt;/<span class="title class_">Text</span>&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="Span"><a href="#Span" class="headerlink" title="Span"></a><a target="_blank" rel="noopener" href="https://www.figma.com/widget-docs/api/component-Span/">Span</a></h3><figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="title class_">Text</span></span><br><span class="line">  fill=<span class="string">&quot;#0F0&quot;</span></span><br><span class="line">  fontSize=&#123;<span class="number">20</span>&#125;</span><br><span class="line">  fontFamily=<span class="string">&quot;Roboto&quot;</span></span><br><span class="line">  fontWeight=&#123;<span class="number">400</span>&#125;</span><br><span class="line">  textCase=<span class="string">&quot;upper&quot;</span></span><br><span class="line">  textDecoration=<span class="string">&quot;underline&quot;</span></span><br><span class="line">&gt;</span><br><span class="line">  <span class="title class_">Hello</span>&#123;<span class="string">&#x27; &#x27;</span>&#125;</span><br><span class="line">  &lt;<span class="title class_">Span</span></span><br><span class="line">    fontSize=&#123;<span class="number">50</span>&#125;</span><br><span class="line">    fontFamily=<span class="string">&quot;Poppins&quot;</span></span><br><span class="line">    fontWeight=&#123;<span class="number">800</span>&#125;</span><br><span class="line">    textCase=<span class="string">&quot;original&quot;</span></span><br><span class="line">    textDecoration=<span class="string">&quot;none&quot;</span></span><br><span class="line">  &gt;</span><br><span class="line">    <span class="title class_">Worl</span></span><br><span class="line">    &lt;<span class="title class_">Span</span> fontSize=&#123;<span class="number">30</span>&#125; fill=<span class="string">&quot;#F00&quot;</span> italic&gt;</span><br><span class="line">      d</span><br><span class="line">    &lt;/<span class="title class_">Span</span>&gt;</span><br><span class="line">  &lt;/<span class="title class_">Span</span>&gt;</span><br><span class="line">&lt;/<span class="title class_">Text</span>&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="Image"><a href="#Image" class="headerlink" title="Image"></a>Image</h3><figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="title class_">Image</span></span><br><span class="line">  <span class="comment">// Pass a data uri directly as the image</span></span><br><span class="line">  src=<span class="string">&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAECSURBVHgBpY87TwJBFIXPnVkhbqQQE7UQNWhrsdpLI40FsdSYGGNvbWFhZ2Jj+AWER0fFD6CAhhYCod8GGmCLJRAI2Rl22LDh1RBOc1/fzb0H2EK0WPSfzj+lxG3wMIpAOKpaZfpPpddgKxG510BllSsw6MGAEAYl0zWVMn+L8boEzOXD0oRwrI1vZF9ESRetWO94XMjEDwxb0xttTF6txyNbzbU5mHmWhhtiQ3aGSkQmTH129YJLunJjdQned9DshkbF8d7o4cRiOSB0475ld+JUnTM+/Pb1d0p8ck2eKXN49/OOFfkGOXfCLnjpdamNDfLhgfFdIyE+GOg3AJHHrpoC5YtKfAfixH0AAAAASUVORK5CYII=&quot;</span></span><br><span class="line"></span><br><span class="line">  width=&#123;<span class="number">100</span>&#125;</span><br><span class="line">  height=&#123;<span class="number">100</span>&#125;</span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Data-Types"><a href="#Data-Types" class="headerlink" title="Data Types"></a>Data Types</h2><h3 id="AlignItems"><a href="#AlignItems" class="headerlink" title="AlignItems"></a>AlignItems</h3><h3 id="ArcData"><a href="#ArcData" class="headerlink" title="ArcData"></a>ArcData</h3><h1 id="REST-API"><a href="#REST-API" class="headerlink" title="REST API"></a>REST API</h1><h1 id="FigJam"><a href="#FigJam" class="headerlink" title="FigJam"></a>FigJam</h1><p>FigJam是Figma中的一种特殊的文件类型，可以实现多人协作。</p>
+<h1 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h1><ul>
+<li><code>Home</code>切换不同的Frame</li>
+<li><code>Ctrl+1</code>切换不同的页签</li>
+<li><code>Ctrl+2</code>切换不同的页签</li>
+<li><code>Shift+1</code>切换全部视图</li>
+<li><code>Shift+2</code>切换当前视图</li>
+<li><code>F</code>创建画板</li>
+<li><code>T</code>快速唤醒文字工具</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>[1]<a target="_blank" rel="noopener" href="https://www.figma.com/developers/compare-apis">Compare the Figma APIs</a></li>
+<li>[2]<a target="_blank" rel="noopener" href="https://juejin.cn/post/7084639146915921956">用 Vue 3 开发 Figma 插件</a></li>
+<li>[3]<a target="_blank" rel="noopener" href="https://figmachina.com/figjam/">FigJam 指南</a></li>
+<li>[4]<a target="_blank" rel="noopener" href="https://gist.github.com/banyudu/f7472f935897adfbb54cc8eb38dc5373">Figma插件开发浅浅谈</a></li>
+<li>[5]<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_53225741/article/details/125000207">Figma 插件开发 - Vite 环境搭建</a></li>
+<li>[6]<a target="_blank" rel="noopener" href="https://www.figma.com/plugin-docs/api/api-reference/">API Reference</a></li>
+<li>[7]<a target="_blank" rel="noopener" href="https://www.figma.cool/learning-paths">Figma 学习路径</a></li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/11/30/Artist/Blender/Blender/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:03
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Figma/" title="Figma">
+                        <b>#</b> Figma
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Figma/" title="Figma">
+                        #Figma
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/11/30/Artist/Krita/Krita/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Plugin-APIs"><span class="toc-text">Plugin APIs</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Global-Objects"><span class="toc-text">Global Objects</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#figma"><span class="toc-text">figma</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ui"><span class="toc-text">ui</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#onmessage"><span class="toc-text">onmessage</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#figma-codegen"><span class="toc-text">figma.codegen</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#figma-timer"><span class="toc-text">figma.timer</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#viewport"><span class="toc-text">viewport</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#clientStorage"><span class="toc-text">clientStorage</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#figma-paramters"><span class="toc-text">figma.paramters</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#figma-variables"><span class="toc-text">figma.variables</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#figma-teamLibarry"><span class="toc-text">figma.teamLibarry</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#figma-textreview"><span class="toc-text">figma.textreview</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#figma-createReactangle"><span class="toc-text">figma.createReactangle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#figma-createPage"><span class="toc-text">figma.createPage</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#figma-createStar-StarNode"><span class="toc-text">figma.createStar(): StarNode</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#showUI"><span class="toc-text">showUI</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#createRectangle"><span class="toc-text">createRectangle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#createFrame"><span class="toc-text">createFrame</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#createComponent"><span class="toc-text">createComponent</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#createPage"><span class="toc-text">createPage</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#loadFontAsync"><span class="toc-text">loadFontAsync</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#createImage"><span class="toc-text">createImage</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#notify"><span class="toc-text">notify</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#on"><span class="toc-text">on</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#ArgFreeEventType"><span class="toc-text">ArgFreeEventType</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#once"><span class="toc-text">once</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#off"><span class="toc-text">off</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#group"><span class="toc-text">group</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ungroup"><span class="toc-text">ungroup</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fetch"><span class="toc-text">fetch</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MODE-Types"><span class="toc-text">MODE Types</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SHARED-NODE-PROPERTIES"><span class="toc-text">SHARED NODE PROPERTIES</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DATA-TYPES"><span class="toc-text">DATA TYPES</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RectangleNode"><span class="toc-text">RectangleNode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FontName"><span class="toc-text">FontName</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#StarNode"><span class="toc-text">StarNode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#InstanceNode"><span class="toc-text">InstanceNode</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Widget-APIs"><span class="toc-text">Widget APIs</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Global-Objects-1"><span class="toc-text">Global Objects</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#figma-widget"><span class="toc-text">figma.widget</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#figma-widget-register-component-FunctionalWidget-void"><span class="toc-text">figma.widget.register(component: FunctionalWidget): void</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Component-Types"><span class="toc-text">Component Types</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AutoLayout"><span class="toc-text">AutoLayout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Frame"><span class="toc-text">Frame</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Text"><span class="toc-text">Text</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Span"><span class="toc-text">Span</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Image"><span class="toc-text">Image</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Data-Types"><span class="toc-text">Data Types</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AlignItems"><span class="toc-text">AlignItems</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ArcData"><span class="toc-text">ArcData</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#REST-API"><span class="toc-text">REST API</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#FigJam"><span class="toc-text">FigJam</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-text">快捷键</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Figma + '&url=' + http%3A%2F%2Fzentia.github.io%2F2023%2F11%2F30%2FArtist%2FFigma%2FFigma%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2023/11/30/Artist/Figma/Figma/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

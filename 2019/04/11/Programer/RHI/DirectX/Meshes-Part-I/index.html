@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      第十章 网格模型I(Meshes Part I) 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">第十章 网格模型I(Meshes Part I)</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/" title="RHI">
+                    <b>#</b> RHI
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/DirectX/" title="DirectX">
+                    <b>#</b> DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/RHI/" title="RHI">
+                    #RHI
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/DirectX/" title="DirectX">
+                    #DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="几何信息"><a href="#几何信息" class="headerlink" title="几何信息"></a>几何信息</h1><p>ID3DXBaseMesh接口包含一个用来存储网格顶点的顶点缓存和一个用来定义这些顶点怎样连接在一起组成网格三角形的索引缓存。我们能够通过使用下面的方法来得到这些缓存的指针：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">HRESULT <span class="title">ID3DXMesh::GetVertexBuffer</span><span class="params">(LPDIRECT3DVERTEXBUFFER9* ppVB)</span></span>;</span><br><span class="line"><span class="function">HRESULT <span class="title">ID3DXMesh::GetIndexBuffer</span><span class="params">(LPDIRECT3DINDEXBUFFER9* ppIB)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>这里有一些使用这些方法的例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IDirect3DVertexBuffer9* vb = <span class="number">0</span>;</span><br><span class="line">Mesh-&gt;<span class="built_in">GetVertexBuffer</span>( &amp;vb );</span><br><span class="line">IDirect3DIndexBuffer9* ib = <span class="number">0</span>;</span><br><span class="line">Mesh-&gt;<span class="built_in">GetIndexBuffer</span>( &amp;ib );</span><br></pre></td></tr></table></figure>
+<p>假如想锁定这些缓存来读写数据，那么我们能够使用下面的方法。注意这些方法锁定整个顶点&#x2F;索引缓存。<br>HRESULT ID3DXMesh::LockVertexBuffer(DWORD Flags, BYTE** ppData);<br>HRESULT ID3DXMesh::LockIndexBuffer(DWORD Flags, BYTE** ppData);<br>Flags参数描述怎样锁定它。这些Flags参数在第三章中我们介绍过。ppData是函数返回的指向锁定内存的指针的地址。<br>　　当然在你锁定以后一定要记得解锁：<br>HRESULT ID3DXMesh::UnlockVertexBuffer();<br>HRESULT ID3DXMesh::UnlockIndexBuffer();<br>　　下面是另外一些与mesh几何结构有关的ID3DXMesh接口方法：</p>
+<ul>
+<li>DWORD GetFVF() — 返回顶点的格式</li>
+<li>DWORD GetNumVertices() — 返回顶点缓存中的顶点数</li>
+<li>DWORD GetNumBytesPerVertex() — 返回一个顶点所占的字节数</li>
+<li>DWORD GetNumFaces() — 返回在mesh中的面（三角形）数<br>10.2 子集和属性缓存<br>　　一个mesh由一个或数个子集组成。一个子集（subset）是在mesh中的使用相同属性渲染的一组三角形。这里的属性是指材质，纹理和渲染状态。图10.1显示了一座房子mesh可能被分成的几个子集。</li>
+</ul>
+<p>　　<br>图10.1<br>我们通过给每个子集指定一个唯一非负整数来标识子集。这个值可以是存储在一个DWORD中的任意数值。例如，在图10.1中我们用0，1，2和3来标识子集。<br>　　在mesh中的每个三角形都与一个属性ID相关联，表示该三角形属于该子集。例如，图10.1中组成地板的三角形具有属性ID0，它表示这些三角形属于子集0。同样，组成墙的三角形具有属性ID1，它表示这些三角形属于子集1。<br>　　三角形的属性ID存储在mesh的属性缓存中，它是一个DWORD数组。因为每个面对应属性缓存中的一项，所以属性缓存中的项目数等于mesh中的面的个数。属性缓存中的项目和索引缓存中定义的三角形一一对应。即，属性缓存中的第i项和索引缓存中的第i个三角形相对应。三角形i由下面三个索引缓存中的索引项定义：<br>　　A &#x3D; i * 3<br>　　B &#x3D; i * 3 + 1<br>　　C &#x3D; i * 3 + 2<br>图10.2显示了这个对应关系：</p>
+<p>图10.2<br>　　我们可以锁定属性缓存，就象下面的代码片段：<br>DWORD* buffer &#x3D; 0;<br>Mesh-&gt;LockAttributeBuffer(lockingFlags, &amp;buffer);<br>&#x2F;&#x2F; Read or write to attribute buffer…<br>Mesh-&gt;UnlockAttributeBuffer();<br>10.3 绘制<br>　　ID3DXMesh接口提供了DrawSubset（DWORD AttribId）方法来绘制AttribId指示的子集中的各个三角形。例如，要绘制子集0中的所有三角形，我们将这样写：<br>Mesh-&gt;DrawSubset(0);<br>　　为了绘制整个mesh，我们必须绘制mesh的所有子集。这是非常方便的用0，1，2，…，n-1来标识子集，这里的n是子集的总数。且有一个相对应的材质和纹理数组，即子集i与材质和纹理数组的第i项对应。这就使我们能够简单的用循环来渲染mesh：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; numSubsets; i++)</span><br><span class="line">&#123;</span><br><span class="line">    Device-&gt;<span class="built_in">SetMaterial</span>( mtrls[i] );</span><br><span class="line">    Device-&gt;<span class="built_in">SetTexture</span>( <span class="number">0</span>, textures[i] );</span><br><span class="line">    Mesh-&gt;<span class="built_in">DrawSubset</span>(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>10.4 优化<br>　　Mesh的顶点和索引能够被重组以便能更有效的渲染mesh。当我们这样做时，我们说我们优化了一个mesh。我们可以使用下面的方法来进行优化：<br>HRESULT ID3DXMesh::OptimizeInplace(<br>    DWORD Flags,<br>    CONST DWORD* pAdjacencyIn,<br>    DWORD* pAdjacencyOut,<br>    DWORD* pFaceRemap,<br>    LPD3DXBUFFER* ppVertexRemap<br>);</p>
+<ul>
+<li>Flags — 表示执行什么类型的优化方法。它可以是下面的一个或几个的组合：</li>
+<li>D3DXMESHOPT_COMPACT — 从mesh中移除没有用的顶点和索引项。</li>
+<li>D3DXMESHOPT_ATTRSORT — 根据属性给三角形排序并调整属性表，这将使DrawSubset执行更有效（参见10.5节）。</li>
+<li>D3DXMESHOPT_VERTEXCACHE — 增加顶点缓存的命中率。</li>
+<li>D3DXMESHOPT_STRIPREORDER — 重组顶点索引使三角带尽可能的长。</li>
+<li>D3DXMESHOPT_IGNOREVERTS — 只优化索引信息；忽略顶点信息。<br>注意：D3DXMESHOPT_VERTEXCACHE和D3DXMESHOPT_STRIPREORDER不能同时使用。</li>
+<li>pAdjacencyIn — 指向没有优化的mesh的邻接数组。</li>
+<li>pAdjacencyOut — 指向一个DWORD数组，它被用来填充优化好了的mesh邻接信息。该数组必须有ID3DXMesh::GetNumFaces() * 3个元素。如果不需要该信息，可以将其设置为0。</li>
+<li>pFaceRemap —指向一个DWORD数组，它被用来填充面重影射信息。该数组必须不小于ID3DXMesh::GetNumFaces()。当一个mesh被优化时，由索引缓存定义的面可能被移动；也就是说，在pFaceRemap中的第i项表示第i个原始面被移动到的面索引值。如果不需要该信息，可以将其设置为0。</li>
+<li>ppVertexRemap — 指向ID3DXBuffer指针的地址（参见11.1节），它被用来填充顶点重影射信息。这个缓存应该包含ID3DXMesh::GetNumVertices()个顶点。当一个mesh被优化后，顶点可能被移动。顶点重影射信息用来说明原来的顶点被移动到新位置；也就是说，在ppVertexRemap中的第i项表示原来的第i个顶点的新位置。如果不需要该信息，可以将其设置为0。<br>　　例子：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Get the adjacency info of the non-optimized mesh.</span></span><br><span class="line">DWORD adjacencyInfo[Mesh-&gt;<span class="built_in">GetNumFaces</span>() * <span class="number">3</span>];</span><br><span class="line">Mesh-&gt;<span class="built_in">GenerateAdjacency</span>(<span class="number">0.0f</span>, adjacencyInfo);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Array to hold optimized adjacency info.</span></span><br><span class="line">DWORD optimizedAdjacencyInfo[Mesh-&gt;<span class="built_in">GetNumFaces</span>() * <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">Mesh-&gt;<span class="built_in">OptimizeInplace</span>(</span><br><span class="line">    D3DXMESHOPT_ATTRSORT |</span><br><span class="line">    D3DXMESHOPT_COMPACT |</span><br><span class="line">    D3DXMESHOPT_VERTEXCACHE,</span><br><span class="line">    adjacencyInfo,</span><br><span class="line">    optimizedAdjacencyInfo,</span><br><span class="line">    <span class="number">0</span>,</span><br><span class="line">     <span class="number">0</span>);</span><br><span class="line">　　一个更简单的方法是Optimize方法，它输出一个优化的mesh，而不是在原来mesh的基础上进行优化：</span><br><span class="line"><span class="function">HRESULT <span class="title">ID3DXMesh::Optimize</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD Flags,</span></span></span><br><span class="line"><span class="params"><span class="function">    CONST DWORD* pAdjacencyIn,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD* pAdjacencyOut,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD* pFaceRemap,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPD3DXBUFFER* ppVertexRemap,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPD3DXMESH* ppOptMesh <span class="comment">// the optimized mesh to be output</span></span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>;</span><br></pre></td></tr></table></figure>
+10.5 属性表<br>　　当一个mesh被使用D3DXMESHOPT_ATTRSORT参数来优化后，mesh的几何信息将按照属性进行排序，这样各个子集的顶点&#x2F;索引将组成连续的块（如图10.3）。</li>
+</ul>
+<p>图10.3<br>　　除了进行几何信息的排序外，D3DXMESHOPT_ATTRSORT优化项还将创建一个属性表。该表是D3DXATTRIBUTERANGE结构的一个数组。在属性表中的每一项对应mesh的一个子集并指示顶点&#x2F;索引缓存中的一个连续连续内存块，这个子集的几何信息就包含在这个块中。D3DXATTRIBUTERANGE结构的定义如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">_D3DXATTRIBUTERANGE</span> &#123;</span><br><span class="line">    DWORD AttribId;</span><br><span class="line">    DWORD FaceStart;</span><br><span class="line">    DWORD FaceCount;</span><br><span class="line">    DWORD VertexStart;</span><br><span class="line">    DWORD VertexCount;</span><br><span class="line">&#125; D3DXATTRIBUTERANGE;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>AttribId — 子集的ID。</li>
+<li>FaceStart — 该子集的面的起始值，FaceStart*3就是起始三角形在索引缓存中的序号。</li>
+<li>FaceCount — 在子集中的面（三角形）数。</li>
+<li>VertexStart — 该子集的起始顶点在顶点缓存中的序号。</li>
+<li>VertexCount — 在子集中的顶点数。<br>　　我们能够很容易的明白D3DXATTRIBUTERANGE结构的各个成员，如图10.3。在图10.3中mesh的属性表有三项——它们和各个子集一一对应。<br>　　建立了属性表以后，渲染一个子集就很容易了。仅仅查一下属性表就能找出自己的几何信息。注意如果没有属性表，每渲染一个子集就需要对属性缓存进行一次线性搜索来找出子集包含的几何信息。<br>　　可以使用下面的方法来访问mesh的属性表：<br>HRESULT ID3DXMesh::GetAttributeTable(<br>  D3DXATTRIBUTERANGE* pAttribTable,<br>  DWORD* pAttribTableSize<br>);<br>　　这个方法能够做两件事情：它可以返回属性表的属性数，也可以用属性数据来填充一个D3DXATTRIBUTERANGE结构数组。<br>　　要得到属性表的元素个数，可以就将第一个参数设置为0：<br>DWORD numSubsets &#x3D; 0;<br>Mesh-&gt;GetAttributeTable(0, &amp;numSubsets);<br>　　一旦我们知道了属性表的元素个数，我们就能够通过写属性表来填充一个D3DXATTRIBUTERANGE结构数组：<br>D3DXATTRIBUTERANGE table &#x3D; new D3DXATTRIBUTERANGE [numSubsets];<br>Mesh-&gt;GetAttributeTable( table, &amp;numSubsets );<br>　　我们能够使用ID3DXMesh::SetAttributeTable方法来直接设置属性表。下面的代码就是设置一个有12个子集的属性表：<br>D3DXATTRIBUTERANGE attributeTable[12];<br>&#x2F;&#x2F; …fill attributeTable array with data<br>Mesh-&gt;SetAttributeTable( attributeTable, 12);<br>10.6 邻接信息<br>　　对于mesh的某些操作，如优化，有必要了解的是三角形之间的邻接信息。Mesh的邻接数组存储了这些信息。<br>　　邻接数组是一个DWORD数组，其中的每一项对应了mesh中的一个三角形。例如，第i项对应的三角形由以下三个索引值定义：<br>A &#x3D; i ??3<br>B &#x3D; i ??3 + 1<br>C &#x3D; i ??3 + 2<br>注意，使用ULONG_MAX &#x3D; 4294967295表示该边没有邻接三角形。我们也可以用-1来表示，因为-1转换成DWORD就是ULONG_MAX。回想一下，DWORD就是一个unsigned32-bit整数。<br>　　因为每个三角形都有三条边，所以他就有三个邻接三角形（如图10.4）。</li>
+</ul>
+<p>　　<br>　　图10.4<br>　　因此，邻接数组必须有三项（ID3DXBaseMesh::GetNumFaces()<em>3）—— 在mesh中每个三角形都可能有三个邻接三角形。<br>　　很多D3Dxmesh创造函数都能输出邻接信息，但我们也可以使用下面的方法：<br>HRESULT ID3DXMesh::GenerateAdjacency(<br>    FLOAT fEpsilon,<br>    DWORD</em> pAdjacency<br>);</p>
+<ul>
+<li>fEpsilon — 指示当两个点距离有多近时，可以认为是一个点。当两点间的距离小于epsilon时，可认为它们是同一个点。</li>
+<li>pAdjacency — 一个指向填充了邻接信息的DWORD数组指针。<br>　　例子：<br>DWORD adjacencyInfo[Mesh-&gt;GetNumFaces() * 3];<br>Mesh-&gt;GenerateAdjacency(0.001f, adjacencyInfo);<br>10.7 复制<br>　　有时我们需要将一个mesh中的数据拷贝到另一个之中。我们可以使用ID3DXBaseMesh::CloneMeshFVF方法。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">HRESULT <span class="title">ID3DXMesh::CloneMeshFVF</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD Options,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD FVF,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPDIRECT3DDEVICE9 pDevice,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPD3DXMESH* ppCloneMesh</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>;</span><br></pre></td></tr></table></figure></li>
+<li>Options — 用来创建mesh的一个或多个创建标志。要了解所有标志信息请查看sdk文档。现在列出一部分：</li>
+<li>D3DXMESH_32BIT — mesh使用32位索引。</li>
+<li>D3DXMESH_MANAGED — mesh数据将被放在受控的内存中。</li>
+<li>D3DXMESH_WRITEONLY — mesh数据只能执行写操作，不能执行读操作。</li>
+<li>D3DXMESH_DYNAMIC — mesh缓存将是动态的。</li>
+<li>FVF — 创建复制mesh的灵活顶点格式。</li>
+<li>pDevice — 与复制mesh有关的设备。</li>
+<li>ppCloneMesh — 输出复制的mesh。<br>　　注意这个方法允许指定与原mesh不同的options和FVF。例如我们有顶点格式为D3DFVF_XYZ的mesh，现在想复制一个顶点格式为D3DFVF_XYZ|D3DFVF_NORMAL的mesh。我们可以这样写：<br>&#x2F;&#x2F; 假设_mesh和device是有效的<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ID3DXMesh* clone = <span class="number">0</span>;</span><br><span class="line">Mesh-&gt;<span class="built_in">CloneMeshFVF</span>(</span><br><span class="line">    Mesh-&gt;<span class="built_in">GetOptions</span>(), <span class="comment">// 使用与源模型同样的选项</span></span><br><span class="line">    D3DFVF_XYZ | D3DFVF_NORMAL,<span class="comment">// 指定克隆的FVF</span></span><br><span class="line">    Device,</span><br><span class="line">    &amp;clone</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+10.8 创建一个Mesh（D3DXCreateMeshFVF）<br>　　我们可以使用D3DXCreate*函数来创建mesh物体。然而，我们也可以使用  D3DXCreateMeshFVF函数来创建一个空mesh。所谓空mesh是指我们已经指定了顶点数和面数，函数D3DXCreateMeshFVF也分配了适当大小的内存给顶点、顶点索引、属性缓冲区。有了这些缓冲区后，就可以手动填写上下文数据了（需要分别向顶点缓存，索引缓存、属性缓存提供顶点、索引、属性数据）。<br>　　我们使用D3DXCreateMeshFVF函数来创建空mesh：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">HRESULT <span class="title">D3DXCreateMeshFVF</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD NumFaces,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD NumVertices,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD Options,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD FVF,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPDIRECT3DDEVICE9 pDevice,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPD3DXMESH* ppMesh</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>;</span><br></pre></td></tr></table></figure></li>
+<li>NumFaces — mesh将拥有的面数。该值必须大于0。</li>
+<li>NumVertices — mesh将拥有的顶点数。该值必须大于0。</li>
+<li>Options —用来创建mesh的一个或多个创建标志。要了解所有标志信息请查看sdk文档。现在列出一部分：</li>
+<li>D3DXMESH_32BIT — mesh使用32位索引。</li>
+<li>D3DXMESH_MANAGED — mesh数据将被放在受控的内存中。</li>
+<li>D3DXMESH_WRITEONLY — mesh数据只能执行写操作，不能执行读操作。</li>
+<li>D3DXMESH_DYNAMIC — mesh缓存将是动态的。</li>
+<li>FVF — mesh的顶点格式。</li>
+<li>pDevice — 与mesh相关的设备。</li>
+<li>ppMesh — 输出创建好的mesh。<br>　　下一节将给出实例程序，它演示了用这个函数怎样创建一个mesh以及手动填充mesh的数据内容。<br>　　另外，你也可以使用D3DXCreateMesh来创建空mesh。它的原型是：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">HRESULT <span class="title">D3DXCreateMesh</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD NumFaces,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD NumVertices,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD Options,</span></span></span><br><span class="line"><span class="params"><span class="function">    CONST LPD3DVERTEXELEMENT9* pDeclaration,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPDIRECT3DDEVICE9 pDevice,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPD3DXMESH* ppMesh</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>;</span><br></pre></td></tr></table></figure>
+　　这些参数和D3DXCreateMeshFVF的参数是非常相似的，除了第四个。作为替代指定的FVF，我们指定一个D3DVERTEXELEMENT9结构，它描述了顶点格式。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">HRESULT <span class="title">D3DXDeclaratorFromFVF</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD FVF, <span class="comment">// input format</span></span></span></span><br><span class="line"><span class="params"><span class="function">    D3DVERTEXELEMENT9 Declaration[MAX_FVF_DECL_SIZE]<span class="comment">//output format</span></span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>;</span><br></pre></td></tr></table></figure>
+注意：D3DVERTEXELEMENT9将在第17章中讨论。<br>　　这个函数通过输入一个FVF返回一个D3DVERTEXELEMENT9结构的数组。注意MAX_FVF_DECL_SIZE的定义如下：<br>typedef enum {<br>  MAX_FVF_DECL_SIZE &#x3D; 18<br>} MAX_FVF_DECL_SIZE;<br>10.9 实例程序：创建和渲染Mesh<br>这一章的实例程序是渲染一个立方体（如图10.5）</li>
+</ul>
+<p>图10.5<br>它演示了这一章中的大部分功能，包括如下一些操作：</p>
+<ul>
+<li>创建一个空mesh。</li>
+<li>用一个立方体几何信息来填充mesh。</li>
+<li>根据mesh的每个面指定子集。</li>
+<li>产生mesh的邻接信息。</li>
+<li>优化mesh。</li>
+<li>绘制mesh。<br>　　注意，我们忽略一些无关的代码来讨论本例。你能在叫做D3DXCreateMeshFVF的例子中找到全部的代码。<br>　　另外，为了更容易调试和研究mesh的构成，我们执行如下的函数来将内在内容放进文件中：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">dumpVertices</span><span class="params">(std::ofstream&amp; outFile, ID3DXMesh* mesh)</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dumpIndices</span><span class="params">(std::ofstream&amp; outFile, ID3DXMesh* mesh)</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dumpAttributeBuffer</span><span class="params">(std::ofstream&amp; outFile, ID3DXMesh* mesh)</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dumpAdjacencyBuffer</span><span class="params">(std::ofstream&amp; outFile, ID3DXMesh* mesh)</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dumpAttributeTable</span><span class="params">(std::ofstream&amp; outFile, ID3DXMesh* mesh)</span></span>;</span><br></pre></td></tr></table></figure>
+　　这些函数的名字就显示了它们的功能。执行这些函数是非常简单的，我们在这里讨论时忽略它们（可以看程序的原代码）。在这一节我们只展示一个dumpAttributeTable函数。<br>　　我们首先来浏览一下该例子，看看如下的一些全局变量：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ID3DXMesh* Mesh = <span class="number">0</span>;</span><br><span class="line"><span class="type">const</span> DWORD NumSubsets = <span class="number">3</span>;</span><br><span class="line">IDirect3DTexture9* Textures[<span class="number">3</span>] = &#123;<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>&#125;;<span class="comment">// texture for each subset</span></span><br><span class="line">std::ofstream OutFile; <span class="comment">// used to dump mesh data to file</span></span><br></pre></td></tr></table></figure>
+　　这里我们定义了一个mesh对象的指针，我们以后要创建的。我们也定义了mesh拥有的子集数——三。在这个例子中，每个子集都用一个不同的纹理来渲染；纹理数组包含每个子集的纹理，如第i个纹理对应mesh的第i个子集。最后，Outfile变量被用来把mesh的内容输出为一个文本文件。<br>　　这个例子的大部分工作是在setup函数中进行。我们首先创建一个空的mesh：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">Setup</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HRESULT hr = <span class="number">0</span>;</span><br><span class="line">    hr = <span class="built_in">D3DXCreateMeshFVF</span>(</span><br><span class="line">        <span class="number">12</span>,</span><br><span class="line">        <span class="number">24</span>,</span><br><span class="line">        D3DXMESH_MANAGED,</span><br><span class="line">        Vertex::FVF,</span><br><span class="line">        Device,</span><br><span class="line">         &amp;Mesh);</span><br></pre></td></tr></table></figure>
+这里我们分配一个有12个面和24个顶点的mesh，这是描述一个盒子所必须的。<br>　　这样的话，mesh是空的，因此我们需要将组成盒子的顶点和索引分别写入顶点缓存和索引缓存。锁定顶点&#x2F;索引缓存并手动写入数据这是很容易的：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Fill in vertices of a box</span></span><br><span class="line">Vertex* v = <span class="number">0</span>;</span><br><span class="line">Mesh-&gt;<span class="built_in">LockVertexBuffer</span>(<span class="number">0</span>, (<span class="type">void</span>**)&amp;v);</span><br><span class="line"><span class="comment">// fill in the front face vertex data</span></span><br><span class="line">v[<span class="number">0</span>] = <span class="built_in">Vertex</span>(<span class="number">-1.0f</span>, <span class="number">-1.0f</span>, <span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>);</span><br><span class="line">v[<span class="number">1</span>] = <span class="built_in">Vertex</span>(<span class="number">-1.0f</span>, <span class="number">1.0f</span>, <span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">-1.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>);</span><br><span class="line"></span><br><span class="line">v[<span class="number">22</span>] = <span class="built_in">Vertex</span>( <span class="number">1.0f</span>, <span class="number">1.0f</span>, <span class="number">1.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">1.0f</span>);</span><br><span class="line">v[<span class="number">23</span>] = <span class="built_in">Vertex</span>( <span class="number">1.0f</span>, <span class="number">-1.0f</span>, <span class="number">1.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>);</span><br><span class="line">Mesh-&gt;<span class="built_in">UnlockVertexBuffer</span>();</span><br><span class="line"><span class="comment">// Define the triangles of the box</span></span><br><span class="line">WORD* i = <span class="number">0</span>;</span><br><span class="line">Mesh-&gt;<span class="built_in">LockIndexBuffer</span>(<span class="number">0</span>, (<span class="type">void</span>**)&amp;i);</span><br><span class="line"><span class="comment">// fill in the front face index data</span></span><br><span class="line">i[<span class="number">0</span>] = <span class="number">0</span>; i[<span class="number">1</span>] = <span class="number">1</span>; i[<span class="number">2</span>] = <span class="number">2</span>;</span><br><span class="line">i[<span class="number">3</span>] = <span class="number">0</span>; i[<span class="number">4</span>] = <span class="number">2</span>; i[<span class="number">5</span>] = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// fill in the right face index data</span></span><br><span class="line">i[<span class="number">30</span>] = <span class="number">20</span>; i[<span class="number">31</span>] = <span class="number">21</span>; i[<span class="number">32</span>] = <span class="number">22</span>;</span><br><span class="line">i[<span class="number">33</span>] = <span class="number">20</span>; i[<span class="number">34</span>] = <span class="number">22</span>; i[<span class="number">35</span>] = <span class="number">23</span>;</span><br><span class="line">Mesh-&gt;<span class="built_in">UnlockIndexBuffer</span>();</span><br></pre></td></tr></table></figure>
+　　一旦mesh的几何信息被写入，我们必须指定每个三角形在哪个子集中。回想一下属性缓存就是存储的在mesh中每个三角形所属的子集信息。在这个例子中，我们指定索引缓存中的前四个三角形子集为0，接着的四个三角形子集为1，最后四个三角形子集为2。代码如下：<br>DWORD* attributeBuffer &#x3D; 0;<br>Mesh-&gt;LockAttributeBuffer(0, &amp;attributeBuffer);<br>for(int a &#x3D; 0; a &lt; 4; a++) &#x2F;&#x2F; triangles 1-4<br>  attributeBuffer[a] &#x3D; 0; &#x2F;&#x2F; subset 0<br>for(int b &#x3D; 4; b &lt; 8; b++) &#x2F;&#x2F; triangles 5-8<br>  attributeBuffer[b] &#x3D; 1; &#x2F;&#x2F; subset 1<br>for(int c &#x3D; 8; c &lt; 12; c++) &#x2F;&#x2F; triangles 9-12<br>  attributeBuffer[c] &#x3D; 2; &#x2F;&#x2F; subset 2<br>Mesh-&gt;UnlockAttributeBuffer();<br>　　现在我们已经创建了一个包含有效数据的mesh。在这一小部分我们将渲染mesh，不过首先还是先将其优化一下。注意虽然这对于一个盒子mesh来说，优化mesh数据没有真正的效果，但是我们还是用ID3DXMesh接口方法来实践一下。为了优化一个mesh，我们首先需要计算mesh的邻接信息：<br>std::vector<DWORD> adjacencyBuffer(Mesh-&gt;GetNumFaces() * 3);<br>Mesh-&gt;GenerateAdjacency(0.0f, &amp;adjacencyBuffer[0]);<br>　　然后我们就能够优化mesh了：<br>hr &#x3D; Mesh-&gt;OptimizeInplace(<br>  D3DXMESHOPT_ATTRSORT |<br>  D3DXMESHOPT_COMPACT |<br>  D3DXMESHOPT_VERTEXCACHE,<br>  &amp;adjacencyBuffer[0],<br>   0, 0, 0);</li>
+</ul>
+<p>　　设置好了mesh以后，我们就为渲染它做好了准备。不过在setup函数中还有最后一个问题，也就是在前面我们说的将mesh的内在数据内容写入文件的函数。这能够检查mesh的数据，它能帮助我们调试和学习mesh的结构。<br>OutFile.open(“Mesh Dump.txt”);<br>dumpVertices(OutFile, Mesh);<br>dumpIndices(OutFile, Mesh);<br>dumpAttributeTable(OutFile, Mesh);<br>dumpAttributeBuffer(OutFile, Mesh);<br>dumpAdjacencyBuffer(OutFile, Mesh);<br>OutFile.close();<br>…Texturing loading, setting render states, etc., snipped<br>return true;<br>} &#x2F;&#x2F; end Setup()<br>　　例如，dumpAttributeTable函数将属性表的数据写入文件。它的具体实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">dumpAttributeTable</span><span class="params">(std::ofstream&amp; outFile, ID3DXMesh* mesh)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    outFile &lt;&lt; <span class="string">&quot;Attribute Table:&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    outFile &lt;&lt; <span class="string">&quot;----------------&quot;</span> &lt;&lt; std::endl &lt;&lt; std::endl;</span><br><span class="line">    <span class="comment">// number of entries in the attribute table</span></span><br><span class="line">    DWORD numEntries = <span class="number">0</span>;</span><br><span class="line">    mesh-&gt;<span class="built_in">GetAttributeTable</span>(<span class="number">0</span>, &amp;numEntries);</span><br><span class="line">    <span class="function">std::vector&lt;D3DXATTRIBUTERANGE&gt; <span class="title">table</span><span class="params">(numEntries)</span></span>;</span><br><span class="line">    mesh-&gt;<span class="built_in">GetAttributeTable</span>(&amp;table[<span class="number">0</span>], &amp;numEntries);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; numEntries; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        outFile &lt;&lt; <span class="string">&quot;Entry &quot;</span> &lt;&lt; i &lt;&lt; std::endl;</span><br><span class="line">        outFile &lt;&lt; <span class="string">&quot;------&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">        outFile &lt;&lt; <span class="string">&quot;Subset ID: &quot;</span> &lt;&lt; table[i].AttribId &lt;&lt; std::endl;</span><br><span class="line">        outFile &lt;&lt; <span class="string">&quot;Face Start: &quot;</span> &lt;&lt; table[i].FaceStart &lt;&lt; std::endl;</span><br><span class="line">        outFile &lt;&lt; <span class="string">&quot;Face Count: &quot;</span> &lt;&lt; table[i].FaceCount &lt;&lt; std::endl;</span><br><span class="line">        outFile &lt;&lt; <span class="string">&quot;Vertex Start: &quot;</span> &lt;&lt; table[i].VertexStart &lt;&lt; std::endl;</span><br><span class="line">        outFile &lt;&lt; <span class="string">&quot;Vertex Count: &quot;</span> &lt;&lt; table[i].VertexCount &lt;&lt; std::endl;</span><br><span class="line">        outFile &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">    outFile &lt;&lt; std::endl &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面的文本文件来自于通过dumpAttributeTable函数得到的mesh Dump.txt文件。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Attribute Table:</span><br><span class="line">----------------</span><br><span class="line">Entry 0</span><br><span class="line">------------</span><br><span class="line">Subset ID: 0</span><br><span class="line">Face Start: 0</span><br><span class="line">Face Count: 4</span><br><span class="line">Vertex Start: 0</span><br><span class="line">Vertex Count: 8</span><br><span class="line">Entry 1</span><br><span class="line">------------</span><br><span class="line">Subset ID: 1</span><br><span class="line">Face Start: 4</span><br><span class="line">Face Count: 4</span><br><span class="line">Vertex Start: 8</span><br><span class="line">Vertex Count: 8</span><br><span class="line">Entry 2</span><br><span class="line">------------</span><br><span class="line">Subset ID: 2</span><br><span class="line">Face Start: 8</span><br><span class="line">Face Count: 4</span><br><span class="line">Vertex Start: 16</span><br><span class="line">Vertex Count: 8</span><br></pre></td></tr></table></figure>
+<p>我们能够了解到我们为mesh所指定的相匹配的数据——有三个子集且每个子集有4个三角形。建议你去看看本例子Dump.txt的完整信息。该文件在本示例文件目录下。<br>最后，我们使用下面的代码就能够非常容易地渲染mesh了；我们只需要循环每个子集，设置相关联的纹理然后在绘制子集即可。这是非常容易的，因为我们已经为每个子集指定的下标如0，1，2，…，n-1，这里的n就是子集的个数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">Display</span><span class="params">(<span class="type">float</span> timeDelta)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>( Device )</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//...update frame code snipped</span></span><br><span class="line">        Device-&gt;<span class="built_in">Clear</span>(<span class="number">0</span>, <span class="number">0</span>, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,<span class="number">0x00000000</span>, <span class="number">1.0f</span>, <span class="number">0</span>);</span><br><span class="line">        Device-&gt;<span class="built_in">BeginScene</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; NumSubsets; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            Device-&gt;<span class="built_in">SetTexture</span>( <span class="number">0</span>, Textures[i] );</span><br><span class="line">            Mesh-&gt;<span class="built_in">DrawSubset</span>( i );</span><br><span class="line">        &#125;</span><br><span class="line">        Device-&gt;<span class="built_in">EndScene</span>();</span><br><span class="line">        Device-&gt;<span class="built_in">Present</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/Fonts/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/" title="RHI">
+                        <b>#</b> RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/DirectX/" title="DirectX">
+                        <b>#</b> DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/RHI/" title="RHI">
+                        #RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/DirectX/" title="DirectX">
+                        #DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/Building-a-Flexible-Camera-Class/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%A0%E4%BD%95%E4%BF%A1%E6%81%AF"><span class="toc-text">几何信息</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E7%AC%AC%E5%8D%81%E7%AB%A0%20%E7%BD%91%E6%A0%BC%E6%A8%A1%E5%9E%8BI(Meshes%20Part%20I) + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F04%2F11%2FProgramer%2FRHI%2FDirectX%2FMeshes-Part-I%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/04/11/Programer/RHI/DirectX/Meshes-Part-I/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      HLSL 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">HLSL</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/" title="RHI">
+                    <b>#</b> RHI
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/DirectX/" title="DirectX">
+                    <b>#</b> DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/RHI/" title="RHI">
+                    #RHI
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/DirectX/" title="DirectX">
+                    #DirectX
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="着色器常量"><a href="#着色器常量" class="headerlink" title="着色器常量"></a>着色器常量</h1><p><strong>着色器常量</strong>存在内存中的一个或多个缓冲区资源当中。他们可以被组织成两种类型的缓冲区：常量缓冲区（cbuffers）和纹理缓冲区（tbuffers）。</p>
+<h2 id="常量缓冲区（Constant-Buffer）Uniform-Buffer"><a href="#常量缓冲区（Constant-Buffer）Uniform-Buffer" class="headerlink" title="常量缓冲区（Constant Buffer）Uniform Buffer"></a>常量缓冲区（Constant Buffer）Uniform Buffer</h2><p>常量缓冲区允许C++端将数据传递给HLSL中使用，在HLSL中，这些传递过来的数据不可更改，因而是常量。常量缓冲区对这种使用有所优化，表现为低延迟的访问和允许来自CPU的频繁更新，因此他们有额外的大小、布局和访问限制。</p>
+<ol>
+<li>每个着色器阶段最多允许15个常量缓冲区（共16个，系统内部保留1个），并且每个缓冲区最多可以容纳4096个标量（每个vector最多包含4个float类型）。HLSL的cbuffer需要指定register(b#)，#的范围为0到14</li>
+<li>在C++创建常量缓冲区时大小必须为16字节的倍数，因为HLSL的常量缓冲区本身及对它的读写操作需要严格按照16字节对齐。</li>
+<li>对常量缓冲区的成员是packoffset修饰符可以指定起始向量和分量位置。</li>
+<li>在更新常量缓冲区时由于数据是提交完整的字节流数据到GPU，会导致HLSL中的cbuffer的所有成员都被更新。为了减少不必要的更新，可以根据这些参数的更新频率划分出多个常量缓冲区以节省带宽资源。</li>
+<li>一个着色器在使用了多个常量缓冲区的情况下，这些常量缓冲区相互间不能出现同名成员</li>
+<li>单个常量缓冲区可以同时绑定到不同的可编程着色器阶段，因为这些缓冲区是只读的，不会导致内存访问冲突。</li>
+</ol>
+<p>一个包含常量缓冲区的*hlsl文件同时被多个着色器文件引用，只是说明这些着色器使用相同的常量缓冲区布局，如果该缓冲区需要在多个着色器阶段使用，你还需要在C++同时将相同的常量缓冲区绑定到各个着色器阶段上</p>
+<p>当我们在HLSL中声明常量缓冲区时，还需要再HLSL的生命中使用关键字<code>register</code>手动指定对应的寄存器索引，然后编译器会为对应的着色器阶段自动将其映射到15个常量缓冲寄存器的其中一个位置。这些寄存器的名字为<code>b0</code>到<code>b14</code>：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** C++ */</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">VS_CONSTANT_BUFFER</span></span><br><span class="line">&#123;</span><br><span class="line">   D3DXMATERIX mWorldViewProj;</span><br><span class="line"></span><br><span class="line">   D3DXVECTOR4 vSomeVectorThatMayBeNeededByASpecificShader;</span><br><span class="line">   <span class="type">float</span> fSomeFloatThatMayBeNeededByASpecificShader;</span><br><span class="line"></span><br><span class="line">   <span class="type">float</span> fTime;</span><br><span class="line"></span><br><span class="line">   <span class="type">float</span> fSomeFloatThatMayBeNeededByASpecificShader2;</span><br><span class="line">   <span class="type">float</span> fSomeFloatThatMayBeNeededBYASpecificShader3;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/***HLSL***/</span></span><br><span class="line">cbuffer cb0</span><br><span class="line">&#123;</span><br><span class="line">   row_major float4x4 mWorldViewProj : <span class="built_in">packoffset</span>(c0);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="编写HLSL着色器"><a href="#编写HLSL着色器" class="headerlink" title="编写HLSL着色器"></a>编写HLSL着色器</h1><p>我们可以在程序源文件中用字符串直接编写HLSL着色器代码，然而更方便、更模块化的方法是把它与程序代码分离出来。因此，我们在记事本中编写着色器并保存成一般的ASCII文本文件，然后可以用D3DXCompileShaderFromFile函数(section 16.2.2)来编译它们。<br>作为介绍，下面是用HLSL编写的一个简单的顶点着色器，用记事本生成并保存成文本文件“Transform.txt”。全部工程都在标题为Transform的目录下，顶点着色器用组合视图和投影矩阵转换顶点，并设置顶点漫射光为蓝色。</p>
+<p>   注意：这是一个顶点着色器的例子，不必关心顶点着色器做了什么，这是下一章包含的内容，现在的目标是熟悉HLSL编程的语法和格式。</p>
+<p>&#x2F;&#x2F; Desc: 顶点着色器用组合视图和投影矩阵转换顶点，并设置顶点漫射光为蓝色.</p>
+<p>&#x2F;&#x2F;全局变量<br>&#x2F;&#x2F;用来保存视图和投影的组合矩阵，在程序中初始化变量<br>matrix ViewProjMatrix;</p>
+<p>&#x2F;&#x2F; 初始化颜色变量（蓝色）<br>vector Blue &#x3D; {0.0f, 0.0f, 1.0f, 1.0f};</p>
+<p>&#x2F;&#x2F; 结构<br>&#x2F;&#x2F; Input结构用来描述输入到着色器的顶点，这个Input顶点只包含一个位置成员<br>struct VS_INPUT<br>{<br>     vector position  : POSITION;<br>};</p>
+<p>&#x2F;&#x2F;Output结构用来描述从着色器输出的顶点，这个Output顶点包含位置和颜色成员<br>struct VS_OUTPUT<br>{<br>     vector position : POSITION;<br>     vector diffuse  : COLOR;<br>};</p>
+<p>&#x2F;&#x2F;主入口点，这个main函数接收一个Input顶点的拷贝作为参数，返回一个Output顶点的拷贝<br>VS_OUTPUT Main(VS_INPUT input)<br>{<br>     &#x2F;&#x2F; 将output结构所有成员初始化<br>     VS_OUTPUT output &#x3D; (VS_OUTPUT)0;<br>     &#x2F;&#x2F; 将位置变换到投影空间<br>     output.position  &#x3D; mul(input.position, ViewProjMatrix);<br>     &#x2F;&#x2F; 设置顶点颜色<br>     output.diffuse &#x3D; Blue;<br>     &#x2F;&#x2F;Output the projected and colored vertex.<br>     return output;<br>}</p>
+<p>16.1.1 全局变量<br>首先是2个全局变量：<br>matrix ViewProjMatrix;<br>vector Blue &#x3D; {0.0f, 0.0f, 1.0f, 1.0f};<br>   第1个变量ViewProjMatrix是矩阵类型，它是一个在HLSL 内创建的4×4的矩阵类型。这个变量保存视图与投影的组合矩阵，它描述两者的变换。使用这种方法我们只要做一个向量和矩阵的乘法（而不是二个）。注意，在着色器源代码的任何地方都没有初始化这个变量，因为它是我们在应用程序的源代码里设置的，而不是在着色器中。从应用程序向着色器程序通讯是常用的操作，例子在16.2.1节。<br>   第二个变量Blue是built-in（内建）类型的4D向量，我们简单的将它初始化成蓝色，它是个RGBA的颜色向量。</p>
+<p>16.1.2 输入和输出结构<br>   在全局变量定义之后，定义2个特殊的结构，我们调用输入和输出结构。对于顶点着色器而言，这些结构定义了顶点的数据，分别是：<br>struct VS_INPUT<br>{<br>     vector position : POSITION;<br>};</p>
+<p>struct VS_OUTPUT<br>{<br>     vector position : POSITION;<br>     vector diffuse  : COLOR;<br>};<br>注意：给像素着色器的结构定义输入和输出像素数据。</p>
+<p>   在例子中，INPUT 顶点着色器只包含位置成员（POSITION），OUTPUT顶点着色器包含位置和颜色成员（POSITION and COLOR）。<br>   特殊的冒号是一种语义，用于是声明变量。这与vertex结构中的自由顶点格式（FVF）相似。例如，在VS_INPUT中有成员：vector position : POSITION;<br>   “: COLOR”是说顶点的漫射光是用VS_OUTPUT结构的COLOR成员来说明的。在下一章中对于顶点和像素着色器中向量的标识符用法，我们将会有更多的讨论。<br>   注意：从底层来说，着色器变量的语义和语法同硬件寄存器是相关联的。即，input变量与input寄存器关联，output变量与output寄存器关联。例如，VS_INPUT中的position成员与顶点input的position寄存器相关联。同样，diffuse与顶点的output 的color寄存器关联。</p>
+<p>16.1.3 函数的入口点<br>   在C++程序中，每个HLSL程序有一个入口点。在我们的着色器例子中，我们调用入口点函数main。然而名字不是强制的。入口点函数名可以是任何有效的函数名，入口点函数必须有一个input结构参数，它通过input顶点进入着色器。入口点函数必须返回一个output结构实例，在着色器中使用output操作顶点。<br>VS_OUTPUT Main(VS_INPUT input)<br>{</p>
+<p>   注意：实际上，使用input、output结构不是强制的。例如，有时你将会看到使用类似下面的语法，特别是在像素着色器中：<br>float4 Main(in float2 base : TEXCOORD0,<br>            in float2 spot : TEXCOORD1,<br>            in float2 text : TEXCOORD2) : COLOR<br>{<br>…<br>}</p>
+<p>   例子中，输入到着色器中的参数是3个纹理坐标。着色器输出（返回）一个颜色，COLOR语句在函数的声明以后。这种定义是类似于：<br>struct INPUT<br>{<br>     float2 base : TEXCOORD0;<br>     float2 spot : TEXCOORD1;<br>     float2 text : TEXCOORD2;<br>};</p>
+<p>struct OUTPUT<br>{<br>     float4 c : COLOR;<br>};</p>
+<p>OUTPUT Main(INPUT input)<br>{<br>…<br>}</p>
+<p>   输入点函数负责根据给定的input顶点计算output顶点。例子中的着色器简单的变换input顶点到视图空间和投影空间，设置顶点颜色为蓝色，并返回结果顶点。首先我们定义VS_OUTPUT的实例并初始化所有成员为0。<br>VS_OUTPUT output &#x3D; (VS_OUTPUT)0; &#x2F;&#x2F; zero out all members<br>   然后着色器变换input顶点位置用ViewProjMatrix变量，使用mul 函数。它是一个built-in（内建）函数，实现向量与矩阵相乘，或矩阵与矩阵相乘。我们保存结果变换的向量（在output实例的position成员中）。<br>&#x2F;&#x2F; 变换后为投影空间的位置<br>output.position &#x3D; mul(input.position, ViewProjMatrix);<br>   然后设置output的成员diffuse的颜色为蓝色：<br>&#x2F;&#x2F; 设置顶点颜色<br>output.diffuse &#x3D; Blue;<br>   最后返回结果向量：<br>return output;<br>}<br>16.2 编译HLSL 着色器<br>16.2.1 常量表<br>   每个着色器有一个常量表，用来保存它的变量。D3DX库通过ID3DXConstantTable接口，提供给应用程序访问着色器的常量表。通过这个接口我们能够在应用程序中设置着色器源代码中的变量。<br>   我们现在描述一个被节选了的ID3DXConstantTable接口的方法列表的实现，全部的列表请查阅Direct3D文档。<br>16.2.1.1 取得常量句柄<br>   为了在应用程序中设置着色器中的一个特定变量，需要有一种方法去引用它，我们能够在应用程序中用D3DXHANDLE引用一个在着色器中的变量，下面的方法返回一个着色器中的变量的D3DXHANDLE，使用时，需要传递一个变量的名字作为参数：<br>D3DXHANDLE ID3DXConstantTable::GetConstantByName(<br>     D3DXHANDLE hConstant, &#x2F;&#x2F; scope of constant<br>     LPCSTR pName          &#x2F;&#x2F; name of constant<br>);</p>
+<ul>
+<li>Hconstant——我们要取得的父结构中变量句柄的D3DXHANDLE标识。例如，如果我们想获得一个特定数据结构中单一数据成员的句柄，我们可以传递结构实例的句柄。如果我们获得一个顶级变量的句柄，给这个参数设为0。</li>
+<li>PName——我们想获得的句柄的着色器代码中的变量的名字。</li>
+</ul>
+<p>例如，如果在着色器中变量的名字为ViewProjMatrix，并且这是顶级变量，我们这么写：<br>&#x2F;&#x2F; 取得着色器中ViewProjMatrix变量的句柄<br>D3DXHANDLE h0;<br>h0 &#x3D; ConstTable-&gt;GetConstantByName(0, “ViewProjMatrix”);</p>
+<p>16.2.1.2 设置常量<br>   一旦应用程序有了一个D3DXHANDLE，要引用着色器代码中的具体变量，我们可以在应用程序中使用ID3DXConstantTable::SetXXX方法设置变量。如果我们想设置一个向量数组类型的变量，方法名是SetVectorArray。<br>   ID3DXConstantTable::SetXXX的一般语法是：<br>HRESULT ID3DXConstantTable::SetXXX(<br>     LPDIRECT3DDEVICE9 pDevice,<br>     D3DXHANDLE hConstant,<br>     XXX value<br>);</p>
+<ul>
+<li><p>PDevice：常量表所关联的设备的指针。</p>
+</li>
+<li><p>HConstant：我们正在设置的变量句柄的引用。</p>
+</li>
+<li><p>Value：我们要把变量设置成的值，XXX是我们设置的要替换的变量类型名，对于有些类型（bool, int, float），传递变量值的COPY，另外一些类型（vectors, matrices, structures），传递值的指针。</p>
+<p> 下面列表描述了我们能用ID3DXConstantTable接口设置的类型列表。这里假定我们有一个有效的设备，和一个有效句柄。</p>
+</li>
+</ul>
+<p>SetBool—Used to set a Boolean value. Sample call:<br>bool b &#x3D; true;<br>ConstTable-&gt;SetBool(Device, handle, b);</p>
+<p>SetBoolArray—Used to set a Boolean array. Sample call:<br>bool b[3] &#x3D; {true, false, true};<br>ConstTable-&gt;SetBoolArray(Device, handle, b, 3);</p>
+<p>SetFloat—Used to set a float. Sample call:<br>float f &#x3D; 3.14f;<br>ConstTable-&gt;SetFloat(Device, handle, f);</p>
+<p>SetFloatArray—Used to set a float array. Sample call:<br>float f[2] &#x3D; {1.0f, 2.0f};<br>ConstTable-&gt;SetFloatArray(Device, handle, f, 2);</p>
+<p>SetInt—Used to set an integer. Sample call:<br>int x &#x3D; 4;<br>ConstTable-&gt;SetInt(Device, handle, x);</p>
+<p>SetIntArray—Used to set an integer array. Sample call:<br>int x[4] &#x3D; {1, 2, 3, 4};<br>ConstTable-&gt;SetIntArray(Device, handle, x, 4);</p>
+<p>SetMatrix—Used to set a 4 × 4 matrix. Sample call:<br>D3DXMATRIX M(…);<br>ConstTable-&gt;SetMatrix(Device, handle, &amp;M);</p>
+<p>SetMatrixArray—Used to set a 4 × 4 matrix array. Sample call:<br>D3DXMATRIX M[4];<br>&#x2F;&#x2F; …Initialize matrices<br>ConstTable-&gt;SetMatrixArray(Device, handle, M, 4);</p>
+<p>SetMatrixPointerArray—Used to set an array of 4 × 4 matrix pointers. Sample call:<br>D3DXMATRIX* M[4];<br>&#x2F;&#x2F; …Allocate and initialize matrix pointers<br>ConstTable-&gt;SetMatrixPointerArray(Device, handle, M, 4);</p>
+<p>SetMatrixTranspose—Used to set a transposed 4 × 4 matrix. Sample call:<br>D3DXMATRIX M(…);<br>D3DXMatrixTranspose(&amp;M, &amp;M);<br>ConstTable-&gt;SetMatrixTranspose(Device, handle, &amp;M);</p>
+<p>SetMatrixTransposeArray—Used to set an array of 4 × 4 transposed matrices. Sample call:<br>D3DXMATRIX M[4];<br>&#x2F;&#x2F; …Initialize matrices and transpose them.<br>ConstTable-&gt;SetMatrixTransposeArray(Device, handle, M, 4);</p>
+<p>SetMatrixTransposePointerArray—Used to set an array of pointers to 4 × 4 transposed matrices. Sample call:<br>D3DXMATRIX* M[4];<br>&#x2F;&#x2F; …Allocate,initialize matrix pointers and transpose them.<br>ConstTable-&gt;SetMatrixTransposePointerArray(Device, handle, M, 4);</p>
+<p>SetVector—Used to set a variable of type D3DXVECTOR4. Sample call:<br>D3DXVECTOR4 v(1.0f, 2.0f, 3.0f, 4.0f);<br>ConstTable-&gt;SetVector(Device, handle, &amp;v);</p>
+<p>SetVectorArray—Used to set a variable that is a vector array. Sample call:<br>D3DXVECTOR4 v[3];<br>&#x2F;&#x2F; …Initialize vectors<br>ConstTable-&gt;SetVectorArray(Device, handle, v, 3);</p>
+<p>SetValue—Used to set an arbitrarily sized type, such as a structure. In the sample call, we use SetValue to set a D3DXMATRIX:<br>D3DXMATRIX M(…);<br>ConstTable-&gt;SetValue(Device, handle, (void*)&amp;M, sizeof(M));</p>
+<p>16.2.1.3 设置常量默认值<br>   下一个方法就是设置常量的默认值，这些默认值在声明时初始化。这个方法应该在应用程序建立（setup）期间被一次性调用（called once）。<br>   HRESULT ID3DXConstantTable::SetDefaults(<br>        LPDIRECT3DDEVICE9 pDevice<br>   );<br>   pDevice——关联到常量表的设备的指针。</p>
+<p>16.2.2 编译HLSL着色器<br>   我们可以编译一个着色器——用我们已保存的着色器的文本文件——使用下列函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">HRESULT <span class="title">D3DXCompileShaderFromFile</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">     LPCSTR               pSrcFile,</span></span></span><br><span class="line"><span class="params"><span class="function">     CONST D3DXMACRO*     pDefines,</span></span></span><br><span class="line"><span class="params"><span class="function">     LPD3DXINCLUDE        pInclude,</span></span></span><br><span class="line"><span class="params"><span class="function">     LPCSTR               pFunctionName,</span></span></span><br><span class="line"><span class="params"><span class="function">     LPCSTR               pTarget,</span></span></span><br><span class="line"><span class="params"><span class="function">     DWORD                Flags,</span></span></span><br><span class="line"><span class="params"><span class="function">     LPD3DXBUFFER*        ppShader,</span></span></span><br><span class="line"><span class="params"><span class="function">     LPD3DXBUFFER*        ppErrorMsgs,</span></span></span><br><span class="line"><span class="params"><span class="function">     LPD3DXCONSTANTTABLE* ppConstantTable</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>pSrcFile——要编译的包含着色器源代码的文本文件的文件名</p>
+</li>
+<li><p>pDefines——参数可选，本书中指定为空。</p>
+</li>
+<li><p>pInclude——ID3DXInclude接口指针。这个接口被设计成由应用程序实现，所以我们可以重载默认include的行为。通常，默认行为就可以了，而且我们可以通过将其指定为空忽略此参数。</p>
+</li>
+<li><p>pFunctionName——指定入口点函数名的字符串。例如，如果着色器的入口点函数叫做Main，我们可以给此参数传递“Main”。</p>
+</li>
+<li><p>pTarget——指定要编译成的HLSL着色器源文件的版本的字符串。有效的顶点着色器版本是：vs_1_1, vs_2_0, vs_2_sw。有效的像素着色器版本是2.0，我们可以给此参数传递vs_2_0。</p>
+<p> 备注：有编译不同版本着色器的能力，是HLSL与汇编语言比的主要优势。用HLSL我们只需为需要的目标简单的重新编译，便可快速移植着色器到不同的版本。使用汇编，我们可能需要手动移植代码。</p>
+</li>
+<li><p>Flags——可选的编译标记，指定为0标识没有标记。有效的选项是：</p>
+</li>
+<li><p>D3DXSHADER_DEBUG——通知编译器写入调试信息</p>
+</li>
+<li><p>D3DXSHADER_SKIPVALIDATION——通知编译器不要做任何代码检查。此项仅用于你已知着色器能够工作时</p>
+</li>
+<li><p>D3DXSHADER_SKIPOPTIMIZATION——通知编译器不要执行任何代码优化。实践中，这个选项应该仅用于调试，因为这种情况下你不希望编译器以任何方式修改代码。</p>
+</li>
+<li><p>ppShader——返回已编译的着色器代码的ID3DXBuffer指针。这个已编译过的着色器代码将作为另一个实际创建顶点&#x2F;像素着色器函数的参数</p>
+</li>
+<li><p>ppErrorMsgs——返回包含错误码和错误消息字符串的ID3DXBuffer指针</p>
+</li>
+<li><p>ppConstantTable——返回包含此着色器常量表数据的ID3DXConstantTable指针</p>
+<p> 这里是一个调用D3DXCompileShaderFromFile的例子：<br> &#x2F;&#x2F; Compile shader</p>
+<p> ID3DXConstantTable* TransformConstantTable &#x3D; 0;<br> ID3DXBuffer* shader      &#x3D; 0;<br> ID3DXBuffer* errorBuffer &#x3D; 0;</p>
+<p> hr &#x3D; D3DXCompileShaderFromFile(<br>  “transform.txt”,      &#x2F;&#x2F; shader filename<br>  0,<br>  0,<br>  “Main”,               &#x2F;&#x2F; entry point function name<br>  “vs 2 0”,             &#x2F;&#x2F; shader version to compile to<br>  D3DXSHADER_DEBUG,     &#x2F;&#x2F; debug compile<br>  &amp;shader,<br>  &amp;errorBuffer,<br>  &amp;TransformConstantTable);<br> &#x2F;&#x2F; output any error messages<br> if( errorBuffer )<br> {<br>  ::MessageBox(0, (char*)errorBuffer-&gt;GetBufferPointer(), 0, 0);<br>  d3d::Release&lt;ID3DXBuffer*&gt;(errorBuffer);<br> }</p>
+<p> if (FAILED (hr))<br> {<br>  ::MessageBox(0, “D3DXCreateEffectFromFile() - FAILED”, 0, 0);<br>  return false;<br> }</p>
+</li>
+</ul>
+<p>16.3 变量类型<br>   注意：除了下列各小节中描述的类型外，HLSL还有一些内建的对象类型（如：纹理对象）。但是，由于这些对象类型主要用于效果框架，我们将对其延迟到第19章讨论。</p>
+<p>16.3.1 数值类型<br>HLSL支持下列数值类型（scalar type）：</p>
+<ul>
+<li>bool—True or false value. Note that HLSL provides the true and false keywords.</li>
+<li>int—32-bit signed integer</li>
+<li>half—16-bit floating-point number</li>
+<li>float—32-bit floating-point number</li>
+<li>double—64-bit floating-point number<br> 注意：一些平台不支持int, half, and double类型，这时我们使用 float类型模拟。</li>
+</ul>
+<p>16.3.2 向量类型<br>HLSL有下列内建的向量类型（vector type）：</p>
+<ul>
+<li><p>vector——各分量为float类型的4D向量</p>
+</li>
+<li><p>vector&lt;T, n&gt;——一个n维向量，其每个分量都为T类型。n维必须在1到4之间。这里是一个2D double向量的例子：<br>vector&lt;double, 2&gt; vec2;</p>
+<p> 我们可以使用数组下标的语法访问向量的一个分量。例如，要设置向量vec的第i个分量，我们可以写成：</p>
+</li>
+</ul>
+<p>vec[i] &#x3D; 2.0f;</p>
+<p>   此外，我们可以像访问结构的成员一样访问向量vec的一个分量，使用已定义的分量名x，y，z，w，r，g，b和a。<br>vec.x &#x3D; vec.r &#x3D; 1.0f;<br>vec.y &#x3D; vec.g &#x3D; 2.0f;<br>vec.z &#x3D; vec.b &#x3D; 3.0f;</p>
+<p>vec.w &#x3D; vec.a &#x3D; 4.0f;</p>
+<p>   名称为r，g，b和a的分量分别对应x，y，z和w的分量。当使用向量来表示颜色时，RGBA符号是更适合的，因为它加强了向量所表示的颜色。</p>
+<p>   作为选择，我们可以使用其它一些预定义类型，分别用来代表2D，3D和4D向量的类型：<br>float2 vec2;<br>float3 vec3;<br>float4 vec4;</p>
+<p>   考虑向量u &#x3D; (ux, uy, uz, uw)，假设我们要拷贝u的所有分量到一个像v &#x3D; (ux, uy, uy, uw)这样的向量v。最直接的方法可能是逐个从u往v拷贝每个分量。但不管怎样，HLSL提供了一种特殊的语法做这些无序的拷贝，它叫做“鸡尾酒”（swizzles）：<br>vector u &#x3D; {l.0f, 2.0f, 3.0f, 4.0f};<br>vector v &#x3D; {0.0f, 0.0f, 5.0f, 6.0f};<br>v &#x3D; u.xyyw; &#x2F;&#x2F; v &#x3D; {1.0f, 2.0f, 2.0f, 4.0f}</p>
+<p>拷贝数组时，我们不必拷贝每个分量。例如，我们可以仅拷贝x和y分量，代码段举例如下：<br>vector u &#x3D; {1.0f, 2.0f, 3.0f, 4.0f};<br>vector v &#x3D; {0.0f, 0.0f, 5.0f, 6.0f};<br>v.xy &#x3D; u; &#x2F;&#x2F; v &#x3D; {l.0f, 2.0f, 5.0f, 6.0f}</p>
+<p>16.3.3 矩阵类型<br>HLSL有下列内建矩阵类型：</p>
+<ul>
+<li>matrix——一个4×4矩阵，其各项类型为float</li>
+<li>matrix&lt;T, m, n&gt;——一个m×n矩阵，其每个成员为类型T。矩阵维数m和n必须在1至4之间。</li>
+</ul>
+<p>这里是一个2×2整型矩阵的例子：<br>matrix&lt;int, 2, 2&gt; m2x2;</p>
+<p>作为选择，我们可以定义一个m×n矩阵，其m和n在1至4之间，使用下列语法：<br>floatmxn matmxn;<br>实例：<br>float2x2 mat2x2;<br>float3x3 mat3x3;<br>float4x4 mat4x4;<br>float2x4 mat2x4;<br>注意：类型不必是float类型——我们可以使用其它类型。举例来说，我们可以用整型，写成这样：<br>int2x2 i2x2;<br>int2x2 i3x3;<br>int2x2 i2x4;</p>
+<p>我们可以用二维数组的下标语法访问矩阵中的项。例如，要设置矩阵M的第i，j个项，我们可以写成：<br>M[i] [j] &#x3D; value;</p>
+<p>此外，我们可以像访问结构的成员那样访问矩阵M的项。下列条目已定义：<br>以1为基数的：<br>M._11 &#x3D; M._12 &#x3D; M._13 &#x3D; M._14 &#x3D; 0.0f;<br>M._21 &#x3D; M._22 &#x3D; M._23 &#x3D; M._24 &#x3D; 0.0f;<br>M._31 &#x3D; M._32 &#x3D; M._33 &#x3D; M._34 &#x3D; 0.0f;<br>M._41 &#x3D; M._42 &#x3D; M._43 &#x3D; M._44 &#x3D; 0.0f;</p>
+<p>以0为基数的：<br>M._m00 &#x3D; M._m01 &#x3D; M._m02 &#x3D; M._m03 &#x3D; 0.0f;<br>M._m10 &#x3D; M._m11 &#x3D; M._m12 &#x3D; M._m13 &#x3D; 0.0f;<br>M._m20 &#x3D; M._m21 &#x3D; M._m22 &#x3D; M._m23 &#x3D; 0.0f;<br>M._m30 &#x3D; M._m31 &#x3D; M._m32 &#x3D; M._m33 &#x3D; 0.0f;</p>
+<p>有时，我们想要访问矩阵中一个特定的行。我们可以用一维数组的下标语法来做。例如，要引用矩阵M中第i行的向量，我们可以写：<br>vector ithRow &#x3D; M[i]; &#x2F;&#x2F; get the ith row vector in M</p>
+<p>注意：可以使用两种语法在HLSL中初始化变量：<br>vector u &#x3D; {0.6f, 0.3f, 1.0f, 1.0f};<br>vector v &#x3D; {1.0f, 5.0f, 0.2f, 1.0f};</p>
+<p>也可以，等价的，使用构造风格的语法：<br>vector u &#x3D; vector(0.6f, 0.3f, 1.0f, 1.0f);<br>vector v &#x3D; vector(1.0f, 5.0f, 0.2f, 1.0f);</p>
+<p>其它一些例子:<br>float2x2 f2x2 &#x3D; float2x2(1.0f, 2.0f, 3.0f, 4.0f);<br>int2x2 m &#x3D; {1, 2, 3, 4};<br>int n &#x3D; int(5);<br>int a &#x3D; {5};<br>float3 x &#x3D; float3(0, 0, 0);</p>
+<p>16.3.4 数组<br>我们可以用类似C++的语法声明特定类型的一个数组。例如：<br>float  M[4][4];<br>half   p[4];<br>vector v[12];</p>
+<p>16.3.5 结构<br>结构的定义和在C++里一样。但是，HLSL里的结构不能有成员函数。这是一个HLSL里的结构的例子：<br>struct MyStruct<br>{<br>     matrix T;<br>     vector n;<br>     float  f;<br>     int    x;<br>     bool   b;<br>};<br>MyStruct s; &#x2F;&#x2F; instantiate<br>s.f &#x3D; 5.0f; &#x2F;&#x2F; member access</p>
+<p>16.3.6 typedef关键字<br>   HLSL的typedef关键字功能和C++里的完全一样。例如，我们可以给类型vector&lt;float, 3&gt;用下面的语法命名：<br>typedef vector&lt;float, 3&gt; point;<br>然后，不用写成：<br>vector&lt;float, 3&gt; myPoint;<br>……我们只需这样写：<br>point myPoint;</p>
+<p>这里是另外两个例子，它展示了如何对常量和数组类型使用typedef关键字：<br>typedef const float CFLOAT;<br>typedef float point2[2];</p>
+<p>1.3.7 变量前缀<br>下列关键字可以做变量声明的前缀：</p>
+<ul>
+<li><p>static——如果带static关键字前缀，那它是全局变量。就表示它不是暴露于着色器之外的。换句话说，它是着色器局部的。如果一个局部变量以static关键字为前缀，它就和C++中static局部变量有相同的行为。也就是说，该变量在函数首次执行时被一次性初始化，然后在所有函数调用中维持其值。如果变量没有被初始化，它就自动初始化为0。static int x &#x3D; 5;</p>
+</li>
+<li><p>uniform——如果变量以uniform关键字为前缀，就意味着此变量在着色器外面被初始化，比如被C++应用程序初始化，然后再输入进着色器。</p>
+</li>
+<li><p>extern——如果变量以extern关键字为前缀，就意味着该变量可在着色器外被访问，比如被C++应用程序。仅全局变量可以以extern关键字为前缀。不是static的全局变量默认就是extern。</p>
+</li>
+<li><p>shared——如果变量以shared关键字为前缀，就提示效果框架（参见19章）：变量将在多个效果间被共享。仅全局变量可以以shared为前缀。</p>
+</li>
+<li><p>volatile——如果变量以volatile关键字为前缀，就提示效果框架（参见19章）：变量将被时常修改。仅全局变量可以以volatile为前缀。</p>
+</li>
+<li><p>const——HLSL中的const关键字和C++里的意思一样。也就是说，如果变量以const为前缀，那此变量就是常量，并且不能被改变。const float pi &#x3D; 3.14f;<br>16.4关键字、语句和强制转换<br>16.4.1 关键字<br>为便于参考，这里给出一个HLSL定义的关键字列表：<br>asm        bool        compile       const          decl         do<br>double      else        extern         false          float         for<br>half        if           in            inline         inout         int<br>matrix      out         pass           pixelshader    return        sampler<br>shared      static       string          struct         technique     texture<br>true        typedef     uniform        vector         vertexshader   void<br>volatile     while</p>
+</li>
+</ul>
+<p>下面的集合显示了被保留并且未使用但是将来可能成为关键字的标识符：<br>auto            break        case           catch         char          class<br>const_cast       continue      default         delete        dynamic cast   enum<br>explicit         friend         goto           long         mutable       namespace<br>new            operator       private         protected     public         register<br>reinterpret_cast   short         signed          sizeof        static_cast     switch<br>template         this          throw          try           typename     union<br>unsigned         using        virtual </p>
+<p>16.4.2 基本程序流程<br>HLSL支持很多与C++相似的选择、重复、和一般程序流程语句。这些语句的语法和C++极为相似。<br>return语句：<br>return (expression);<br>if和if…else语句：<br>if( condition )<br>{<br>     statement(s);<br>}</p>
+<p>if( condition )<br>{<br>     statement(s);<br>}<br>else<br>{<br>     statement(s);<br>}</p>
+<p>for语句：<br>for(initial; condition; increment)<br>{<br>     statement(s);<br>}</p>
+<p>while语句：<br>while( condition )<br>{<br>     statement(s);<br>}</p>
+<p>do…while语句：<br>do<br>{<br>     statement(s);<br>}while( condition );</p>
+<p>16.4.3 强制转换（casting）<br>   HLSL支持一种非常自由的强制转换设计。HLSL中强制转换的语法和C程序语言中的一样。例如要把float转换到matrix，我们写：<br>float f &#x3D; 5.0f;<br>matrix m &#x3D; (matrix)f;</p>
+<p>   从本书的例子中，你就能推断出这个转换语法的意思。但是，如果想要得到更详细的受支持的转换的信息，那么在DirectX SDK里，Content（内容）标签页下，看DirectX Graphics\Reference\Shader Reference\High Level Shading Language\Type就可以了。</p>
+<h2 id="16-5-操作符-HLSL支持很多类似C-的操作符。除了很少一些底下注释的例外以外，他们的用法和C-里的完全一样。下表列出了HLSL的操作符："><a href="#16-5-操作符-HLSL支持很多类似C-的操作符。除了很少一些底下注释的例外以外，他们的用法和C-里的完全一样。下表列出了HLSL的操作符：" class="headerlink" title="16.5 操作符   HLSL支持很多类似C++的操作符。除了很少一些底下注释的例外以外，他们的用法和C++里的完全一样。下表列出了HLSL的操作符：[]?&gt;&lt;&lt; &#x3D;&gt; &#x3D;! &#x3D;&#x3D; &#x3D;!&amp;&amp;??:++ &#x3D;"></a>16.5 操作符<br>   HLSL支持很多类似C++的操作符。除了很少一些底下注释的例外以外，他们的用法和C++里的完全一样。下表列出了HLSL的操作符：<br>[]<br>?<br>&gt;<br>&lt;<br>&lt; &#x3D;<br>&gt; &#x3D;<br>! &#x3D;<br>&#x3D; &#x3D;<br>!<br>&amp;&amp;<br>?<br>?:<br>+<br>+ &#x3D;</h2><ul>
+<li>&#x3D;</li>
+</ul>
+<ul>
+<li>*&#x3D;<br>&#x2F;<br>&#x2F;&#x3D;<br>%<br>%&#x3D;</li>
+</ul>
+<ul>
+<li><ul>
+<li><h1 id="–"><a href="#–" class="headerlink" title="–"></a>–</h1><p>()<br>‘</p>
+<p>虽然操作符的行为和C++很相似，但是也有一些差异。第一，求模%运算符对整型和浮点型都起作用。为了使用求模操作符，左边的值和右边的值都必须有相同的正负号（如：左边和右边必须都是正或者负）。</p>
+<p>第二，要注意HLSL操作是以每个分量为基础的。这是由于实际上向量和矩阵是语言内建的，并且这些类型是由若干个分量组成。通过将这些操作施加在分量级别之上，我们可以像使用数值类型一样完成诸如向量&#x2F;矩阵的加法，减法和相等测试这些操作（），见下例：</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>注意：操作符的行为正如对数值操作一样（也就是说，按一般C++的方式）。<br>vector u &#x3D; {1.0f, 0.0f, -3.0f, 1.0f};<br>vector v &#x3D; {-4.0f, 2.0f, 1.0f, 0.0f};<br>&#x2F;&#x2F; adds corresponding components<br>vector sum &#x3D; u + v; &#x2F;&#x2F; sum &#x3D; (-3.0f, 2.0f, -2.0f, 1.0f)</p>
+<p>增量一个向量就是增量其每个分量：<br>&#x2F;&#x2F; before increment: sum &#x3D; (-3.0f, 2.0f, -2.0f, 1.0f)<br>sum++; &#x2F;&#x2F; after increment: sum &#x3D; (-2.0f, 3.0f, -1.0f, 2.0f)</p>
+<p>向量相乘也是按分量的：<br>vector u &#x3D; {1.0f, 0.0f, -3.0f, 1.0f};<br>vector v &#x3D; {-4.0f, 2.0f, 1.0f, 0.0f};</p>
+<p>&#x2F;&#x2F; multiply corresponding components<br>vector sum &#x3D; u * v; &#x2F;&#x2F; product &#x3D; (-4.0f, 0.0f, -3.0f, 0.0f)</p>
+<p>比较操作也是按分量进行的，并且返回一个每个分量都为bool类型的向量或者数组。作为结果的“bool”向量包含了每个分量比较的结果。例如：<br>vector u &#x3D; { 1.0f, 0.0f, -3.0f, 1.0f};<br>vector v &#x3D; {-4.0f, 0.0f, 1.0f, 1.0f};<br>vector b &#x3D; (u &#x3D;&#x3D; v); &#x2F;&#x2F; b &#x3D; (false, true, false, true)</p>
+<p>最后，我们以讨论二元操作的变量提升（promotion）作为结束：</p>
+<ul>
+<li>对于二元操作，如果（操作符的）左边和右边维数不同，则维数较少的一边提升（强制转换）到具有和维数较大的一边相同的维数。例如，如果x的类型为float，而y的类型为float3，在表达式(x + y)中变量x被提升到float3，并且计算出来的表达式的值的类型也为float3。提升使用已定义的转换完成。注意，若转换未定义则提升也是未定义的。例如，我们不能转换float2到float3，因为没有定义这个转换。</li>
+<li>对于二元操作，如果左边和右边类型不同，那么较低精度的类型（the lower type resolution）被提升（强制转换）到具有同类型的较高精度的类型（the higher type resolution）。例如，如果x类型为int，y类型为half，则表达式(x + y)中的变量x被提升到half，并且计算出来的表达式的值的类型也为half。</li>
+</ul>
+<p>16.6 用户定义函数<br>HLSL中的函数有下例属性：</p>
+<ul>
+<li>函数使用类似C++的语法</li>
+<li>参数总是按值传递</li>
+<li>递归不被支持</li>
+<li>函数总是inline的</li>
+</ul>
+<p>此外，函数还加上了一些用于其上的额外的关键字。例如，考虑一个写在HLSL中的下面这个函数：<br>bool foo(in const bool b,   &#x2F;&#x2F; input bool<br>         out int r1,        &#x2F;&#x2F; output int<br>         inout float r2)    &#x2F;&#x2F; input&#x2F;output float<br>{<br>     if( b )               &#x2F;&#x2F; test input value<br>     {<br>          r1 &#x3D; 5;          &#x2F;&#x2F; output a value through r1<br>     }<br>     else<br>     {<br>          r1 &#x3D; 1;          &#x2F;&#x2F; output a value through r1<br>     }</p>
+<pre><code> // since r2 is inout we can use it as an input
+ // value and also output a value through it
+ r2 = r2 * r2 * r2;
+ 
+ return true;
+</code></pre>
+<p>}</p>
+<p>函数几乎和C++函数是一样的，除了in，out和inout关键字：</p>
+<ul>
+<li>in——指定型参（argument，特指传递给实参的变量）应该在函数开始前被拷贝给实参。传入参数不必强制指定，因为实参默认是in的。例如，下面两段是等价的：<br>float square(in float x)<br>{<br>   return x * x;<br>}</li>
+</ul>
+<p>也可以不强制指定in：<br>float square(float x)<br>{<br>     return x * x;<br>}</p>
+<ul>
+<li><p>out——指定实参应该在函数返回时被拷贝给型参。这样可以通过参数返回值。out关键字是必须的，因为HLSL不允许传递一个引用或一个指针。我们要注意：如果实参标记为out，在函数开始前，型参就不拷贝给实参。换句话说，out实参仅可以被用于输出数据——它不能用于输入。<br>void square(in float x, out float y)<br>{<br>   y &#x3D; x * x;<br>}<br>这里，我们输入了要被乘方的数x，并且通过参数y返回了x的乘方。</p>
+</li>
+<li><p>inout——这是一个指示实参既用于输入又用于输出的快捷方法。如果要使用实参同时用作输入和输出，就指定inout。<br>void square(inout float x)<br>{<br>   x &#x3D; x * x;<br>}<br>这里，我们输入了要被乘方的数x，同时又通过x返回了的x的乘方。</p>
+</li>
+</ul>
+<p>16.7内建函数<br>   HLSL有一个丰富的内建函数的集合，它们对3D图形来说非常有用。下表是一个删减了的列表。在下两章中，我们会使用这些函数中的一些进行实践。而现在，熟悉它们就够了。</p>
+<p>注意：要得到更多的参考，可以参看DirectX文档中内建HLSL函数的完整列表，在Content页下，然后到DirectX Graphics\Reference\Shader Reference\High Level Shader Language\Intrinsic Functions。</p>
+<p>译者注：以下表格中，&#x2F;&#x2F;<variable>&#x2F;&#x2F;表示变量variable的模（例如向量的绝对值）。<br>函数<br>描述<br>abs(x)<br>返回 |x|<br>ceil(x)<br>返回 ≥ x 的最小整数<br>clamp(x, a, b)<br>clamp(x, a, b)<br>clamp(x, a, b)<br>clamp(x, a, b)<br>cross(u, v)<br>返回 u × v（叉积）<br>degrees(x)<br>转换 x 从弧度到角度<br>determinant(M)<br>返回矩阵M的行列式det(M)<br>distance(u, v)<br>返回u点和v点之间的距离||v - u||<br>dot(u, v)<br>返回 u · v（点积）<br>floor(x)<br>返回 ≤ x 的最大整数<br>length(v)<br>返回 ||v||<br>lerp(u, v, t)<br>在u和v之间线性插值，根据参数 t ? [0, 1 ]<br>log(x)<br>返回 ln(x)<br>log10(x)<br>返回 log10(x)<br>log2(x)<br>返回 log2(x)<br>max(x, y)<br>如果x ≥ y，则返回 x；否则返回 y<br>min(x, y)<br>如果 x ≤ y，返回x；否则返回 y<br>mul(M, N)<br>返回矩阵乘积 MN. 注意：矩阵乘积必须是已定义的. 如果M是一个向量，它被作为一个行向量，则向量－矩阵（vector-matrix）乘法是已定义的。类似的,如果N 是一个向量，他被作为一个列向量，则矩阵－向量（matrix-vector）乘法是已定义的<br>normalize(v)<br>返回 v&#x2F;∥v∥<br>pow(b, n)<br>返回 bn<br>radians(x)<br>转换 x 从 角度 到 弧度<br>reflect(v, n)<br>给定向量v和表面法线n，计算其反射向量<br>refract(v,n, eta)<br>给定向量v、表面法线n和两种材质的两个索引的比率eta，计算其折射向量. 翻看一下物理书中Snell的规则或者在互联网上搜索一下关于refraction（反射）的信息<br>rsqrt(x)<br>返回x的平方根的倒数<br>saturate(x)<br>返回clamp(x, 0.0, 1.0)<br>sin(x)<br>返回x的正弦,其中x单位为弧度<br>返回x的正弦,其中x单位为弧度<br>返回x的正弦和余弦，其中x单位为弧度<br>sqrt(x)<br>返回x的平方根<br>tan(x)<br>返回x的正切,其中 x 单位为弧度<br>transpose(M)<br>返回MT的转置</p>
+<p>   大多数函数已经重载以使其可以对所有内建类型有意义。例如，abs对所有数值类型有意义，所以它为所有这些数值类型进行了重载。又例如，叉积的叉乘仅对3D向量有意义，所以它对所有类型的3D向量（比如：int，float，double的3D向量）进行了重载。另一方面，线性插值——lerp，对于数值、2D、3D和4D向量有意义，因此重载了这些类型。</p>
+<p>注意：如果你传递进去一个非数值类型到一个（要求）数值类型的函数，也就是一个仅能对数值类型进行操作的函数（比如：cos(x)），那么这个函数会对传进去的每个分量进行操作。例如，你写：<br>floats v &#x3D; float3 (0.0f, 0.0f, 0.0f);<br>v &#x3D; cos(v);</p>
+<p>那么函数将会对每个分量进行操作：v&#x3D;(cos(x),cos(y),cos(z))。<br>下例展示了这些固有的函数可能被调用的方式：<br>float x &#x3D; sin(1.0f);       &#x2F;&#x2F; sine of 1.0f radian.<br>float y &#x3D; sqrt(4.0f);      &#x2F;&#x2F; square root of 4.</p>
+<p>vector u &#x3D; {1.0f, 2.0f, -3.0f, 0.0f};<br>vector v &#x3D; {3.0f, -1.0f, 0.0f, 2.0f};<br>float  s &#x3D; dot(u, v);      &#x2F;&#x2F; compute dot product of u and v.</p>
+<p>float3 i &#x3D; {1.0f, 0.0f, 0.0f};<br>float3 j &#x3D; {0.0f, 1.0f, 0.0f};<br>float3 k &#x3D; cross(i, j);    &#x2F;&#x2F; compute cross product of i and j.</p>
+<p>matrix&lt;float, 2, 2&gt; M &#x3D; {1.0f, 2.0f, 3.0f, 4.0f};<br>matrix&lt;float, 2, 2&gt; T &#x3D; transpose(M); &#x2F;&#x2F; compute transpose</p>
+<p>16.8 摘要</p>
+<ul>
+<li>我们在ASCII文本文件中编写了HLSL程序，并且在我们的应用程序中使用D3DXCompileShaderFromFile函数编译了它们。</li>
+<li>ID3DXConstantTable接口允许我们在应用程序中对着色器程序中的变量进行设置。这种通信是必须的，因为被着色器使用的变量可以按一帧一帧的变化而改变。例如，如果应用程序中的视图矩阵发生了改变，我们需要使用新的视图矩阵更新着色器的视图矩阵变量。我们可以用ID3DXConstantTable完成这种更新。</li>
+<li>对于每个着色器，我们必须定义一个输入和一个输出结构，这些结构分别描述了着色器中输入和输出数据的格式。</li>
+<li>每个着色器有一个入口点函数，它有一个输入结构参数用于传递数据进着色器。此外，每个着色器返回一个输出结构的实例，它用于从着色器输出数据。</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/HLSL/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/" title="RHI">
+                        <b>#</b> RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/DirectX/" title="DirectX">
+                        <b>#</b> DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/RHI/" title="RHI">
+                        #RHI
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/DirectX/" title="DirectX">
+                        #DirectX
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/04/11/Programer/RHI/DirectX/Introduction-to-Vertex-Shaders/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%9D%80%E8%89%B2%E5%99%A8%E5%B8%B8%E9%87%8F"><span class="toc-text">着色器常量</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E9%87%8F%E7%BC%93%E5%86%B2%E5%8C%BA%EF%BC%88Constant-Buffer%EF%BC%89Uniform-Buffer"><span class="toc-text">常量缓冲区（Constant Buffer）Uniform Buffer</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E5%86%99HLSL%E7%9D%80%E8%89%B2%E5%99%A8"><span class="toc-text">编写HLSL着色器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#16-5-%E6%93%8D%E4%BD%9C%E7%AC%A6-HLSL%E6%94%AF%E6%8C%81%E5%BE%88%E5%A4%9A%E7%B1%BB%E4%BC%BCC-%E7%9A%84%E6%93%8D%E4%BD%9C%E7%AC%A6%E3%80%82%E9%99%A4%E4%BA%86%E5%BE%88%E5%B0%91%E4%B8%80%E4%BA%9B%E5%BA%95%E4%B8%8B%E6%B3%A8%E9%87%8A%E7%9A%84%E4%BE%8B%E5%A4%96%E4%BB%A5%E5%A4%96%EF%BC%8C%E4%BB%96%E4%BB%AC%E7%9A%84%E7%94%A8%E6%B3%95%E5%92%8CC-%E9%87%8C%E7%9A%84%E5%AE%8C%E5%85%A8%E4%B8%80%E6%A0%B7%E3%80%82%E4%B8%8B%E8%A1%A8%E5%88%97%E5%87%BA%E4%BA%86HLSL%E7%9A%84%E6%93%8D%E4%BD%9C%E7%AC%A6%EF%BC%9A"><span class="toc-text">16.5 操作符   HLSL支持很多类似C++的操作符。除了很少一些底下注释的例外以外，他们的用法和C++里的完全一样。下表列出了HLSL的操作符：[]?&gt;&lt;&lt; &#x3D;&gt; &#x3D;! &#x3D;&#x3D; &#x3D;!&amp;&amp;??:++ &#x3D;</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E2%80%93"><span class="toc-text">–</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + HLSL + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F04%2F11%2FProgramer%2FRHI%2FDirectX%2FIntorduction-to-the-High-Level-Shading-Language%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/04/11/Programer/RHI/DirectX/Intorduction-to-the-High-Level-Shading-Language/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

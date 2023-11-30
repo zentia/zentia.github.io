@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      Flutter渲染机制：Widget、Element和RenderObject 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Flutter渲染机制：Widget、Element和RenderObject</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:03
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Flutter/" title="Flutter">
+                    <b>#</b> Flutter
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/Flutter/" title="Flutter">
+                    #Flutter
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>在上一篇文章中我们分析了Framework层的启动流程，其中讲到了在<code>runApp</code>方法中，调用到了<code>attachRootWidget</code>方法：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> attachRootWidget(Widget rootWidget) &#123;</span><br><span class="line">  <span class="keyword">final</span> <span class="built_in">bool</span> isBootstrapFrame = renderViewElement == <span class="keyword">null</span>;</span><br><span class="line">  _readyToProduceFrames = <span class="keyword">true</span>;</span><br><span class="line">  _renderViewElement = RenderObjectToWidgetAdapter&lt;RenderBox&gt;(</span><br><span class="line">    container: renderView,</span><br><span class="line">    debugShortDescription: <span class="string">&#x27;[root]&#x27;</span>,</span><br><span class="line">    child: rootWidget,</span><br><span class="line">  ).attachToRenderTree(buildOwner!, renderViewElement <span class="keyword">as</span> RenderObjectToWidgetElement&lt;RenderBox&gt;?);</span><br><span class="line">  <span class="keyword">if</span> (isBootstrapFrame) &#123;</span><br><span class="line">    SchedulerBinding.instance.ensureVisualUpdate();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法获取一个<code>Widget</code>并将其辅导<code>renderViewElement</code>上，在必要的时候创建这个<code>renderViewElement</code>。其中涉及到了<code>Widget</code>、<code>Element</code>和<code>Render</code>，都属于Flutter渲染机制。本文将对Flutter渲染机制进行分析。</p>
+<p>首先看一下<code>RenderObjectToWidgetAdapter</code>这个类和其构造方法：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RenderObjectToWidgetAdapter</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">RenderObject</span>&gt; <span class="keyword">extends</span> <span class="title">RenderObjectWidget</span> </span>&#123;</span><br><span class="line">  <span class="comment">/// <span class="language-markdown">Creates a bridge from a [RenderObject] to an [Element] tree.</span></span></span><br><span class="line">  <span class="comment">///</span></span><br><span class="line">  <span class="comment">/// <span class="language-markdown">Used by [WidgetsBinding] to attach the root widget to the [RenderView].</span></span></span><br><span class="line">  RenderObjectToWidgetAdapter(&#123;</span><br><span class="line">    <span class="keyword">this</span>.child,</span><br><span class="line">    <span class="keyword">required</span> <span class="keyword">this</span>.container,</span><br><span class="line">    <span class="keyword">this</span>.debugShortDescription,</span><br><span class="line">  &#125;) : <span class="keyword">super</span>(key: GlobalObjectKey(container));</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个类的作用是桥接<code>RenderObject</code>和<code>Element</code>树，其中<code>container</code>就是<code>RenderObject</code>，而<code>Element</code>树则插入在其中。类型参数<code>T</code>是一种<code>RenderObject</code>，是<code>container</code>期望孩子的类型。在看一下<code>RenderObjectToWidgetAdapter</code>类的<code>attachToRenderTree</code>方法：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">RenderObjectToWidgetElement&lt;T&gt; attachToRenderTree(BuildOwner owner, [ RenderObjectToWidgetElement&lt;T&gt;? element ]) &#123;</span><br><span class="line">  <span class="keyword">if</span> (element == <span class="keyword">null</span>) &#123;</span><br><span class="line">    owner.lockState(() &#123;</span><br><span class="line">      element = createElement();</span><br><span class="line">      <span class="keyword">assert</span>(element != <span class="keyword">null</span>);</span><br><span class="line">      element!.assignOwner(owner);</span><br><span class="line">    &#125;);</span><br><span class="line">    owner.buildScope(element!, () &#123;</span><br><span class="line">      element!.mount(<span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    element._newWidget = <span class="keyword">this</span>;</span><br><span class="line">    element.markNeedsBuild();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> element!;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法填充了<code>widget</code>，并且将结果<code>RenderObject</code>设置为<code>container</code>的孩子。如果<code>element</code>为空，那么则会创建一个新的<code>element</code>，否则的话，给定的<code>element</code>会调度一个更新，使得与当前<code>widget</code>关联。</p>
+<p>从上面可以看出，对于Flutter框架来说，主要关注的就是<code>Widget</code>、<code>Element</code>、<code>RenderObject</code>。下面我们来分析一下这三者的特点和关系。</p>
+<h1 id="Widget"><a href="#Widget" class="headerlink" title="Widget"></a>Widget</h1><p>在上文的例子中，<code>rootWidget</code>是用户开发的Flutter应用的根节点，是一个<code>Widget</code>类。在<code>Widget</code>类的注释宏，官方给出的定位是用于描述<code>Element</code>的配置。<code>Widget</code>是Flutter框架的中心类结构。一个<code>Widget</code>是UI中一个固定不变的部分。可以被填充成<code>Element</code>，而<code>Element</code>又管理底层的渲染树。<code>Widget</code>本身是没有可变状态的，所有的成员变量都是<code>final</code>的。入股偶需要和一个<code>Widget</code>关联的可变状态，可以使用<code>StatefulWidget</code>，这个类会创建一个<code>StatefulWidget</code>，而它又会填充成<code>element</code>和合并到树中的时候创建一个<code>State</code>对象。一个给定的<code>Widget</code>可以被包含到树中0次或更多次。特别是<code>Widget</code>可以被多次放置到树中。每次<code>Widget</code>被放置到树中，都会填充成一个<code>Element</code>。看一下<code>Widget</code>基类的方法生命：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@immutable</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Widget</span> <span class="keyword">extends</span> <span class="title">DiagnosticableTree</span> </span>&#123;</span><br><span class="line">  <span class="comment">/// <span class="language-markdown">Initializes [key] for subclasses.</span></span></span><br><span class="line">  <span class="keyword">const</span> Widget(&#123; <span class="keyword">this</span>.key &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">Element</span> createElement();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> <span class="built_in">bool</span> canUpdate(Widget oldWidget, Widget newWidget) &#123;</span><br><span class="line">    <span class="keyword">return</span> oldWidget.runtimeType == newWidget.runtimeType</span><br><span class="line">        &amp;&amp; oldWidget.key == newWidget.key;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> <span class="built_in">int</span> _debugConcreteSubtype(Widget widget) &#123;</span><br><span class="line">    <span class="keyword">return</span> widget <span class="keyword">is</span> StatefulWidget ? <span class="number">1</span> :</span><br><span class="line">           widget <span class="keyword">is</span> StatelessWidget ? <span class="number">2</span> :</span><br><span class="line">           <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分别介绍一下这几个方法和成员变量。首先是<code>key</code>这个成员变量，它用于控制在树中一个<code>Widget</code>如何替换另一个。主要有以下几种方式：更新<code>Element</code>、替换<code>Element</code>以及换位置。<br>通常情况下，如果一个<code>Widget</code>是另一个的唯一孩子，那么不需要明确的<code>key</code>。<br><code>createElement</code>方法用于将配置填充为一个具体的实例。<code>canUpdate</code>方法用于判断<code>newWidget</code>能否用于更新当前以<code>oldWidget</code>为配置的<code>Element</code>。<code>_debugConcreteSubtype</code>方法返回一个编码值，用于指示<code>Widget</code>的实际子类型，1表示<code>StatefulWidget</code>，2表示<code>StatelessWidget</code>。<code>StatefulWidget</code>和<code>StatelessWidget</code>都是<code>Widget</code>的抽象子类，下面看一下这两个子类的具体情况。</p>
+<h1 id="StatelessWidget"><a href="#StatelessWidget" class="headerlink" title="StatelessWidget"></a>StatelessWidget</h1><p><code>StatelessWidget</code>用于不需要可变状态的情况。一个无状态<code>Widget</code>通过建立一些列其他更完整描述UI的<code>Widget</code>的方式，来描述部分UI。这个构建过程是一个递归的过程，直到这个描述已经被完全实现。当部分UI以来的只有其自身配置信息和<code>BuildContext</code>是，<code>StatelessWidget</code>就非常有用了。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">StatelessWidget</span> <span class="keyword">extends</span> <span class="title">Widget</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="meta">@protected</span></span><br><span class="line">  Widget build(BuildContext context);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>build</code>方法会在当前<code>Widget</code>被插入到给定<code>BuildContext</code>内的树中时被调用。框架会用这个方法返回的<code>Widget</code>更新当前<code>Widget</code>的子树，可能是更新现有子树，也可能是移除子树。然后根据返回的<code>Widget</code>填充一个新的子树。通常情况下，这个方法的实现，会返回一个新建的<code>Widget</code>系列，构建信息是根据从当前<code>Widget</code>构造函数和给定<code>BuildContext</code>中传递进来的信息来配置。</p>
+<h1 id="StatefulWidget"><a href="#StatefulWidget" class="headerlink" title="StatefulWidget"></a>StatefulWidget</h1><p><code>StatefulWidget</code>拥有一个可变的状态。这个状态<code>State</code>在<code>Widget</code>建立时可以同步地被读取，而在<code>Widget</code>的整个生命周期中可能会改变。<code>StatefulWidget</code>可用于可动态变化的用户描述。比如，依赖于一些系统状态或者时钟驱动的情况。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">StatefulWidget</span> <span class="keyword">extends</span> <span class="title">Widget</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="meta">@protected</span></span><br><span class="line">    State createState();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>StatefulWidget</code>实例本身是不可变的，但是其动态信息会保存一切辅助类对象里，比如通过<code>createState</code>方法创建的<code>State</code>对象，或者是<code>State</code>订阅的对象。框架会填充一个<code>StatefulWidget</code>时调用<code>createState</code>方法。这意味着，当一个<code>StatefulWidget</code>在树中不同位置插入时，可能会有多个<code>State</code>对象与这个<code>StatefulWidget</code>关联。类似的，如果一个<code>StatefulWidget</code>先从树中移除，之后又重新插入树中，那么框架会再次调用<code>createState</code>去创建一个新的State对象，便于简化<code>State</code>对象的生命周期。</p>
+<p>可以看出，对于<code>StatefulWidget</code>来说，<code>State</code>类时关键辅助类。下面再看一下<code>State</code>类的详情。</p>
+<h1 id="State"><a href="#State" class="headerlink" title="State"></a>State</h1><p><code>State</code>类用于标识<code>StatefulWidget</code>的逻辑和内部状态。<code>State</code>对象有以下的生命周期</p>
+<ul>
+<li>框架通过调用<code>StatefulWidget.createState</code>方法创建<code>State</code>对象；</li>
+<li>新创建的<code>State</code>对象与一个<code>BuildContext</code>关联。这个关联是不变的，也就是说，<code>State</code>对象不回改变它的<code>BuildContext</code>。不过，<code>BuildContext</code>本身是可以在沿着子树移动。这种情况下，<code>State</code>对象可以认为是<code>mounted</code>。</li>
+<li>框架调用<code>initState</code>方法。<code>State</code>的子类都需要重载<code>initState</code>方法，来实现一次性初始化。这个初始化依赖于<code>BuildContext</code>或<code>Widget</code>，即分别对应于<code>context</code>和<code>widget</code>属性。</li>
+<li>框架调用<code>didChangeDependencies</code>方法，<code>State</code>的子类需要重写该方法，来实现包括<code>InderitedWidget</code>在内的初始化。如果调用了<code>BuildContext.dependOnInheritedWidgetOfExactType</code>方法，那么在后续<code>InheritedWidget</code>改变或当前<code>Widget</code>在树中移动时，<code>didChangeDependencies</code>方法再次被调用。</li>
+<li>此时<code>State</code>对象已经完全初始化，框架可能会调用任意次数的<code>build</code>方法来获取一个子树UI的描述。<code>State</code>对象会自发的通过调用<code>setState</code>方法来请求重建其子树。</li>
+<li>在这期间，一个父<code>Widget</code>可能会重建和请求当前位置显式一个新的<code>Widget</code>。当这些发生时，框架会将<code>widget</code>属性更新为新的<code>widget</code>，并且调用<code>didUpdateWidget</code>方法，将之前的<code>widget</code>作为一个参数传入。<code>State</code>对象应该重载<code>didUpdateWidget</code>方法来应对其关联的<code>Widget</code>的变化。框架也会在<code>didUpdateWidget</code>方法之后调用<code>build</code>方法，这意味着在<code>didUpdateWidget</code>方法内调用<code>setState</code>方法是多余的。</li>
+<li>在开发过程中，如果发生了重载，则会调用<code>reassemble</code>方法。这会使得在<code>iniState</code>方法中准备好的数据重新初始化。</li>
+<li>如果包含<code>State</code>的子树从树中移除，框架会调用<code>deactivate</code>方法。这会使得在<code>iniState</code>方法1</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/01/26/Programer/Engine/Unreal/C++/dynamic_cast/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:03
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Flutter/" title="Flutter">
+                        <b>#</b> Flutter
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/Flutter/" title="Flutter">
+                        #Flutter
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/08/17/Programer/Engine/Flutter/Engine/FlutterEngine/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Widget"><span class="toc-text">Widget</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#StatelessWidget"><span class="toc-text">StatelessWidget</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#StatefulWidget"><span class="toc-text">StatefulWidget</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#State"><span class="toc-text">State</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Flutter%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6%EF%BC%9AWidget%E3%80%81Element%E5%92%8CRenderObject + '&url=' + http%3A%2F%2Fzentia.github.io%2F2022%2F08%2F17%2FProgramer%2FEngine%2FFlutter%2FFlutter_Widget_Element_RenderObject%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2022/08/17/Programer/Engine/Flutter/Flutter_Widget_Element_RenderObject/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="keywords" content="Unreal, Unity, Math, Renderer, GPU, Blender">
+  
+  <meta name="author" content="李彦峰" />
+  <meta name="description" content="李彦峰" />
+  
+  
+  <title>
+    
+      抗锯齿技术 
+      
+      
+      |
+    
+     李彦峰
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">抗锯齿技术</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-11-30 23:45:04
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/RHI/" title="RHI">
+                    <b>#</b> RHI
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="标签"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" title="计算机图形学">
+                    #计算机图形学
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E5%90%8E%E5%A4%84%E7%90%86/" title="后处理">
+                    #后处理
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>SMAAD技术的全称为”Enhanced Subpixel Morphological Antialiasing”，与FXAA一样同为后期处理抗锯齿技术，可以提供基于过滤算法的通用图像抗锯齿解决方案。SMAA技术使用了更好的几何形体和对角形体检测处理机制，通过图形边缘局部特征对比来识别图像的锯齿特征，并通过重建子像素的方式实现抗锯齿功能，效果与传统的4x MSAA相近而且可以根据游戏的需要进行定制。</p>
+<img src="/2019/05/29/Programer/RHI/smaa/1.gif" class="">
+
+<p>通过”以模糊换取精确“的手段来消除显示屏上的锯齿，而这个过程我们称其为采样(Sampling)，也就是针对某一点的像素，通过让它带有周围像素的特性，因此在足够的分辨率下，这一点便不再顽固般地锐利，也达到消除锯齿的目的。</p>
+<h1 id="超级采样抗锯齿-Super-Sampling-Anti-Aliasing-SSAA"><a href="#超级采样抗锯齿-Super-Sampling-Anti-Aliasing-SSAA" class="headerlink" title="超级采样抗锯齿(Super Sampling Anti-Aliasing,SSAA)"></a>超级采样抗锯齿(Super Sampling Anti-Aliasing,SSAA)</h1><p>通过名字就知道，SSAA最大的特点来自采样过程，以常见的SSAA<em>4为例，在面对一张最后需要以1920</em>1080像素渲染的画面时，SSAA会首先渲染一张尺寸位3840*2160像素的缓存，再在这种长宽都乘以2的画面上进行采样，采样的精度和效果当然是最理想的，但是你也可以想象，这种只为追求理想情况的手段对于硬件资源的消耗非常大，成本也非常高。更重要的是，即使在原理上SSAA拥有最理想的精度，但是最现实的情况万般变化中的游戏世界，SSAA并不能永远保证采样效果是最讨好眼睛的，换句话说性价比会随着新技术的现身而面临越来越大的挑战，这其中就包括SSAA本身的一种灵活的变体：多重采样抗锯齿技术(Multi-Sampling Anti-Aliasing,MSAA)。</p>
+<p>MSAA的原理和SSAA一致，都是通过将图形拉伸至更高倍率之下的缓存之后再精细的图像上进行采样，但是前者真正聪明的地方在于，再开始狮子大开口之前MSAA存在一个判断的过程，换句话说MSAA仅仅针对画面中边缘部分进行放大处理，这么一来对于硬件的负担着实大大减轻，正式因为如此，MSAA早已是最流行的抗锯齿方案之一，对于任何一款现代游戏来说，不支持MSAA几乎是不可想象的。</p>
+<img src="/2019/05/29/Programer/RHI/smaa/1.png" class="">
+<img src="/2019/05/29/Programer/RHI/smaa/2.png" class="">
+
+<p>无论是SSAA还是MSAA，他们运作都集中在非常考前的位置，比如光栅化阶段，因此对于硬件开销有较大的呼声，但是从2012年的GeFore 600系列以来，NVIDIA就已经开始推广一款全新的抗锯齿方案，它们最大的特点就是出发点非常靠前，作为一款后处理抗锯齿它的硬件需求非常低，甚至达到几乎难以察觉的地步，同时因为较低的实现难度，它已经成为MSAA之后最流行的抗锯齿方案之一，就是快速近似抗锯齿(Fast approximate anti-aliasing)。</p>
+<h1 id="SSAA画质与性能变化"><a href="#SSAA画质与性能变化" class="headerlink" title="SSAA画质与性能变化"></a>SSAA画质与性能变化</h1><p>我们再来对比开启SSAA之后的情况，首先这里可以看到SSAA的一个特点，虽然抗锯齿技术逃不过采样的过程，但是这里可以看到开启SSAA之后，原本充满锯齿的地方首先还是一如既往的清晰、锐利，衣物和衣物的过度非常干净，完全没有后处理抗锯齿那种模糊的干净，而是锯齿真的缩小既视感，不过开启SSAA的代价确实高，2倍环境下Benchmark成绩已经滑落至49.08帧。</p>
+<img src="/2019/05/29/Programer/RHI/smaa/3.png" class="">
+
+<h1 id="OpenGL中的MSAA"><a href="#OpenGL中的MSAA" class="headerlink" title="OpenGL中的MSAA"></a>OpenGL中的MSAA</h1><p>如果我们想要在OpenGL中使用MSAA，我们必须要使用一个能在每个像素中存储大于1个颜色值的颜色缓冲（因为多重采样需要我们为每个采样点都储存一个颜色）。所以，我们需要一个新的缓冲类型，来存储特定数量的的多重采样样本，它叫做多重采样缓冲（Multisample Buffer）。</p>
+<p>大多数的窗口系统都应该提供一个多重采样缓冲，用以代替默认的颜色缓冲。GLFW同样给了我们这个功能，我们所要做的只是提示(Hint)GLFW，我们希望使用一个包含N个样本的多重采样缓冲。这可以在创建窗口之前调用glfwWindowHint来完成。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glfwWindowHint(GLFW_SAMPLES, <span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<p>现在再调用glfwCreateWindow创建渲染窗口时，每个屏幕坐标就会调用一个包含4个子采样点的颜色缓冲了。GLFW会自动创建一个每像素4个子采样点的深度和样本缓冲。这也意味着所有缓冲的大小都增长了4倍。</p>
+<p>现在我们已经向GLFW请求了多重采样缓冲，我们还需要调用glEnable并启用GL_MULTISAMPLE，来启用多重采样。再大多数OpenGL的驱动上，多重采样都是默认启用的，所以这个调用可能会有点多余，但显示地调用可能会有点多余，但显示地调用一下会更保险一点。这样子不论是什么OppenGL地实现都能够正常启用多重采样了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glEnable(GL_MULTISAMPLE);</span><br></pre></td></tr></table></figure>
+<p>只要默认的帧缓冲有了多重采样缓冲的附件，我们所要做的只是调用<code>glEnable</code>来启用多重采样。因为多重采样的算法都在OpenGL驱动的光栅器中实现了，我们不需要再多做什么。如果现在再来渲染本节一开始的那个绿色的立方体，我们应该能看到更平滑的边缘：</p>
+<h1 id="离屏MSAA"><a href="#离屏MSAA" class="headerlink" title="离屏MSAA"></a>离屏MSAA</h1><p>由于GLFW负责了创建多重采样缓冲，启用MSAA非常简单。然而，如果我们想要使用我们自己的帧缓冲来进行离屏渲染，那么我们就必须要自己手动生成多重采样缓冲了。</p>
+<p>有两种方式可以创建多重采样缓冲，将其作为帧缓冲的附件：纹理附件和渲染缓冲附件，这和帧缓冲教程中所讨论的普通附件很相似。</p>
+<h2 id="多重采样纹理附件"><a href="#多重采样纹理附件" class="headerlink" title="多重采样纹理附件"></a>多重采样纹理附件</h2><p>为了创建一个支持存储多个采样点的纹理，我们使用<code>glTexImage2DMultisample</code>来替代glTexImage2D，它的纹理目标是<code>GL_TEXTURE_2D_MULTISAPLE</code>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">glBindTexture(GL_TEXTURE_2D_MULTISAPLE, tex);</span><br><span class="line">glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAPLE, samples, GL_RGB, width, height, GL_TRUE);</span><br><span class="line">glBindTexture(GL_TEXTURE_2D_MULTISAPLE, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2019/05/29/Programer/game/gameengine/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-11-30 23:45:04
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/RHI/" title="RHI">
+                        <b>#</b> RHI
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="标签"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" title="计算机图形学">
+                        #计算机图形学
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E5%90%8E%E5%A4%84%E7%90%86/" title="后处理">
+                        #后处理
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2019/06/04/Programer/Android/intergpaandroid/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B6%85%E7%BA%A7%E9%87%87%E6%A0%B7%E6%8A%97%E9%94%AF%E9%BD%BF-Super-Sampling-Anti-Aliasing-SSAA"><span class="toc-text">超级采样抗锯齿(Super Sampling Anti-Aliasing,SSAA)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SSAA%E7%94%BB%E8%B4%A8%E4%B8%8E%E6%80%A7%E8%83%BD%E5%8F%98%E5%8C%96"><span class="toc-text">SSAA画质与性能变化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#OpenGL%E4%B8%AD%E7%9A%84MSAA"><span class="toc-text">OpenGL中的MSAA</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A6%BB%E5%B1%8FMSAA"><span class="toc-text">离屏MSAA</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E9%87%8D%E9%87%87%E6%A0%B7%E7%BA%B9%E7%90%86%E9%99%84%E4%BB%B6"><span class="toc-text">多重采样纹理附件</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E6%8A%97%E9%94%AF%E9%BD%BF%E6%8A%80%E6%9C%AF + '&url=' + http%3A%2F%2Fzentia.github.io%2F2019%2F05%2F29%2FProgramer%2FRHI%2Fsmaa%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://zentia.github.io/2019/05/29/Programer/RHI/smaa/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>
