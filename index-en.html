@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-cn">
+<html lang="en-us">
 <head>
     <meta charset="UTF-8">
     <title>FontEditor</title>
@@ -12,63 +12,63 @@
         <div class="logo"></div>
         <div class="action-groups btn-groups">
 
-            <button data-action="add-new" type="button" class="btn btn-flat btn-new btn-sm"><i class="ico ico-left i-add"></i>新字形</button>
+            <button data-action="add-new" type="button" class="btn btn-flat btn-new btn-sm"><i class="ico ico-left i-add"></i>New Glyph</button>
             <i class="split"></i>
 
-            <button data-disabled="1" data-action="undo" type="button" class="btn btn-flat btn-ico" title="撤销"><i class="ico i-undo"></i></button>
-            <button data-disabled="1" data-action="redo" type="button" class="btn btn-flat btn-ico" title="重做"><i class="ico i-redo"></i></button>
+            <button data-disabled="1" data-action="undo" type="button" class="btn btn-flat btn-ico" title="Undo"><i class="ico i-undo"></i></button>
+            <button data-disabled="1" data-action="redo" type="button" class="btn btn-flat btn-ico" title="Redo"><i class="ico i-redo"></i></button>
             <i class="split"></i>
 
             <div class="btn-group">
                 <button type="button" class="btn btn-flat btn-sm dropdown-toggle" data-toggle="dropdown">
-                    导入
+                    Import
                     <span class="ico i-down"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li data-disabled="1" data-action="import"  title="导入svg格式字体文件"><a>导入svg</a></li>
-                    <li data-disabled="1" data-action="import-pic"  title="导入包含字形的图片"><a>导入图片</a></li>
-                    <li data-disabled="1" data-action="import"  title="导入ttf,woff,eot,otf格式字体文件"><a>导入字体文件</a></li>
-                    <li data-action="add-online"><a>加载线上字体</a></li>
-                    <li data-action="add-url"><a>从URL加载字体</a></li>
-                    <li data-action="sync-from-server"><a>从服务器同步字体</a></li>
+                    <li data-disabled="1" data-action="import"  title="Import svg font or svg file"><a>Import svg</a></li>
+                    <li data-disabled="1" data-action="import-pic"  title="Import image with glyph"><a>Import Image</a></li>
+                    <li data-disabled="1" data-action="import"  title="Import ttf,woff,eot,otf font"><a>Import Font</a></li>
+                    <li data-action="add-online"><a>Open Online Font</a></li>
+                    <li data-action="add-url"><a>Open Font from URL</a></li>
+                    <li data-action="sync-from-server"><a>Sync Font From Server</a></li>
                 </ul>
             </div>
             <i class="split"></i>
 
-            <a data-disabled="1" id="export-btn" href="#" data-action="export" data-type="ttf" class="btn btn-flat btn-ico" title="导出ttf"><i class="ico i-ttf"></i></a>
-            <a data-disabled="1" id="export-btn-woff" href="#" data-action="export" data-type="woff" class="btn btn-flat btn-ico" title="导出woff"><i class="ico i-woff"></i></a>
-                        <a data-disabled="1" id="export-btn-woff" href="#" data-action="export" data-type="woff2" class="btn btn-flat btn-ico" title="导出woff2"><i class="ico i-woff2"></i></a>
-            <a data-disabled="1" id="export-btn-zip" href="#" data-action="export" data-type="zip" class="btn btn-flat btn-ico" title="导出zip,包含ttf,woff,woff2,eot,svg等格式字体和icon示例"><i class="ico i-zip"></i></a>
+            <a data-disabled="1" id="export-btn" href="#" data-action="export" data-type="ttf" class="btn btn-flat btn-ico" title="Export ttf"><i class="ico i-ttf"></i></a>
+            <a data-disabled="1" id="export-btn-woff" href="#" data-action="export" data-type="woff" class="btn btn-flat btn-ico" title="Export woff"><i class="ico i-woff"></i></a>
+                        <a data-disabled="1" id="export-btn-woff" href="#" data-action="export" data-type="woff2" class="btn btn-flat btn-ico" title="Export woff2"><i class="ico i-woff2"></i></a>
+            <a data-disabled="1" id="export-btn-zip" href="#" data-action="export" data-type="zip" class="btn btn-flat btn-ico" title="Export zip file, including ttf,woff,woff2,eot,svg font and examples."><i class="ico i-zip"></i></a>
             <i class="split"></i>
 
-            <button data-disabled="1" data-action="save" type="button" class="btn btn-flat btn-sm"><i class="ico ico-left i-save"></i>保存项目</button>
+            <button data-disabled="1" data-action="save" type="button" class="btn btn-flat btn-sm"><i class="ico ico-left i-save"></i>Save Project</button>
 
             <div class="btn-group">
                 <button type="button" class="btn btn-flat btn-sm dropdown-toggle" data-toggle="dropdown">
-                    工具
+                    Tools
                     <span class="drop ico i-down"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a data-disabled="1" data-action="setting-glyf-name">生成字形名称</a></li>
-                    <li><a data-disabled="1" data-action="setting-glyf-clearname">清除字形名称</a></li>
-                    <li><a data-disabled="1" data-action="setting-optimize">优化字体</a></li>
-                    <li><a data-disabled="1" data-action="setting-sort">按代码点进行排序</a></li>
-                    <li><a data-disabled="1" data-action="setting-compound2simple">复合字形转简单字形</a></li>
+                    <li><a data-disabled="1" data-action="setting-glyf-name">Generate Glyph Name</a></li>
+                    <li><a data-disabled="1" data-action="setting-glyf-clearname">Clear Glyph Name</a></li>
+                    <li><a data-disabled="1" data-action="setting-optimize">Optimize Glyph</a></li>
+                    <li><a data-disabled="1" data-action="setting-sort">Sort Glyph by Unicode</a></li>
+                    <li><a data-disabled="1" data-action="setting-compound2simple">Composite Glyph to Simple Glyph</a></li>
                 </ul>
             </div>
 
             <div class="btn-group">
 
                 <button type="button" class="btn btn-flat btn-sm dropdown-toggle" data-toggle="dropdown">
-                    设置
+                    Setting
                     <span class="drop ico i-down"></span>
                 </button>
 
                 <ul class="dropdown-menu" role="menu">
-                    <li><a data-disabled="1" data-action="setting-name">字体信息</a></li>
-                    <li><a data-disabled="1" data-action="setting-metrics">字体度量</a></li>
-                    <li><a data-action="setting-editor">编辑器设置</a></li>
-                    <li><a data-action="setting-import-and-export">导入和导出</a></li>
+                    <li><a data-disabled="1" data-action="setting-name">Font Info</a></li>
+                    <li><a data-disabled="1" data-action="setting-metrics">Metrics</a></li>
+                    <li><a data-action="setting-editor">Editor Setting</a></li>
+                    <li><a data-action="setting-import-and-export">Import and Export</a></li>
                 </ul>
             </div>
 
@@ -77,16 +77,16 @@
             <div class="btn-group">
 
                 <button type="button" class="btn btn-flat btn-preview btn-sm dropdown-toggle" data-toggle="dropdown">
-                    预览
+                    Preview
                     <span class="drop ico i-down"></span>
                 </button>
 
                 <ul class="dropdown-menu" role="menu">
-                    <li><a data-disabled="1" data-format="ttf" data-action="preview">ttf字体</a></li>
-                    <li><a data-disabled="1" data-format="woff2" data-action="preview">woff2字体</a></li>
-                    <li><a data-disabled="1" data-format="woff" data-action="preview">woff字体</a></li>
-                    <li><a data-disabled="1" data-format="svg" data-action="preview">svg字体(仅safari)</a></li>
-                    <li><a data-disabled="1" data-format="eot" data-action="preview">eot字体(仅IE)</a></li>
+                    <li><a data-disabled="1" data-format="ttf" data-action="preview">ttf Font</a></li>
+                    <li><a data-disabled="1" data-format="woff2" data-action="preview">woff2 Font</a></li>
+                    <li><a data-disabled="1" data-format="woff" data-action="preview">woff Font</a></li>
+                    <li><a data-disabled="1" data-format="svg" data-action="preview">svg Font(Only safari)</a></li>
+                    <li><a data-disabled="1" data-format="eot" data-action="preview">eot Font(Only IE)</a></li>
                 </ul>
             </div>
         </div>
@@ -96,15 +96,15 @@
             <a href="./index-en.html">English</a>
         </div>
         <a class="ico i-github forkme" href="https://github.com/ecomfe/fonteditor" target="_blank">Fork me on Github</a>
-        <a class="ico i-help userguide" href="https://kekee000.github.io/fonteditor-doc/" target="_blank">帮助</a>
+        <a class="ico i-help userguide" href="https://kekee000.github.io/fonteditor-doc/" target="_blank">Help</a>
     </section>
 
     <section class="sidebar">
         <div class="project-btns action-groups">
-            <button data-action="new" type="button" class="btn btn-flat btn-sm" title="新建ttf字体文件"><i class="ico ico-left i-new"></i>新建</button><button data-action="open" type="button" class="btn btn-flat btn-sm" title="打开ttf,woff,eot,otf格式字体文件"><i class="ico ico-left i-open"></i>打开</button>
+            <button data-action="new" type="button" class="btn btn-flat btn-sm" title="new font"><i class="ico ico-left i-new"></i>New</button><button data-action="open" type="button" class="btn btn-flat btn-sm" title="Open ttf,woff,eot,otf format font file"><i class="ico ico-left i-open"></i>Open</button>
         </div>
         <div class="project">
-            <div class="project-title">项目列表</div>
+            <div class="project-title">Project List</div>
             <div id="project-list" class="project-list"></div>
         </div>
     </section>
@@ -118,7 +118,7 @@
 
     <section class="editor">
         <ul id="editor-commandmenu" class="command-groups"></ul>
-        <i class="ico i-leave close-editor" title="点击或者按`F2`键关闭编辑器"></i>
+        <i class="ico i-leave close-editor" title="Click or press `F2` to close glyph editor"></i>
         <div id="glyf-editor" class="glyf-editor" oncontextMenu="return false"></div>
     </section>
 
@@ -128,12 +128,12 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span></button>
-            <h4 class="modal-title" id="model-label">设置</h4>
+            <h4 class="modal-title" id="model-label">Setting</h4>
           </div>
           <div class="modal-body"></div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-flat btn-sm" data-dismiss="modal">取消</button>
-            <button type="button" class="btn btn-flat btn-sm btn-confirm">确定</button>
+            <button type="button" class="btn btn-flat btn-sm" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-flat btn-sm btn-confirm">Confirm</button>
           </div>
         </div>
       </div>
@@ -151,7 +151,7 @@
     <script src="./dep/bootstrap/js/bootstrap.min.js"></script>
     <script src="./dep/hidpi-canvas.js"></script>
     <script>
-        window.language = 'zh-cn';
+        window.language = 'en-us';
     </script>
 
     <script>
