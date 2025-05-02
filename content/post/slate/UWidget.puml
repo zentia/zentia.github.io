@@ -1,0 +1,58 @@
+UWidget <|-- UImage
+UWidget <|-- UTextLayoutWidget 
+UWidget <|-- UPanelWidget
+UWidget <|-- UProgressBar
+UWidget <|-- URadialSlider
+class UComboBoxKey {
+    - MyComboBox : TSharedPtr<SComboBox<FName>>
+}
+UWidget <|-- UComboBoxKey
+class UComboBoxString {
+    # MyComboBox : TSharedPtr< SComboBox< TSharedPtr<FString> > >
+}
+UWidget <|-- UComboBoxString
+UWidget <|-- UEditableText
+UWidget <|-- UEditableTextBox
+UWidget <|-- USpinBox
+UWidget <|-- UListViewBase
+
+UPanelWidget <|-- UContentWidget
+class UCanvasPanel {
+    # MyCanvas : TSharedPtr<SContraintCanvas>
+}
+UPanelWidget <|-- UCanvasPanel
+UPanelWidget <|-- UGridPanel
+UPanelWidget <|-- UHorizontalBox
+UPanelWidget <|-- UVerticalBox
+UPanelWidget <|-- UOverlay
+UPanelWidget <|-- UScrollBox
+UPanelWidget <|-- UStackBox
+UPanelWidget <|-- UUniformGridPanel
+UPanelWidget <|-- UWidgetSwitcher
+UPanelWidget <|-- UWrapBox
+
+UContentWidget <|-- UButton
+UContentWidget <|-- UBorder
+UContentWidget <|-- UCheckBox
+class UNamedSlot {
+    # MyBox : TSharedPtr<SBox>
+}
+UContentWidget <|-- UNamedSlot
+UContentWidget <|-- UInvalidationBox
+UContentWidget <|-- URetainerBox
+UContentWidget <|-- USafeZone
+UContentWidget <|-- UScaleBox
+class USizeBox {
+    # MySizeBox : TSharedPtr<SBox>
+}
+UContentWidget <|-- USizeBox
+
+UTextLayoutWidget <|-- UTextBlock
+UTextLayoutWidget <|-- URichTextBlock
+UTextLayoutWidget <|-- UMultiLineEditableText
+UTextLayoutWidget <|-- UMultiLineEditableTextBox
+
+UListViewBase <|-- UListView
+
+UListView <|-- UTileView
+UListView <|-- UTreeView
