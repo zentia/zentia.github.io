@@ -1,0 +1,40 @@
+SWidget <|-- SLeafWidget
+SWidget <|-- SRichTextBlock
+SWidget <|-- SMultiLineEditableText
+SWidget <|-- SCompoundWidget
+SWidget <|-- SPanel
+
+SLeafWidget <|-- SImage
+SLeafWidget <|-- STextBlock
+SLeafWidget <|-- SProgressBar
+SLeafWidget <|-- SRadialSlider
+
+SCompoundWidget <|-- SBorder
+SCompoundWidget <|-- SCheckBox
+SCompoundWidget <|-- SInvalidationPanel
+SCompoundWidget <|-- SRetainerWidget
+SCompoundWidget <|-- SScaleBox
+SCompoundWidget <|-- SScrollBox
+
+SBorder <|-- SMultiLineEditableTextBox
+SBorder <|-- SButton
+
+SPanel <|-- SBox
+SPanel <|-- SConstraintCanvas
+SPanel <|-- SGridPanel
+SPanel <|-- SBoxPanel
+SPanel <|-- SUniformGridPanel
+SPanel <|-- SWidgetSwitcher
+SPanel <|-- SWrapBox
+SPanel <|-- SMenuAnchor
+
+SBox <|-- SSafeZone
+
+SBoxPanel <|-- SOverlay
+SBoxPanel <|-- SHorizontalBox
+SBoxPanel <|-- SVerticalBox
+SBoxPanel <|-- SStackBox
+
+SMenuAnchor <|-- SComboButton
+
+SComboButton <|-- SComboBox
