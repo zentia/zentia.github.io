@@ -1,6 +1,0 @@
-FNiagaraRenderer <|-- FNiagaraRendererDecals
-FNiagaraRenderer <|-- FNiagaraRendererLights
-FNiagaraRenderer <|-- FNiagaraRendererMeshes
-FNiagaraRenderer <|-- FNiagaraRendererRibbons
-FNiagaraRenderer <|-- FNiagaraRendererSprites
-FNiagaraRenderer <|-- FNiagaraRendererVolumes

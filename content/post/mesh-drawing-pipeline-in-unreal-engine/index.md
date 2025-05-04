@@ -1,7 +1,7 @@
 ---
 title: 网格体绘制管道
 description: 介绍如何添加自定义网格体通道以及虚幻引擎网格体绘制的性能特定。
-weight: 12
+weight: 2
 image: ue5-hero.png
 categories:
     - 图形编程

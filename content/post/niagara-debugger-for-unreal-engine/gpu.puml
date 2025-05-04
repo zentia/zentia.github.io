@@ -1,0 +1,8 @@
+start
+:group logic;
+:HLSL;
+split
+:Target GPU Platform;
+split again
+:SIMD optimized;
+end split
