@@ -4,7 +4,9 @@ description: 动画蒙太奇动画资产可以用于将动画合并至一个资�
 weight: 12
 image: ue5-hero.png
 categories:
+    - 物体和角色动画制作
     - 骨架网格体动画系统
+    - 动画资产和功能
 ---
 你可以使用动画蒙太奇（Animation Montage）（简称蒙太奇（Montage））来讲多个动画序列（Animation Sequence）合并为单个资产并通过蓝图播放。
 
