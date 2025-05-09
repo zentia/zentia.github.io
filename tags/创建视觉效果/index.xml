@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>创建视觉效果 on zentia</title><link>https://zentia.github.io/tags/%E5%88%9B%E5%BB%BA%E8%A7%86%E8%A7%89%E6%95%88%E6%9E%9C/</link><description>Recent content in 创建视觉效果 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/tags/%E5%88%9B%E5%BB%BA%E8%A7%86%E8%A7%89%E6%95%88%E6%9E%9C/index.xml" rel="self" type="application/rss+xml"/><item><title>GPU光线追踪碰撞</title><link>https://zentia.github.io/p/gpu%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E7%A2%B0%E6%92%9E/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/gpu%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E7%A2%B0%E6%92%9E/</guid><description>&lt;img src="https://zentia.github.io/p/gpu%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E7%A2%B0%E6%92%9E/bannerimage_workingwithmedia.png" alt="Featured image of post GPU光线追踪碰撞" /></description></item><item><title>Niagara调试器</title><link>https://zentia.github.io/p/niagara%E8%B0%83%E8%AF%95%E5%99%A8/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/niagara%E8%B0%83%E8%AF%95%E5%99%A8/</guid><description>&lt;img src="https://zentia.github.io/p/niagara%E8%B0%83%E8%AF%95%E5%99%A8/niagara-landing-hero.png" alt="Featured image of post Niagara调试器" /></description></item><item><title>优化Niagara</title><link>https://zentia.github.io/p/%E4%BC%98%E5%8C%96niagara/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E4%BC%98%E5%8C%96niagara/</guid><description>&lt;img src="https://zentia.github.io/p/%E4%BC%98%E5%8C%96niagara/bannerimage_workingwithmedia.png" alt="Featured image of post 优化Niagara" />&lt;h1 id="衡量性能">衡量性能
+&lt;/h1>&lt;h2 id="概述">概述
+&lt;/h2>&lt;p>衡量粒子的性能后，你将知道进行优化时应重点关注的具体区域。在做出更改之前验证假设非常重要，这可避免错误地优化无需优化地地方，而且这样可以有一个比较点，用来显示更改带来地影响程度。&lt;/p>
+&lt;p>本节将介绍虚幻提供地一些用于衡量Niagara粒子系统性能地工具，以及如何读取这些系统，和如何根据它们地数据做出决定。&lt;/p>
+&lt;h2 id="衡量性能-1">衡量性能
+&lt;/h2>&lt;h3 id="unreal-insights-关卡中地衡量系统">Unreal Insights-关卡中地衡量系统
+&lt;/h3>&lt;p>捕获具有代表性的Gameplay窗口，最好是游戏本身，以便提供最具有参考价值的数据。适合某个项目的设置未必适合其他项目，甚至同一项目的不同关卡也是如此。
+例如，带受摄像机的过长动画可能会有运行3D流体模拟的预算，但着如果在正常Gameplay期间运行，开销就太高了。&lt;/p>
+&lt;h2 id="视图模式-衡量渲染复杂性">视图模式-衡量渲染复杂性
+&lt;/h2>&lt;p>视觉特效通常有许多重叠的半透明Sprite和网格体，所以它们通常会到导致过渡绘制，因此验证Niagara系统的着色器复杂性也很重要。你可以在着色器复杂性视图模式查看复杂性的总体概况。要获得更详细的度过绘制视图，可以使用四边形过渡绘制视图模式。&lt;/p>
+&lt;p>减少颗粒数和进一步扩散粒子可以减少过渡绘制。粒子占据的屏幕控件越少，受到的关注就越少，在本例中也是如此。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BC%98%E5%8C%96niagara/niagara-measuring-perf-11.png"
+width="1400"
+height="796"
+srcset="https://zentia.github.io/p/%E4%BC%98%E5%8C%96niagara/niagara-measuring-perf-11_hu_12ae42f023f794ec.png 480w, https://zentia.github.io/p/%E4%BC%98%E5%8C%96niagara/niagara-measuring-perf-11_hu_a27713eeec94e186.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="175"
+data-flex-basis="422px"
+>&lt;/p>
+&lt;h1 id="伸缩性和最佳实践">伸缩性和最佳实践
+&lt;/h1>&lt;h2 id="概述-1">概述
+&lt;/h2>&lt;p>本节概述了多个策略，主要用来减少粒子系统在单个和总体关卡上所作的工作量。 上一节已经指出了执行额外工作的区域，本节将介绍在这些区域做出更改的工具和选项。通常，减少了执行的工作量，就可以避免不必要的工作，或者选择开销更少的解决方案。&lt;/p>
+&lt;h2 id="实例数减少关卡中的系统数量">实例数：减少关卡中的系统数量
+&lt;/h2>&lt;p>即使一个系统经过了优化，如果关卡中这样的系统太多，也会影响性能。默认情况下，我们会使用Niagara World Manager批量刷新同一系统的实例，但系统的实例越多，游戏线程上需要执行的工作就越多。通常，在模拟的粒子数量不变的情况下，实例越多，达到的性能就越低，但拥有更多的实例可以让Niagara以更高的粒度剔除粒子，所以你需要在少量大实例与大量小实例之间进行权衡。&lt;/p></description></item></channel></rss>

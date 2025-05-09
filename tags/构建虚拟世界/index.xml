@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>构建虚拟世界 on zentia</title><link>https://zentia.github.io/tags/%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E4%B8%96%E7%95%8C/</link><description>Recent content in 构建虚拟世界 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/tags/%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E4%B8%96%E7%95%8C/index.xml" rel="self" type="application/rss+xml"/><item><title>预计算光照情景</title><link>https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%85%89%E7%85%A7%E6%83%85%E6%99%AF/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%85%89%E7%85%A7%E6%83%85%E6%99%AF/</guid><description>&lt;img src="https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%85%89%E7%85%A7%E6%83%85%E6%99%AF/ue5-hero.png" alt="Featured image of post 预计算光照情景" />&lt;p>虚幻引擎支持在关卡中使用不同的预计算光照情景（Precomputed Lighting Scenarios）。这使得单个关卡可以保存并显示多种光照设置，使玩家即获得灵活的动态光照，又能以固定开销预计算光照。对用高性能方式进行高精度渲染的虚拟显示（VR）或建筑可视化而言，在不同预计算光照情景之间切换更显重要。通读此文后，你便能了解如何在项目中使用预计算光照。&lt;/p>
+&lt;h1 id="功能限制">功能限制
+&lt;/h1>&lt;p>虽然预计算光照情景拥有诸多优点，但使用时也需要注意其缺陷和限制。在下文中，我们将介绍其中的一些限制，并告诉你如何回避（或解决）它们。&lt;/p>
+&lt;ul>
+&lt;li>在游戏中只限制一个可见光照情景关卡。&lt;/li>
+&lt;li>光照情景关卡出现后，来自所有子关卡的光照图数据均会放置在其中，因此白天时只加载Day Scenario光照图。因此光照图将不再由子关卡进行流送。&lt;/li>
+&lt;li>子关卡光照贴图数据保存在光照情景的BuildData包中。注册来自其他子关卡的反射捕获会修改当前光照情景的BuiltData。假如加载子关卡两次，并且只加载光照情景BulidData一次，就会产生如下错误：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">错误： 反射捕获 /Game/Environments/Levels/Your_Level_Name.level_name:PersistentLevel.SphereReflectionCapture_1.NewReflectionComponent 上传了两次，且未重新加载其光照情景关卡。
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>CPU Lightmass全局光照</title><link>https://zentia.github.io/p/cpu-lightmass%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/cpu-lightmass%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/</guid><description>&lt;img src="https://zentia.github.io/p/cpu-lightmass%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/ue5-hero.png" alt="Featured image of post CPU Lightmass全局光照" />&lt;p>全局光照（Lightmass）创建具有复杂光交互作用的光照图，例如区域阴影和漫反射。它用于预计算具有固定和静态运动型的光源的光照共享部分。&lt;/p>
+&lt;p>编辑器和全局光照之间的通信由Swarm Agent处理，它管理本地的光照构建，也可以将光照构建分发到远程机器。默认情况下以最小化方式打开的Swarm Agent还会跟踪光照构建进度，并让你了解哪些机器为你工作，它们在做什么，以及每个机器使用了多少线程。&lt;/p>
+&lt;h1 id="静态和固定光源的特性">静态和固定光源的特性
+&lt;/h1>&lt;h2 id="漫反射">漫反射
+&lt;/h2>&lt;p>漫反射（Diffuse Interreflection）是目前为止视觉上最重要的全局光照效果。在默认情况下，光源以全局光照反射，而材质的基本颜色（BaseColor）项控制有多少光（和什么颜色）向各个方向反射。这种效果有时称为渗色。漫反射是入射光在各个方向上均匀反射，即不受观测方向或位置的影响。&lt;/p>
+&lt;p>这里是一个由全局光照创建的场景，只有一个方向的光，且仅显示直接光照。光源无法直接照射的区域是黑色的。这是没有全局光照的结果。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/cpu-lightmass%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/02-lightmass-global-illum-direct-light-only.png"
+width="1240"
+height="798"
+srcset="https://zentia.github.io/p/cpu-lightmass%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/02-lightmass-global-illum-direct-light-only_hu_d6e5eeef116b0c8.png 480w, https://zentia.github.io/p/cpu-lightmass%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/02-lightmass-global-illum-direct-light-only_hu_ac6e2e65a8a2228d.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="155"
+data-flex-basis="372px"
+>&lt;/p></description></item><item><title>GPU Lightmass全局光照</title><link>https://zentia.github.io/p/gpu-lightmass%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/gpu-lightmass%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/</guid><description>&lt;img src="https://zentia.github.io/p/gpu-lightmass%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/ue5-hero.png" alt="Featured image of post GPU Lightmass全局光照" />&lt;p>GPU Lightmass（GPULM）是一种光照烘培解决方案，它可以预计算移动性设置为静止（Stationary）或静态（Static）的光源的复杂光线交互，并将这些数据保存在生成的光照贴图纹理中，这些纹理又转而应用到场景几何体。这个将光照烘培到纹理中的系统类似于基于CPU的Lightmass全局光照系统。&lt;/p></description></item><item><title>Unreal Swarm</title><link>https://zentia.github.io/p/unreal-swarm/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/unreal-swarm/</guid><description>&lt;img src="https://zentia.github.io/p/unreal-swarm/ue5-hero.png" alt="Featured image of post Unreal Swarm" />&lt;p>Unreal Swarm是一种通用的应用程序和任务分配系统，由两种应用程序类型组成，一种是分配构建任务的协调程序，另一种是利用主机系统资产完成分配任务的代理程序。&lt;/p></description></item><item><title>间接光照缓存</title><link>https://zentia.github.io/p/%E9%97%B4%E6%8E%A5%E5%85%89%E7%85%A7%E7%BC%93%E5%AD%98/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E9%97%B4%E6%8E%A5%E5%85%89%E7%85%A7%E7%BC%93%E5%AD%98/</guid><description>&lt;img src="https://zentia.github.io/p/%E9%97%B4%E6%8E%A5%E5%85%89%E7%85%A7%E7%BC%93%E5%AD%98/ue5-hero.png" alt="Featured image of post 间接光照缓存" />&lt;p>CPU Lightmass可以在静态对象上生成间接光照的光照贴图，但角色之类的动态对象同样需要一种接受间接光照的方法。这能通过间接光照缓存（Indirect Lighting Cache）来解决，其在光照构建时使用Lightmass生成的采样来计算动态对象在运行时的间接光照。&lt;/p>
+&lt;p>下图显示了带与不带间接光照缓存渲染的效果差异：&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E9%97%B4%E6%8E%A5%E5%85%89%E7%85%A7%E7%BC%93%E5%AD%98/01-indirect-cache-diffuse-no-indirect.png"
+width="1918"
+height="1130"
+srcset="https://zentia.github.io/p/%E9%97%B4%E6%8E%A5%E5%85%89%E7%85%A7%E7%BC%93%E5%AD%98/01-indirect-cache-diffuse-no-indirect_hu_4096c6f569dd0e1e.png 480w, https://zentia.github.io/p/%E9%97%B4%E6%8E%A5%E5%85%89%E7%85%A7%E7%BC%93%E5%AD%98/01-indirect-cache-diffuse-no-indirect_hu_f8d09119c334506.png 1024w"
+loading="lazy"
+alt="Elemental关卡中的漫反射光照，不带间接光照缓存"
+class="gallery-image"
+data-flex-grow="169"
+data-flex-basis="407px"
+>&lt;/p></description></item><item><title>Lightmass基础知识</title><link>https://zentia.github.io/p/lightmass%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/lightmass%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid><description>&lt;img src="https://zentia.github.io/p/lightmass%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/ue5-hero.png" alt="Featured image of post Lightmass基础知识" />&lt;p>全局光照（Lightmass）创建具有复杂光交互作用的光照图，例如区域阴影和漫反射。&lt;/p></description></item><item><title>Lightmass门户</title><link>https://zentia.github.io/p/lightmass%E9%97%A8%E6%88%B7/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/lightmass%E9%97%A8%E6%88%B7/</guid><description>&lt;img src="https://zentia.github.io/p/lightmass%E9%97%A8%E6%88%B7/ue5-hero.png" alt="Featured image of post Lightmass门户" />&lt;p>在收集光线时，Lightmass可以使用来自光子映射技术的光子追溯到聚光源、点光源和定向光源。这意味着它可以找到这些类型的光源来自哪个小窗户，并以高品质解析射入的光线。但是，天空光照自发光网格体不能有效地支持光子发射，所以Lightmass只能强行查找微小地重要光照特性。&lt;/p></description></item></channel></rss>

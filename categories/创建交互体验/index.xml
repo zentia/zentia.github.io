@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>创建交互体验 on zentia</title><link>https://zentia.github.io/categories/%E5%88%9B%E5%BB%BA%E4%BA%A4%E4%BA%92%E4%BD%93%E9%AA%8C/</link><description>Recent content in 创建交互体验 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E5%88%9B%E5%BB%BA%E4%BA%A4%E4%BA%92%E4%BD%93%E9%AA%8C/index.xml" rel="self" type="application/rss+xml"/><item><title>Actors</title><link>https://zentia.github.io/p/actors/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/actors/</guid><description>&lt;img src="https://zentia.github.io/p/actors/ue5-hero.png" alt="Featured image of post Actors" />&lt;p>所有可以放入关卡的对象都是 Actor，比如摄像机、静态网格体、玩家起始位置。Actor支持三维变换，例如平移、旋转和缩放。你可以通过游戏逻辑代码（C++或蓝图）创建（生成）或销毁Actor。&lt;/p>
+&lt;p>在C++中，AActor是所有Actor的基类。&lt;/p>
+&lt;p>注意：Actor不直接保存变换（位置、旋转和缩放）数据；如Actor的根组件存在，则使用它的变换数据。&lt;/p>
+&lt;h1 id="创建actor">创建Actor
+&lt;/h1>&lt;p>创建 AActor 类的新实例被称为 生成。可使用泛型 SpawnActor() 函数或它的一个特殊模板化版本进行操作。&lt;/p>
+&lt;p>在 生成和销毁Actor 中可查阅gameplay AActor 类实例诸多创建方法的详细信息。&lt;/p>
+&lt;h1 id="组件">组件
+&lt;/h1>&lt;p>在某种意义上，Actor 可被视为包含特殊类型 对象（称作组件）的容器。 不同类型的组件可用于控制Actor移动的方式及其被渲染的方式，等等。Actor的其他主要功能是在游戏进程中在网络上进行属性复制 和函数调用。&lt;/p>
+&lt;p>组件被创建时与其包含的Actor相关联。&lt;/p>
+&lt;p>组件的主要类型有：&lt;/p>
+&lt;ul>
+&lt;li>UActorComponent：这是基础组件。其可作为Actor的一部分被包含。如果需要，其可进行Tick。ActorComponents与特定的Actor相关联，但不存在于场景中的任意特定位置。它们通常用于概念上的功能，如AI或解译玩家输入。&lt;/li>
+&lt;li>USceneComponent：SceneComponents是拥有变换的ActorComponents。变换是场景中的位置，由位置、旋转和缩放定义。SceneComponents能以层级的方式相互附加。Actor的位置、旋转和缩放取自位于层级根部的SceneComponent。&lt;/li>
+&lt;li>UPrimitiveComponent：PrimitiveComponent是拥有一类图像表达（如网格体或粒子系统）的SceneComponent。诸多有趣的物理和碰撞设置均在此处。&lt;/li>
+&lt;/ul>
+&lt;p>Actor支持拥有一个SceneComponent的层级。每个Actor也拥有一个 RootComponent 属性，将指定作为Actor根的组件。Actor自身不含变换，因此不带位置、旋转，或缩放。 它们依赖于其组件的变换，具体来说是其根组件的变换。如果此组件是一个 SceneComponent，其将提供Actor的变换信息。 否则Actor将不带变换。其他附加的组件拥有相对于其附加到的组件的变换。&lt;/p>
+&lt;h1 id="ticking">Ticking
+&lt;/h1>&lt;p>Ticking代表Actor在虚幻引擎中的更新方式。所有Actor均能每帧tick，或以用户定义的最小间隔进行tick，以便执行必要的更新计算或操作。&lt;/p>
+&lt;p>所有Actor均可通过 Tick() 函数默认被tick。&lt;/p>
+&lt;p>ActorComponents 能够默认被更新，但其使用的是 TickComponent() 函数进行操作。 参见组件页面的更新部分了解详情。&lt;/p>
+&lt;h1 id="生命周期">生命周期
+&lt;/h1>&lt;p>查看Actor生命周期文档，了解如何在游戏中创建和移除Actor的更多信息。&lt;/p></description></item><item><title>Actor生命周期</title><link>https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</guid><description>&lt;img src="https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/ue5-hero.png" alt="Featured image of post Actor生命周期" />&lt;p>本文档大致介绍了Actor的生命周期，其中包括：&lt;/p>
+&lt;ul>
+&lt;li>如何在关卡中实例化或生成Actor，包括如何初始化Actor。&lt;/li>
+&lt;li>如何将Actor标识为PendingKill，然后通过垃圾回收移除或销毁。&lt;/li>
+&lt;li>下方流程图展示了如何实例化Actor的主要路径。无论Actor是如何创建的，它们的销毁路径均相同。&lt;/li>
+&lt;/ul>
+&lt;h1 id="生命周期详解">生命周期详解
+&lt;/h1>&lt;p>&lt;img src="https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/actorlifecycle1.png"
+width="923"
+height="1912"
+srcset="https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/actorlifecycle1_hu_4ed41f252bf8bad9.png 480w, https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/actorlifecycle1_hu_b2359199f1e34b31.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="48"
+data-flex-basis="115px"
+>&lt;/p>
+&lt;h1 id="从磁盘加载">从磁盘加载
+&lt;/h1>&lt;p>从磁盘加载（Load From Disk）路径适用于已经在关卡中的Actor，如当 UEngine::LoadMap 发生时，或当关卡流送调用 UWorld::AddToWorld 时。&lt;/p></description></item><item><title>组件</title><link>https://zentia.github.io/p/%E7%BB%84%E4%BB%B6/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E7%BB%84%E4%BB%B6/</guid><description>&lt;img src="https://zentia.github.io/p/%E7%BB%84%E4%BB%B6/ue5-hero.png" alt="Featured image of post 组件" />&lt;p>组件 是一种特殊类型的 对象，Actor 可以将组件作为子对象附加到自身。组件适用于共享相同的行为，例如显示视觉表现、播放声音。它们还可以表示项目特有的概念，例如载具解译输入和改变其速度与方向的方式。举例而言，某个项目拥有用户可控制车辆、飞机和船只。可以通过更改载具Actor所使用的组件来实现载具控制和移动的差异。&lt;/p>
+&lt;h1 id="actor组件">Actor组件
+&lt;/h1>&lt;p>UActorComponent 是所有组件的基类。由于组件是渲染网格体和图像、实现碰撞和播放音频的唯一方法，因此玩家游戏期间在场景中看到或进行交互的一切其实都是某一类组件的成果。&lt;/p>
+&lt;p>创建自己的组件时，需要了解一些主要的类：Actor组件、场景组件 和 Primitive组件。&lt;/p>
+&lt;ul>
+&lt;li>Actor组件（类 UActorComponent）最适用于抽象行为，例如移动、物品栏或属性管理，以及其他非物理概念。Actor组件没有变换，即它们在场景中不存在任何物理位置或旋转。&lt;/li>
+&lt;li>场景组件（类 USceneComponent、UActorComponent 的子项）支持基于位置的行为，这类行为不需要几何表示。这包括弹簧臂、摄像机、物理力和约束（但不包括物理对象），甚至音频。&lt;/li>
+&lt;li>Primitive组件（类 UPrimitiveComponent、USceneComponent 的子项）是拥有几何表示的场景组件，通常用于渲染视觉元素或与物理对象发生碰撞或重叠。这包括静态或骨架网格体、Sprite或公告板、粒子系统以及盒体、胶囊体和球体碰撞体积。&lt;/li>
+&lt;/ul>
+&lt;h2 id="注册组件">注册组件
+&lt;/h2>&lt;p>为了让Actor组件能够逐帧更新并影响场景，引擎必须 注册 这类组件。如果在Actor产生过程中，作为Actor子对象自动创建了组件，则这类组件会自动注册。但是，游戏期间创建的组件可以使用手动注册。RegisterComponent 函数提供了这个功能，要求是组件与Actor关联。&lt;/p>
+&lt;blockquote>
+&lt;p>游戏期间注册组件可能会影响性能，因此只应在必要时进行此操作。&lt;/p>&lt;/blockquote>
+&lt;h3 id="注册事件">注册事件
+&lt;/h3>&lt;p>在注册组件的过程中，引擎会将组件与场景关联起来，让其可用于逐帧更新，并运行以下 UActorComponent 函数：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>函数&lt;/th>
+&lt;th>描述&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>OnRegister&lt;/td>
+&lt;td>在注册组件时，可以覆写此函数来添加代码。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>CreateRenderState&lt;/td>
+&lt;td>初始化组件的渲染状态。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>OnCreatePhysicsState&lt;/td>
+&lt;td>初始化组件的物理状态。&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="取消注册组件">取消注册组件
+&lt;/h2>&lt;p>要从更新、模拟或渲染过程中移除Actor组件，可以使用 &lt;code>UnregisterComponent&lt;/code> 函数将其取消注册。&lt;/p>
+&lt;h3 id="取消注册事件">取消注册事件
+&lt;/h3>&lt;p>在组件取消注册时，将运行下面的 UActorComponent 函数。&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>函数&lt;/th>
+&lt;th>描述&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>OnUnregister&lt;/code>&lt;/td>
+&lt;td>在取消注册组件时，可以覆写此函数来添加代码。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>DestroyRenderState&lt;/code>&lt;/td>
+&lt;td>取消初始化组件的渲染状态。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>OnDestroyPhysicsState&lt;/code>&lt;/td>
+&lt;td>取消初始化组件的物理状态。&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="更新">更新
+&lt;/h2>&lt;p>Actor组件能够以类似于Actor的方法逐帧更新。TickComponent 函数允许组件逐帧运行代码。例如，USkeletalMeshComponent 使用其 TickComponent 函数来更新动画和骨架控制器，而 UParticleSystemComponent 更新其发射器和处理粒子事件。&lt;/p>
+&lt;p>默认情况下，Actor组件不更新。为了让Actor组件逐帧更新，必须在构造函数中将 PrimaryComponentTick.bCanEverTick 设置为 true 来启用tick。之后，在构造函数中或其他位置处，必须调用 &lt;code>PrimaryComponentTick.SetTickFunctionEnable(true)&lt;/code> 以开启更新。之后可调用 &lt;code>PrimaryComponentTick.SetTickFunctionEnable(false)&lt;/code> 停用tick。如果您知道组件永远不需要更新，或者打算手动调用自己的更新函数（也许从拥有的Actor类），将 PrimaryComponentTick.bCanEverTick 保留为默认值 false 即可，这样可以稍微改善性能。&lt;/p>
+&lt;h2 id="渲染状态">渲染状态
+&lt;/h2>&lt;p>为进行渲染，Actor组件必须创建渲染状态。此渲染状态还会告诉引擎，需要更新渲染数据的组件已发生变更。当发生此类变更时，渲染状态会被标记为&amp;quot;dirty&amp;quot;。如果编译您自己的组件，可以使用 &lt;code>MarkRenderStateDirty&lt;/code> 函数将渲染数据标记为dirty。在一帧结束时，所有dirty组件的渲染数据都会在引擎中更新。场景组件（包括Primitive组件）默认会创建渲染状态，而Actor组件则不会。&lt;/p>
+&lt;h2 id="物理状态">物理状态
+&lt;/h2>&lt;p>要与引擎的物理模拟系统交互，Actor组件需要物理状态。物理状态会在发生变化时立即更新，防止出现&amp;quot;帧落后&amp;quot;瑕疵等问题，也不需要&amp;quot;dirty&amp;quot;标记。默认情况下，Actor组件和场景组件没有物理状态，但基元组件有。覆盖 &lt;code>ShouldCreatePhysicsState&lt;/code> 函数以确定组件类实例是否需要物理状态。&lt;/p>
+&lt;blockquote>
+&lt;p>如果类使用物理，则不建议只返回 true。请参阅函数的 &lt;code>UPrimitiveComponent&lt;/code> 版本，了解不应创建物理状态的情况（例如在组件破坏期间）。在正常返回 true 的情况下，还可以返回 &lt;code>Super::ShouldCreatePhysicsState&lt;/code>。&lt;/p>&lt;/blockquote>
+&lt;h2 id="视觉化组件">视觉化组件
+&lt;/h2>&lt;p>某些Actor和组件没有视觉表示，使它们难以选择，或有一些重要属性不可见。在编辑器中工作时，开发者可以添加额外的组件来显示信息，但在编辑器中运行时或运行打包版本时不需要这些额外组件。为解决这个问题，编辑器支持 视觉化组件 的概念，这是只在编辑器中工作时存在的普通组件。&lt;/p>
+&lt;p>要创建视觉化组件，需创建常规组件并在其上方调用 &lt;code>SetIsVisualizationComponent&lt;/code>。由于组件无需存在于编辑器之外，所有对它的引用都应当处在对 &lt;code>WITH_EDITORONLY_DATA&lt;/code> 或 &lt;code>WITH_EDITOR&lt;/code> 的预处理器检查之中。这将确保打包版本不受这些组件的影响，并保证不会在代码中的任何位置引用它们。举例而言，摄像机组件 使用多个其他组件来在编辑器中显示实用信息，包括用于显示视图视锥的 绘制视锥组件。在头文件中，绘制视锥组件在类中进行如下定义：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-C++" data-lang="C++">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#if WITH_EDITORONLY_DATA
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span> &lt;span class="c1">// 用于显示摄像机视野所在位置的视锥组件
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">class&lt;/span> &lt;span class="nc">UDrawFrustumComponent&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">DrawFrustum&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// ...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="cp">#endif
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>同样，对这个组件的所有引用应当位于源文件中对 &lt;code>WITH_EDITORONLY_DATA&lt;/code> 的预处理器检查之中。&lt;code>OnRegister&lt;/code> 中的 &lt;code>WITH_EDITORONLY_DATA&lt;/code> 检查内部的这段代码，将检查确认摄像机组件是否连接到有效Actor，然后添加绘制视锥组件代码：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-C++" data-lang="C++">&lt;span class="line">&lt;span class="cl">&lt;span class="kt">void&lt;/span> &lt;span class="n">UCameraComponent&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="n">OnRegister&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#if WITH_EDITORONLY_DATA
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">AActor&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">MyOwner&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">GetOwner&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// ...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">DrawFrustum&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="k">nullptr&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">DrawFrustum&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">NewObject&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">UDrawFrustumComponent&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">MyOwner&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">NAME_None&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">RF_Transactional&lt;/span> &lt;span class="o">|&lt;/span> &lt;span class="n">RF_TextExportTransient&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">DrawFrustum&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="n">SetupAttachment&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">this&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">DrawFrustum&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="n">SetIsVisualizationComponent&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nb">true&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// ...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// ...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="cp">#endif
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span> &lt;span class="n">Super&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="n">OnRegister&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// ...在此处编写其他代码（在所有版本中运行）...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;code>DrawFrustum&lt;/code> 现仅存在于编辑器中，被视为视觉化组件，即在编辑器中进行游戏测试时不会显示。&lt;/p>
+&lt;h1 id="场景组件">场景组件
+&lt;/h1>&lt;p>场景组件是指存在于场景中特定物理位置处的Actor组件。该位置由 变换（类 FTransform）定义，其中包含组件的位置、旋转和缩放。场景组件能够通过将彼此连接起来形成树，Actor可以将单个场景组件指定为&amp;quot;根&amp;quot;，意味着这个Actor的场景位置、旋转和缩放都根据此组件来绘制。&lt;/p>
+&lt;h2 id="附加">附加
+&lt;/h2>&lt;p>只有场景组件（USceneComponent 及其子类）可以彼此附加，因为需要变换来描述子项和父项组件之间的空间关系。虽然场景组件可以拥有任意数量的子项，但只能拥有一个父项，或可直接放置在场景中。场景组件系统不支持附加循环。两种主要方法分别是 &lt;code>SetupAttachment&lt;/code>和 &lt;code>AttachToComponent&lt;/code>。前者在构造函数中、以及处理尚未注册的组件时十分实用；后者会立即将场景组件附加到另一个组件，在游戏进行中十分实用。该附加系统还允许将Actor彼此之间进行附加，方法是将一个Actor的根组件附加到属于另一个Actor的组件。&lt;/p>
+&lt;h1 id="基元组件">基元组件
+&lt;/h1>&lt;p>基元组件（类 UPrimitiveComponent）是包含或生成某类几何的场景组件，通常用于渲染或碰撞。各种类型的几何体，目前最常用的是 盒体组件、胶囊体组件、静态网格体组件 和 骨架网格体组件。盒体组件和胶囊体组件生成不可见的几何体进行碰撞检测，而静态网格体组件和骨架网格体组件包含将被渲染的预制几何体，需要时也可以用于碰撞检测。&lt;/p>
+&lt;h2 id="场景代理">场景代理
+&lt;/h2>&lt;p>基元组件的 场景代理（类 FPrimitiveSceneProxy）封装场景数据，引擎使用这些数据来与游戏线程并行渲染组件。每种类型的基元都有自身的场景代理子类，用来保存所需的特定渲染数据。&lt;/p></description></item></channel></rss>

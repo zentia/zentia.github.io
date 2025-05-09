@@ -1,0 +1,13 @@
+start
+:NiagaraComponent;
+note right
+主线程
+end note
+split
+:FNiagaraSystemSimulation;
+split again
+:FNiagaraSceneProxy;
+note right
+渲染线程
+end note
+end split

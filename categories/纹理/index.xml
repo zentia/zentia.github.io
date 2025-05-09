@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>纹理 on zentia</title><link>https://zentia.github.io/categories/%E7%BA%B9%E7%90%86/</link><description>Recent content in 纹理 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E7%BA%B9%E7%90%86/index.xml" rel="self" type="application/rss+xml"/><item><title>支持的纹理格式和设置</title><link>https://zentia.github.io/p/%E6%94%AF%E6%8C%81%E7%9A%84%E7%BA%B9%E7%90%86%E6%A0%BC%E5%BC%8F%E5%92%8C%E8%AE%BE%E7%BD%AE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%94%AF%E6%8C%81%E7%9A%84%E7%BA%B9%E7%90%86%E6%A0%BC%E5%BC%8F%E5%92%8C%E8%AE%BE%E7%BD%AE/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%94%AF%E6%8C%81%E7%9A%84%E7%BA%B9%E7%90%86%E6%A0%BC%E5%BC%8F%E5%92%8C%E8%AE%BE%E7%BD%AE/ue5-hero.png" alt="Featured image of post 支持的纹理格式和设置" />&lt;p>在任何数字项目内存占用比例中，最大的一个内存占用来源是所用的纹理大小和数量。幸运的是，虚幻引擎 拥有非常可靠的系统，能够以非破坏性方式减小所有项目纹理的纹理大小。在以下页面中，我们将介绍这些系统，以及如何使用它们来降低项目纹理内存要求。&lt;/p>
+&lt;h1 id="纹理分辨率">纹理分辨率
+&lt;/h1>&lt;p>虚幻引擎支持1x1到8192x8192的纹理分辨率，只需要对.INI文件进行少许修改。最新的DirectX视频适配器和游戏主机支持1x1到2048x2048的各种纹理分辨率，最高可达8192x8192。特定硬件设备支持的最高纹理分辨率因制造商、型号和可用纹理内存而异。虚幻引擎4中有一些功能和设置，用于管理针对各种区域渲染的纹理分辨率，如场景几何结构或用户界面。&lt;/p>
+&lt;h1 id="引擎纹理分辨率限制">引擎纹理分辨率限制
+&lt;/h1>&lt;p>虚幻引擎4默认将最大纹理mip数量限制为14，这样有效地将最大渲染纹理限制为8192（1x1到8192x8192为14个mip）。&lt;/p>
+&lt;p>这有一种副作用，即导入的8192纹理将仅渲染4096中的mip1。恒定值MAX_TEXTURE_MIP_COUNT在引擎源文件中默认为13，可以修改为值14以支持8192纹理渲染。该恒定值在以下源文件中定义（截至QAMar09，确保在其他QA版本上验证）。&lt;/p>
+&lt;p>从发布UE 4.8开始，您现在可以修改项目以使用高达8192的大小，而不必修改C++代码，只需在项目的 BaseDeviceProfiles.ini 文件中添加以下文本并将 MaxLODsize 设置为 8192 即可&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">[/Script/Engine.TextureLODSettings]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">TextureLODGroup_World=(MinLODSize=1,MaxLODSize=8192,LODBias=0,MinMagFilter=aniso,MipFilter=point)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>添加了想要增加其大小的分段后，保存文件并重新启动编辑器。编辑器重新启动后，以8192大小导入的任何纹理现在应该在LOD 1显示大小8192，而不是限制在最大值4096以内。在以下示例图像中，我们修改了UE 4.8项目中的BaseDeviceProfiles.ini文件，以允许使用大小高达8192的纹理。在UE4中加载纹理Texture_8k_Test时，我们可以看到导入和显示的纹理大小均为8192。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E6%94%AF%E6%8C%81%E7%9A%84%E7%BA%B9%E7%90%86%E6%A0%BC%E5%BC%8F%E5%92%8C%E8%AE%BE%E7%BD%AE/texturelod_8k.png"
+width="1391"
+height="604"
+srcset="https://zentia.github.io/p/%E6%94%AF%E6%8C%81%E7%9A%84%E7%BA%B9%E7%90%86%E6%A0%BC%E5%BC%8F%E5%92%8C%E8%AE%BE%E7%BD%AE/texturelod_8k_hu_f226750a3f6518e9.png 480w, https://zentia.github.io/p/%E6%94%AF%E6%8C%81%E7%9A%84%E7%BA%B9%E7%90%86%E6%A0%BC%E5%BC%8F%E5%92%8C%E8%AE%BE%E7%BD%AE/texturelod_8k_hu_87bed8015e6dc264.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="230"
+data-flex-basis="552px"
+>&lt;/p>
+&lt;h1 id="压缩的纹理内存要求">压缩的纹理内存要求
+&lt;/h1>&lt;p>DXT使用有损压缩，通过调色板颜色和插值颜色将像素压缩在4x4的块中。这样会产生8:1 DXT1和4:1 DXT5恒定压缩文件大小。由于特定平台和硬件的视频内存和纹理池资源是固定的，因此纹理分辨率和资源使用必须达到平衡。下表列出了各种常见分辨率和完全mip下，DXT1和DXT5的纹理内存要求（1x1到完全原生mip0）。请注意，内存要求几乎是纹理分辨率比例的倍数不变，DXT5纹理对内存的占用几乎是DXT1的两倍。&lt;/p>
+&lt;p>由于分辨率与压缩的比值是常量，为了计算本文未列出的纹理的内存要求，只需乘以分辨率比例即可。例如，1024x512纹理的内存要求是1024x1024纹理的一半。&lt;/p>
+&lt;p>下表数据是根据使用箱式过滤器mip生成和DirectX纹理压缩，由ATI的Compressonator创建的纹理编译的。&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>分辨率&lt;/th>
+&lt;th>来自1x1的总Mip&lt;/th>
+&lt;th>DXT1&lt;/th>
+&lt;th>DXT5&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>16x16&lt;/td>
+&lt;td>5个mip&lt;/td>
+&lt;td>312字节&lt;/td>
+&lt;td>496字节&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>8192x8192&lt;/td>
+&lt;td>14个mip&lt;/td>
+&lt;td>42.6MB（44,739,384字节）&lt;/td>
+&lt;td>85.3MB（89,478,640字节）&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h1 id="引擎配置texturegroup属性">引擎配置TextureGroup属性
+&lt;/h1>&lt;p>特定游戏的TextureGroup支持的最低和最高LOD（mip）在多个引擎配置文件中定义。
+源配置设置文件组位于&lt;code>[虚幻引擎4安装位置]\Engine\Config\BaseDeviceProfiles.ini&lt;/code> 文件的[/Scripts/Engine.TextureLODSettings]分段中。&lt;/p>
+&lt;p>为开发游戏，[your_game]\Config\DefaultDeviceProfiles.ini 文件还在 Engine\Config\ 文件夹中包含一组镜像基础文件，这应当是通常根据游戏特定设置进行修改的副本。&lt;/p>
+&lt;p>需要注意的是，虚幻编辑器和游戏中拥有一组独立的TextureGroup条目。这两组分别位于配置文件的[SystemSettingsEditor]和[SystemSettings]分段中。&lt;/p>
+&lt;p>DefaultDeviceProfiles.ini 文件中的TextureLODGroup设置条目类与此类似。请注意，较早QA版本可能不包含各个设置的MinMagFilter和MipFilter属性。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">[/Script/Engine.TextureLODSettings]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">; 请注意，该分段中的任何项目会影响所有平台！！！
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">@TextureLODGroups=Group
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">TextureLODGroups=(Group=TEXTUREGROUP_World,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_WorldNormalMap,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_WorldSpecular,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Character,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_CharacterNormalMap,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_CharacterSpecular,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Weapon,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_WeaponNormalMap,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_WeaponSpecular,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Vehicle,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_VehicleNormalMap,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_VehicleSpecular,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Cinematic,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Effects,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=linear,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_EffectsNotFiltered,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Skybox,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_UI,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Lightmap,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Shadowmap,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,NumStreamedMips=3,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_RenderTarget,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_MobileFlattened,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Terrain_Heightmap,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Terrain_Weightmap,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Bokeh,MinLODSize=1,MaxLODSize=256,LODBias=0,MinMagFilter=linear,MipFilter=linear,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+TextureLODGroups=(Group=TEXTUREGROUP_Pixels2D,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=point,MipFilter=point,MipGenSettings=TMGS_SimpleAverage)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h1 id="pc-appcompat桶">PC AppCompat桶
+&lt;/h1>&lt;p>AppCompat用于根据目标和启动时收集的经验证据来覆盖各种SystemSettings。启用应用兼容性（仅限PC）时，系统衡量机器能力，然后使用五个&amp;quot;桶&amp;quot;中的其中一个桶的预设值来覆盖Engine.ini值。请参阅Engine\Config\文件夹中的BaseCompat.ini以了解相关用法示例。&lt;/p>
+&lt;p>AppCompat应该仅在首次运行游戏（而不是编辑器）时检查一次。它通过在[game]Engine.ini中检查是否存在[AppCompat]分段来进行检测，这个分段包含机器先前计算的分数。如果AppCompat已经应用过一次，则不会再次更改以允许用户每次在不进行覆盖的情况下进行自定义更改。&lt;/p>
+&lt;p>AppCompat专门针对编辑器禁用，这样机器规格不会影响开发期间在各种机器上查看资源的方式。因此，SystemSettings和SystemSettingsEditor才需要区分开来。&lt;/p>
+&lt;p>您可以有效地禁用AppCompat，方法是为游戏提供空的DefaultCompat.ini，使其从Engine.ini中的[SystemSettings]初始化所有桶。在此情况下，系统完全按照引入AppCompat之前的状态运行。&lt;/p>
+&lt;h1 id="texturegroup属性">TEXTUREGROUP属性
+&lt;/h1>&lt;p>每个TextureGroup条目为游戏渲染中使用的特定纹理集定义纹理属性。通过将纹理分组为常用集，可以更好地控制各种游戏纹理资源的纹理内存池使用。&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>属性&lt;/th>
+&lt;th>说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>MinLODSize&lt;/td>
+&lt;td>将渲染的最小mip大小，以像素为单位指定，范围1到8192中的2的幂值，必须小于MaxLODSize。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>MaxLODSize&lt;/td>
+&lt;td>将渲染的最大mip大小，以像素为单位指定，范围1到8192中的2的幂值，必须大于MinLODSize。&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h1 id="过滤">过滤
+&lt;/h1>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>MinMagFilter&lt;/th>
+&lt;th>MipFilter&lt;/th>
+&lt;th>过滤类型&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>点&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>点&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>各向异性&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>各向异性线性&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h1 id="texturegrouplodgroup和lodbias">TextureGroup、LODGroup和LODBias
+&lt;/h1>&lt;p>配置ini文件中指定的TextureGroup和LODBias设置以及纹理属性中指定的LODGroup和LODBias设置确定了用于单个纹理的最终纹理mip集。&lt;/p>
+&lt;p>[your_game]Engine.ini中的示例TextureGroup条目可能类似于：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Group=TEXTUREGROUP_World,MinLODSize=1,MaxLODSize=4096,LODBias=0,MinMagFilter=aniso,MipFilter=point,MipGenSettings=TMGS_SimpleAverage
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h1 id="纹理属性">纹理属性
+&lt;/h1>&lt;p>关于各种纹理属性的含义说明，请参阅纹理属性页面。&lt;/p></description></item><item><title>Getting started with Texture Graph</title><link>https://zentia.github.io/p/getting-started-with-texture-graph/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/getting-started-with-texture-graph/</guid><description>&lt;img src="https://zentia.github.io/p/getting-started-with-texture-graph/ue5-hero.png" alt="Featured image of post Getting started with Texture Graph" />&lt;p>The Texture Graph Editor provides artists a node-based interface to procedurally create and edit textures in Unreal Engine.&lt;/p></description></item></channel></rss>

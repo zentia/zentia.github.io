@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>纹理流送 on zentia</title><link>https://zentia.github.io/categories/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81/</link><description>Recent content in 纹理流送 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81/index.xml" rel="self" type="application/rss+xml"/><item><title>构建纹理流送数据</title><link>https://zentia.github.io/p/%E6%9E%84%E5%BB%BA%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%95%B0%E6%8D%AE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%9E%84%E5%BB%BA%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%95%B0%E6%8D%AE/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%9E%84%E5%BB%BA%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%95%B0%E6%8D%AE/ue5-hero.png" alt="Featured image of post 构建纹理流送数据" />&lt;p>每次修改和重新保存材质或材质实例时，会重新计算与使用的每个纹理有关的纹理流送数据。 每个纹理数据包含UV通道索引和缩放，UV通道索引用于对纹理采样， 缩放是应用于被采样通道的乘法因数。&lt;/p>
+&lt;p>但是，这不涵盖所有情况，因为采样可能基于场景位置、网格体顶点颜色或任何UV通道组合。这可能会导致无法通过分析 找到相关数据，引擎会假设依赖于UV通道0和缩放1。&lt;/p>
+&lt;p>分析在多个不同的步骤运行，具体取决于所编辑的内容：&lt;/p>
+&lt;ol>
+&lt;li>材质：当用户应用或保存修改时运行。&lt;/li>
+&lt;li>材质实例：材质实例编辑器关闭或者保存包含材质实例的包时运行。&lt;/li>
+&lt;li>关卡：用户运行&amp;quot;构建纹理流送&amp;quot;时针对每个所用材质运行。用于确保每个材质都是最新的。材质不是最新的原因包括：
+&lt;ul>
+&lt;li>4.15之前的材质没有任何数据。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol></description></item><item><title>纹理流送配置</title><link>https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E9%85%8D%E7%BD%AE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E9%85%8D%E7%BD%AE/</guid><description>&lt;img src="https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E9%85%8D%E7%BD%AE/ue5-hero.png" alt="Featured image of post 纹理流送配置" />&lt;p>在检查构建的纹理流送的准确性之后，您可能需要调整纹理流送的行为和优先级。 下面的参数可以通过配置文件进行调整，而其中的大多数参数也可以在运行时从控制台窗口进行更新。&lt;/p>
+&lt;p>|命令|说明|
+|r.TextureStreaming|此命令用于启用或禁用纹理流送器。当纹理流送器被禁用后，所有纹理mip都将被完全加载到内存中，即使在纹理从来没有被用于渲染的情况下也是如此。如果需要，您可以在运行时切换此选项。|
+|r.Streaming.PoolSize|引擎中纹理可用的池大小(MB)。这个池包含UI纹理、NeverStream纹理、立方体贴图和流送纹理。在某些平台上，这个池还可以保存非纹理资源，例如GPU粒子缓冲区和顶点缓冲区。设置为0时，池的大小将不受限制。|
+|r.Streaming.UseFixedPoolSize|当使用非零值时，可以在运行时更改纹理池大小。|
+|r.Streaming.FramesForFullUpdate|纹理流送器的每次完整更新之间的帧数。每次更新都会重新计算每个纹理所需的分辨率，并生成mip加载或卸载请求。较高的值会降低纹理流送器CPU使用率，而较低的值会提高其反应能力。|
+|r.Streaming.UseNewMetrics|仅用于兼容性。当设置为假时，纹理流送器将按照4.12版本继续进行处理。|&lt;/p></description></item><item><title>纹理流送概述</title><link>https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%A6%82%E8%BF%B0/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%A6%82%E8%BF%B0/</guid><description>&lt;img src="https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%A6%82%E8%BF%B0/ue5-hero.png" alt="Featured image of post 纹理流送概述" />&lt;p>纹理流送系统或流送器是引擎的一部分，负责增大和减小每个纹理的分辨率。该系统使您可以拥有良好的视觉质量， 同时有效地管理可用内存。这在一定程度上是通过Mip或Mipmap实现的，Mip或Mipmap是为您的纹理分辨率预先计算的图像序列。您可以将它们视为纹理的LOD。 有关Mip的更多信息，您可以在我们的纹理支持和设置页面上加以了解。&lt;/p>
+&lt;p>流送器有自己的场景视图，它的更新周期包括&lt;/p>
+&lt;ol>
+&lt;li>更新场景视图&lt;/li>
+&lt;li>计算每个纹理的理想分辨率&lt;/li>
+&lt;li>根据流送池大小选择哪个分辨率实际上是可行的&lt;/li>
+&lt;li>选择要更新的纹理&lt;/li>
+&lt;li>生成加载/卸载请求&lt;/li>
+&lt;/ol>
+&lt;p>为完成这些任务，流送器使用异步工作线程来降低游戏线程上的工作负载，这样上述只有第一个和最后一个任务需要在游戏更新循环中完成。 场景视图包含每个Primitive组件使用的所有纹理列表以及每个纹理的场景边界和纹素场景大小。根据该信息和给定视点，可以计算出 获得良好的逐像素比率纹素所必需的分辨率。然后还会考虑一些额外的信息，例如该组件实际上是否可以在屏幕上看到。 这最终会定义每个纹理的理想分辨率。然后流送器会计算流送内存池是不是足够大，能容纳这些分辨率。如果不够，流送器会降低所选纹理的计划质量， 一次降低一个mip，直到计划的分辨率降低到预算之下。&lt;/p>
+&lt;p>降低mip时处理纹理的顺序由保留时间优先级来定义，请按以下顺序遵循这些规则：&lt;/p>
+&lt;ol>
+&lt;li>保留地形纹理、强制加载纹理和已经缺失分辨率的纹理&lt;/li>
+&lt;li>保留在屏幕上可见的mip&lt;/li>
+&lt;li>保留角色纹理和不占用过多内存的纹理&lt;/li>
+&lt;li>删掉不可见的mip，先删掉最新看到的mip&lt;/li>
+&lt;/ol>
+&lt;p>流送器确定针对每个纹理加载的分辨率后，就会根据加载顺序优先级计算先更新哪个纹理。优先级根据按照以下顺序评估的多个条件定义：&lt;/p>
+&lt;ol>
+&lt;li>先加载可见mip&lt;/li>
+&lt;li>先加载强制加载纹理、地形纹理和角色纹理&lt;/li>
+&lt;li>先加载远离目标分辨率的纹理&lt;/li>
+&lt;li>对于不可见的纹理，先加载最新看到的&lt;/li>
+&lt;/ol>
+&lt;p>最后一步是为了生成一批更新请求，每个请求增大或降低当前纹理分辨率。针对一批更新的内存量 受到内存池大小的限制，以便保持较低的动态请求数量。&lt;/p></description></item><item><title>纹理流送指标</title><link>https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%8C%87%E6%A0%87/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%8C%87%E6%A0%87/</guid><description>&lt;img src="https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%8C%87%E6%A0%87/ue5-hero.png" alt="Featured image of post 纹理流送指标" />&lt;p>可使用 STAT STREAMING 控制台命令分析纹理流送状态。此分析报告性能、内存使用，以及纹理流送器使用的其他指标。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">STAT STREAMING sortby=name maxhistoryframes=1
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%8C%87%E6%A0%87/statstreaming.png"
+width="1136"
+height="626"
+srcset="https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%8C%87%E6%A0%87/statstreaming_hu_7d663e3bd6568f81.png 480w, https://zentia.github.io/p/%E7%BA%B9%E7%90%86%E6%B5%81%E9%80%81%E6%8C%87%E6%A0%87/statstreaming_hu_53f6b5ad6d3d0ecc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="181"
+data-flex-basis="435px"
+>&lt;/p>
+&lt;p>读取内存数据时，术语&amp;quot;pool&amp;quot;代表概念（保留）内存，与实际使用的内存无关。 术语&amp;quot;mips&amp;quot;代表纹理当前使用的内存，而非未发生或未来的使用。内存指标分为三种主要的池：&lt;/p>
+&lt;ul>
+&lt;li>Texture&lt;/li>
+&lt;li>Streaming&lt;/li>
+&lt;li>Wanted&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>这些池的大小显示在 Memory Counters 类目中每行的右方。&lt;/p>&lt;/blockquote>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>数据&lt;/th>
+&lt;th>描述&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Game Thread Update Time&lt;/td>
+&lt;td>流送器更新函数所占用的时间。这负责大多数的纹理流送工作。只有少数任务在纹理流送器外处理，如移除对纹理、组件或关卡的引用。在一个游戏线程更新中，流送器向完整更新执行一步。完成更新将持续数帧，并与 r.Streaming.FramesForFullUpdate 相关。如数据的 Counter 部分所定义，更新步骤各有不同。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Texture Pool&lt;/td>
+&lt;td>纹理资源可用的总内存。这包含各种非流送资源，如渲染目标、GPU 粒子缓存、立方体贴图、UI 纹理和不可流送纹理。在部分平台上，此内存可用于保存静态网格体之类的非纹理资源。Texture Pool 约等于 Safety Pool + Temporary Pool + Streaming Pool + NonStreaming Mips（如有，仅限波动的量，上至安全池的大小）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Safety Pool&lt;/td>
+&lt;td>此值在 Engine 配置文件中设置（在 [TextureStreaming] 下，作为 MemoryMargin）。这是为意外（非流送）分配预留的内存。如可用的内存因低于此值的量形成周期波动，纹理流送器将在此波动下最大程度地稳定其流送池如正常（预计）的波动超过安全池大小，纹理流送器将不断应用其预算，可能会创建流入和流出纹理的无限循环。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Temporary Pool&lt;/td>
+&lt;td>此值由 r.Streaming.MaxTempMemoryAllowed 控制，并指定调整纹理大小时流送器可用的额外内存量。变更纹理的 mip 数量时，引擎需要新建一个纹理（无论大小），用于保存之后的 mip 数据。这能间接控制进行中请求的数量，因为流送器将向 IO 系统发送临时池允许的请求数量。注意：临时池最小尺寸必须与需要流送的最大资源相同，但设为过大会浪费内存（因其正是为此目的而预留）。从另一方面而言，设为过小会减缓流送速度（无法为 IO 系统生成足够的工作，使其进入待机状态）。此外还需注意：流送器无法对进行中请求内的处理顺序进行较大程度的控制。这意味着使用相对较小的临时池可更大程度地控制加载顺序。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Streaming Pool&lt;/td>
+&lt;td>纹理流送器可用的内存量。流送器通常会将所有可用内存用于流送新 mip，或将之前流送的 mip 尽可能久地保存在内存中。流送池（Streaming Pool）包含可见 Mip（Visible Mip）、隐藏 Mip（Hidden Mip）、强制 Mip（Force Mip）和缓存 Mip（Cached Mip）。Streaming Pool 约等于 Visible Mips* + Hidden Mips + Forced Mips + Cached Mips（完全使用时为 *:，否则未使用的空间必须被占用）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>NonStreaming Mips&lt;/td>
+&lt;td>非流送分配使用的内存量。如这些分配因超过安全池的值而出现定期波动，这将影响流送池的预算，应避免出现此状况（减少分配次数或增加安全池）。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Required Pool&lt;/td>
+&lt;td>纹理流送器需要根据其指标加载的 mip 数据量。这可超过纹理流送池的 100%，但同时也会进行一些妥协，部分纹理将不会以其所要求的分辨率加载。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Visible Mips&lt;/td>
+&lt;td>可见纹理 mip 当前占用的所需内存。这并不包含强制 mip。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Hidden Mips&lt;/td>
+&lt;td>非可见纹理 mip 当前占用的所需内存。这并不包含强制 mip。为防止首次显示纹理时出现低精度纹理，流送器会提前预流送纹理，但通常会比所需要的少一个 mip（详见 r.Streaming.HiddenPrimitiveScale）。&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item></channel></rss>

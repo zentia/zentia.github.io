@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>可扩展性 on zentia</title><link>https://zentia.github.io/categories/%E5%8F%AF%E6%89%A9%E5%B1%95%E6%80%A7/</link><description>Recent content in 可扩展性 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E5%8F%AF%E6%89%A9%E5%B1%95%E6%80%A7/index.xml" rel="self" type="application/rss+xml"/><item><title>可延展性设置</title><link>https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/</guid><description>&lt;img src="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/ue5-hero.png" alt="Featured image of post 可延展性设置" />&lt;h1 id="可延展性设置">可延展性设置
+&lt;/h1>&lt;p>要在编辑器中访问可延展性设置，可使用工具栏中的设置（Settings）菜单。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/scaler_viewqual.png"
+width="870"
+height="648"
+srcset="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/scaler_viewqual_hu_660a2bbe38fd2601.png 480w, https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/scaler_viewqual_hu_eb94a814a012fbd6.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="134"
+data-flex-basis="322px"
+>&lt;/p>
+&lt;h1 id="分辨率缩放">分辨率缩放
+&lt;/h1>&lt;p>UE可以较低分辨率渲染场景，然后将图像延展到目标分辨率。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/sc_00007.png"
+width="939"
+height="353"
+srcset="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/sc_00007_hu_8b00d92bde1ea5f.png 480w, https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/sc_00007_hu_b363202e6dacd546.png 1024w"
+loading="lazy"
+alt="左：50%无AA，中间：50%有AA，右：100%（无分辨率缩放）有AA"
+class="gallery-image"
+data-flex-grow="266"
+data-flex-basis="638px"
+>&lt;/p>
+&lt;h1 id="视图距离">视图距离
+&lt;/h1>&lt;p>对象可以根据与查看者的距离而剔除。默认情况下，所有对象都不会随距离而剔除（所需最大绘制距离为0）。除了设计者指定的值之外，还有一个全局可延展性设置，其作用类似于乘数（r.ViewDistanceScale）。下图您可以看到一些草对象（所需最大绘制距离为1000）：&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/sc_00006.png"
+width="1431"
+height="314"
+srcset="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/sc_00006_hu_d40726dcea105a47.png 480w, https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/sc_00006_hu_9697e1379c2915c4.png 1024w"
+loading="lazy"
+alt="左： r.ViewDistanceScale 0.4，中间：r.ViewDistanceScale 0.7，右：r.ViewDistanceScale 1.0（默认值）"
+class="gallery-image"
+data-flex-grow="455"
+data-flex-basis="1093px"
+>&lt;/p>
+&lt;h1 id="抗锯齿">抗锯齿
+&lt;/h1>&lt;p>&lt;img src="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/scaler_aa_small.png"
+width="920"
+height="216"
+srcset="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/scaler_aa_small_hu_298278cc3782843.png 480w, https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/scaler_aa_small_hu_548e393c642400f7.png 1024w"
+loading="lazy"
+alt="从左开始：r.PostProcessAAQuality 0到6。前3个等于 视图（View）-&amp;gt;可延展性选项（Scalability Options）-&amp;gt;AA 设置中的 低（Low）、中（Medium）、高（High）、Epic 设置。"
+class="gallery-image"
+data-flex-grow="425"
+data-flex-basis="1022px"
+>&lt;/p>
+&lt;h1 id="后期处理sgpostprocessquality">后期处理——sg.PostProcessQuality
+&lt;/h1>&lt;h1 id="阴影sgshadowquality">阴影——sg.ShadowQuality
+&lt;/h1>&lt;p>&lt;img src="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/sc_shadowquallevels.png"
+width="4065"
+height="665"
+srcset="https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/sc_shadowquallevels_hu_83ca908e3725a514.png 480w, https://zentia.github.io/p/%E5%8F%AF%E5%BB%B6%E5%B1%95%E6%80%A7%E8%AE%BE%E7%BD%AE/sc_shadowquallevels_hu_a2c094256dc9599c.png 1024w"
+loading="lazy"
+alt="sg.ShadowQuality左侧设置为0，依次向右递增到3。"
+class="gallery-image"
+data-flex-grow="611"
+data-flex-basis="1467px"
+>&lt;/p>
+&lt;p>视图（View）-&amp;gt;引擎可延展性设置（Engine Scalability Settings）-&amp;gt;阴影（Shadows） 选项根据[UE_InstallPath]/Engine/Config文件夹中 BaseScalability.ini 文件中的设置，调节动态阴影的质量。低（Low） 设置等于 sg.ShadowQuality 0，Epic 等于 sg.ShadowQuality 3。&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>sg.ShadowQuality 0&lt;/th>
+&lt;th>sg.ShadowQuality 1&lt;/th>
+&lt;th>sg.ShadowQuality 2&lt;/th>
+&lt;th>sg.ShadowQuality 3&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>r.LightFunctionQuality=0&lt;/td>
+&lt;td>r.LightFunctionQuality=1&lt;/td>
+&lt;td>r.LightFunctionQuality=1&lt;/td>
+&lt;td>r.LightFunctionQuality=1&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>r.ShadowQuality=0&lt;/td>
+&lt;td>r.ShadowQuality=2&lt;/td>
+&lt;td>r.ShadowQuality=5&lt;/td>
+&lt;td>r.ShadowQuality=5&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>r.Shadow.CSM.MaxCascades=1&lt;/td>
+&lt;td>r.Shadow.CSM.MaxCascades=1&lt;/td>
+&lt;td>r.Shadow.CSM.MaxCascades=2&lt;/td>
+&lt;td>r.Shadow.CSM.MaxCascades=4&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>r.Shadow.MaxResolution=512&lt;/td>
+&lt;td>r.Shadow.MaxResolution=1024&lt;/td>
+&lt;td>r.Shadow.MaxResolution=1024&lt;/td>
+&lt;td>r.Shadow.MaxResolution=1024&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>r.Shadow.RadiusThreshold=0.06&lt;/td>
+&lt;td>r.Shadow.RadiusThreshold=0.05&lt;/td>
+&lt;td>r.Shadow.RadiusThreshold=0.03&lt;/td>
+&lt;td>r.Shadow.RadiusThreshold=0.03&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>r.Shadow.DistanceScale=0.6&lt;/td>
+&lt;td>r.Shadow.DistanceScale=0.7&lt;/td>
+&lt;td>r.Shadow.DistanceScale=0.85&lt;/td>
+&lt;td>r.Shadow.DistanceScale=1.0&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>r.Shadow.CSM.TransitionScale=0&lt;/td>
+&lt;td>r.Shadow.CSM.TransitionScale=0.25&lt;/td>
+&lt;td>r.Shadow.CSM.TransitionScale=0.8&lt;/td>
+&lt;td>r.Shadow.CSM.TransitionScale=1.0&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h1 id="纹理sgtexturequality">纹理——sg.TextureQuality
+&lt;/h1>&lt;p>主流渲染引擎需要更多GPU内存（纹理、网格体、GBuffer、深度缓冲、阴影贴图）。其中一些根据屏幕分辨率缩放（例如GBuffer），另一些有特定的质量设置（例如，阴影贴图）。使用大量GPU内存的另一个因素是所用的纹理（通常压缩并流送）。您可以指示流送系统在管理上更主动一些（缩小池大小、剔除不用的纹理），或者在mip等级计算中拥有更少或更多细节。这样会影响图像质量、您能够注意到的纹理流送瑕疵数量以及游戏的运行流畅度（更新需要高成本内存传输）。结果不尽相同，具体取决于介质（例如，更快/更慢的硬盘/SSD）。从DVD/蓝光流送会大幅增加延迟，因此应当尽量避免。&lt;/p></description></item></channel></rss>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>虚拟纹理 on zentia</title><link>https://zentia.github.io/categories/%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86/</link><description>Recent content in 虚拟纹理 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86/index.xml" rel="self" type="application/rss+xml"/><item><title>虚拟纹理内存池</title><link>https://zentia.github.io/p/%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%86%85%E5%AD%98%E6%B1%A0/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%86%85%E5%AD%98%E6%B1%A0/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%86%85%E5%AD%98%E6%B1%A0/ue5-hero.png" alt="Featured image of post 虚拟纹理内存池" />&lt;p>虚拟纹理系统主要有两种GPU内存分配方式：页表内存（Page Table Memory）和物理内存池（Physical Memory Pool）。&lt;/p></description></item><item><title>运行时虚拟纹理快速入门</title><link>https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/ue5-hero.png" alt="Featured image of post 运行时虚拟纹理快速入门" />&lt;blockquote>
+&lt;p>本指南要求使用了在Epic Games启动程序中示例选项卡下的内容示例项目中的材质。虽然不使用这些材质也可以完成以下步骤，但为了设置地形，使其正常生效，需要使用绘制好的地形材质。在继续前，打开 示例 选项卡下的内容示例项目 Landscapes 地图，以配合本指南的学习。&lt;/p>&lt;/blockquote>
+&lt;p>在运行时 虚拟纹理（RVT） 快速入门中，将介绍在你的项目中针对地形和非地形组件设置和使用RVT的过程。&lt;/p>
+&lt;p>在开始本指南前，出于以下原因，理解运行时虚拟纹理最适用于地形十分重要：&lt;/p>
+&lt;ul>
+&lt;li>复杂的地形材质缓存着色效果，可提高性能。&lt;/li>
+&lt;li>使用样条型和贴花类效果可提高质量和加强变体。&lt;/li>
+&lt;li>由同一RVT资产处理非地形Acor与地形的混合。&lt;/li>
+&lt;/ul>
+&lt;p>完成本指南后，你会更了解：&lt;/p>
+&lt;ul>
+&lt;li>设置运行时虚拟纹理资产以及它连接到不同组件的方式。&lt;/li>
+&lt;li>为地形材质启用运行时虚拟纹理。&lt;/li>
+&lt;li>在关卡中设置运行时虚拟纹理体积。&lt;/li>
+&lt;li>设置更多Actor以渲染至运行时虚拟纹理。&lt;/li>
+&lt;/ul>
+&lt;h1 id="项目设置">项目设置
+&lt;/h1>&lt;p>使用运行时虚拟纹理前，必须先为项目启用它。执行以下步骤：&lt;/p>
+&lt;ol>
+&lt;li>在主菜单中，选择 编辑（Edit） 菜单并选择 项目设置（Project Settings）。在 引擎（Engine） &amp;gt; 渲染（Rendering） &amp;gt; 虚拟纹理（Virtual Textures） 类目下，将 启用虚拟纹理支持（Enable Virtual texture support） 设为true。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/ue5_1-1-1-project-settings.png"
+width="1335"
+height="841"
+srcset="https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/ue5_1-1-1-project-settings_hu_1b525a045f762b43.png 480w, https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/ue5_1-1-1-project-settings_hu_ad61ae4b957f1e3b.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="158"
+data-flex-basis="380px"
+>&lt;/p>
+&lt;ol start="2">
+&lt;li>重启 项目。&lt;/li>
+&lt;/ol>
+&lt;h1 id="创建运行时虚拟纹理资产">创建运行时虚拟纹理资产
+&lt;/h1>&lt;p>运行时虚拟纹理 资产包含指定给运行时虚拟纹理体积的RVT资产的配置详情。RVT资产的工作原理是链接场景中需共享数据的材质和其他Actor。&lt;/p>
+&lt;ol>
+&lt;li>在 内容侧滑菜单 中，利用右键点击快捷菜单或 添加（+Add） 按钮从 纹理（Textures） 类目创建 运行时虚拟纹理 资产。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/ue5_1-2-1-content-drawer-add-new-runtime-virtual-texturing-asset.png"
+width="612"
+height="906"
+srcset="https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/ue5_1-2-1-content-drawer-add-new-runtime-virtual-texturing-asset_hu_64120219a2e20565.png 480w, https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/ue5_1-2-1-content-drawer-add-new-runtime-virtual-texturing-asset_hu_c54ac6ca6feb8f6a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="67"
+data-flex-basis="162px"
+>&lt;/p>
+&lt;ol start="2">
+&lt;li>为 运行时虚拟纹理 资产命名。在本指南中，命名为 VT_Test。&lt;/li>
+&lt;li>双击打开此 运行时虚拟纹理 资产编辑器，以配置其可用属性。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/ue5_1-2-1-runtime-virtual-texturing-asset-window.png"
+width="960"
+height="768"
+srcset="https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/ue5_1-2-1-runtime-virtual-texturing-asset-window_hu_9aa5a3f872bb81ed.png 480w, https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/ue5_1-2-1-runtime-virtual-texturing-asset-window_hu_57c88a2caeaa1f65.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="125"
+data-flex-basis="300px"
+>&lt;/p>
+&lt;p>在此窗口中，你可以定义运行时虚拟纹理（RSV）支持的大小、图块大小和材质属性类型。这些熟悉可以实时调整，并在编辑器中实时查看改动效果。&lt;/p>
+&lt;blockquote>
+&lt;p>欲知这些设置的详情和用途，参阅虚拟纹理设置页面。&lt;/p>&lt;/blockquote></description></item><item><title>运行时虚拟纹理</title><link>https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%BF%90%E8%A1%8C%E6%97%B6%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86/ue5-hero.png" alt="Featured image of post 运行时虚拟纹理" />&lt;p>运行时虚拟纹理 (RVT)在运行时使用GPU按需创建其纹素数据，工作方式与传统纹理映射类似。较大区域上的RVT缓存着色数据非常适用于使用贴花类材质的地形和适配地形的样条。&lt;/p>
+&lt;h1 id="工作流程">工作流程
+&lt;/h1>&lt;p>使用以下高级步骤在项目中设置和使用运行时虚拟纹理：&lt;/p>
+&lt;ol>
+&lt;li>在内容浏览器中创建 运行时虚拟纹理 资产。用于将所有组件（包括RVT体积Actor和RVT材质）链接在一起，渲染运行时虚拟纹理。&lt;/li>
+&lt;li>在 模式（Modes） 面板中将 运行时虚拟纹理体积（Runtime Virtual Texture Volume） 添加到场景。此操作用于将RVT资产放置到场景中。&lt;/li>
+&lt;li>配置材质以 写入 到RVT资产。&lt;/li>
+&lt;li>配置材质以从RVT资产 采样。&lt;/li>
+&lt;li>设置一个或多个图元组件或地形Actor，以渲染至RVT资产。&lt;/li>
+&lt;/ol>
+&lt;blockquote>
+&lt;p>欲了解设置RVT的详细步骤指南，参见运行时虚拟纹理快速入门。本指南将设置地形材质和其他场景组件，以使用运行时虚拟纹理。&lt;/p>&lt;/blockquote></description></item><item><title>流送虚拟纹理</title><link>https://zentia.github.io/p/%E6%B5%81%E9%80%81%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%B5%81%E9%80%81%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%B5%81%E9%80%81%E8%99%9A%E6%8B%9F%E7%BA%B9%E7%90%86/ue5-hero.png" alt="Featured image of post 流送虚拟纹理" />&lt;p>流送虚拟纹理 (SVT)是一种在项目中从硬盘流送纹理的替代方法，与虚幻引擎4（UE4）中现有基于mip的纹理流送相比，其既有优点也有缺点。&lt;/p></description></item></channel></rss>

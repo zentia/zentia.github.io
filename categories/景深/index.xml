@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>景深 on zentia</title><link>https://zentia.github.io/categories/%E6%99%AF%E6%B7%B1/</link><description>Recent content in 景深 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E6%99%AF%E6%B7%B1/index.xml" rel="self" type="application/rss+xml"/><item><title>过场动画景深</title><link>https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/randg_herobanner.png" alt="Featured image of post 过场动画景深" />&lt;p>以下景深方法具有影视级视觉效果，十分接近使用延迟着色渲染器和群集前向渲染器的桌面及主机平台上照片和电影的效果。&lt;/p>
+&lt;p>类似于圆圈景深和散景景深，&amp;ldquo;影视级&amp;quot;景深的效果跟真实摄像机不相上下，你可以在锐化&lt;a class="link" href="" >高动态范围 (HDR)&lt;/a>内容中看到圆形散景（离焦区域）。此方法使用程序化散景模拟技术，具有动态分辨率稳定性和阿尔法通道支持，在台式机和主机上开发的项目还具有更快速、可扩展和性能优化等特性。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_disabled.png"
+width="1916"
+height="1015"
+srcset="https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_disabled_hu_3989771e759a9fa6.png 480w, https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_disabled_hu_216ec5c823000df5.png 1024w"
+loading="lazy"
+alt="Depth of Field Disabled"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="453px"
+>
+&lt;img src="https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_enabled.png"
+width="1916"
+height="1015"
+srcset="https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_enabled_hu_75955f69df7591d6.png 480w, https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_enabled_hu_38507762aa83299c.png 1024w"
+loading="lazy"
+alt="Cinematic Depth of Field"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="453px"
+>&lt;/p>
+&lt;h1 id="对焦拍摄对象">对焦拍摄对象
+&lt;/h1>&lt;p>实现美学意义上宜人景深效果的关键在于对焦拍摄对象。对于特定拍摄情形，影响景深设置的核心因素有三个：&lt;/p>
+&lt;ul>
+&lt;li>确定镜头要使用的 焦距（Focal Length）。&lt;/li>
+&lt;li>选择合适的 孔径（Aperture）（F值）。&lt;/li>
+&lt;li>选择拍摄对象与摄像机之间的 对象距离（Distance to your Subject）。&lt;/li>
+&lt;/ul>
+&lt;p>为了理解调整这些设置时会产生怎样的效果，我们来分析一下构成摄像机和拍摄场景的各个要素：&lt;/p></description></item><item><title>移动平台景深方法</title><link>https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/</guid><description>&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/randg_herobanner.png" alt="Featured image of post 移动平台景深方法" />&lt;h1 id="高斯">高斯
+&lt;/h1>&lt;blockquote>
+&lt;p>已移除高斯景深与 延迟渲染器（Deferred Renderer） 和 桌面前向渲染器（Desktop Forward Renderer） 的配合使用，该景深仅支持移动平台。如需在桌面计算机上在编辑器内工作时使用此高斯景深，请使用移动预览器启用其中一个移动平台预览器。&lt;/p>&lt;/blockquote>
+&lt;p>高斯 景深方法使用标准的&lt;a class="link" href="https://zh.wikipedia.org/wiki/%E9%AB%98%E6%96%AF%E6%A8%A1%E7%B3%8A" target="_blank" rel="noopener"
+>高斯模糊&lt;/a>（也叫高斯平滑）函数对场景进行模糊处理。高斯DOF使用固定大小的高斯模糊核对前景和背景进行模糊处理，在移动设备等低端硬件上它的速度非常快。在非常注重性能的场合，它可以在降低开销的情况下保持高性能。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_0.png"
+width="1415"
+height="796"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_0_hu_4fecfe220d92d046.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_0_hu_e1f7c743d28f242f.png 1024w"
+loading="lazy"
+alt="无景深"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>
+&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_1.png"
+width="1415"
+height="796"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_1_hu_5f95c64f3d699239.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_1_hu_1aec8e03adb98eef.png 1024w"
+loading="lazy"
+alt="高斯景深"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h1 id="查看景深">查看景深
+&lt;/h1>&lt;p>可以使用关卡视口中的 景深图层（Depth of Field layers） 显示标志来使包括过渡区在内的图层可视化，该显示标志位于 显示（Show） &amp;gt; 可视化（Visualize） 下。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_2.png"
+width="1916"
+height="1015"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_2_hu_7dd9e637e0c3bf70.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_2_hu_65d4db5bdb216334.png 1024w"
+loading="lazy"
+alt="最终场景"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="453px"
+>
+&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_3.png"
+width="1916"
+height="1015"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_3_hu_2ed0772d4a7b30bb.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_3_hu_30a6a8862b3a15a6.png 1024w"
+loading="lazy"
+alt="景深查看"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="453px"
+>&lt;/p>
+&lt;h1 id="对焦距离focal-distance">对焦距离（Focal Distance）
+&lt;/h1>&lt;p>对焦距离（Focal Distance） 表示对焦区域和捕捉的视角。焦距越长，景深越浅，对焦区域外的对象越模糊；焦距越短，景深越大，聚焦越准确而且失焦的对象越少。光圈数值可以保持不变，更改透镜尺寸将调整景深效果的深浅。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_5.png"
+width="2500"
+height="1946"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_5_hu_dc9299fc1fcae59d.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_5_hu_64bc36050e0c1c0d.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="128"
+data-flex-basis="308px"
+>&lt;/p>
+&lt;p>设置好 对焦距离（Focal Distance） 和 对焦区域（Focal Region） 之后，就可以使用 近过渡（Near Transition） 和 远过渡（Far Transition） 来调整对焦区域和完全模糊的场景之间的距离。另外，你甚至还可以调整 近景模糊尺寸（Near Blur Size） 和 远景模糊尺寸（Far Blur Size） 来进一步对高斯景深的外观进行微调。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_6.png"
+width="1916"
+height="1015"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_6_hu_4abb0c0ce2ea3f61.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_6_hu_b0749e0bddcf6ff.png 1024w"
+loading="lazy"
+alt="为得到良好的景深效果，对近/远过渡和模糊尺寸的数值进行了调整之后的高斯景深。"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="453px"
+>&lt;/p>
+&lt;p>在本示例中，为了实现近景和远景区域的柔和景深效果，我们设置了以下数值。&lt;/p>
+&lt;ul>
+&lt;li>对焦距离（Focal Distance）： 215&lt;/li>
+&lt;li>影调范围（Scale）： 2500&lt;/li>
+&lt;li>近过渡（Near Transition）： 500&lt;/li>
+&lt;li>远过渡（Far Transition）： 400&lt;/li>
+&lt;li>近景模糊尺寸（Near Blur Size）： 2.0&lt;/li>
+&lt;li>远景模糊尺寸（Far Blur Size）： 2.5&lt;/li>
+&lt;/ul>
+&lt;h1 id="可用设置">可用设置
+&lt;/h1>&lt;p>高斯景深的设置和属性可以在后期处理体积的 细节 面板中找到，位于 移动景深（Mobile Depth of Field） 的 镜头（Lens） 分类中。&lt;/p></description></item></channel></rss>

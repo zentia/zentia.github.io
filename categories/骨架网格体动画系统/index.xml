@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>骨架网格体动画系统 on zentia</title><link>https://zentia.github.io/categories/%E9%AA%A8%E6%9E%B6%E7%BD%91%E6%A0%BC%E4%BD%93%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/</link><description>Recent content in 骨架网格体动画系统 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E9%AA%A8%E6%9E%B6%E7%BD%91%E6%A0%BC%E4%BD%93%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/index.xml" rel="self" type="application/rss+xml"/><item><title>动画蓝图</title><link>https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E8%93%9D%E5%9B%BE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E8%93%9D%E5%9B%BE/</guid><description>&lt;img src="https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E8%93%9D%E5%9B%BE/ue5-hero.png" alt="Featured image of post 动画蓝图" />&lt;p>动画蓝图 是一种特殊的 蓝图，它用于在游戏中控制 骨骼网格体 的动画效果。动画蓝图编辑器（Animation Blueprint Editor） 中的 图表（Graphs） 可以效果动画，允许你直接控制骨架的骨骼，或设置骨骼网格体逐帧逻辑，以便创建最终动画姿势。&lt;/p></description></item><item><title>动画插槽</title><link>https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E6%8F%92%E6%A7%BD/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E6%8F%92%E6%A7%BD/</guid><description>&lt;img src="https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E6%8F%92%E6%A7%BD/ue5-hero.png" alt="Featured image of post 动画插槽" />&lt;p>为角色创建复杂的动画时，可能需要在动画蓝图中创建代理区域用来插入一次性的动画。为此可以使用 插槽（Slots），这是一种可以添加至动画蓝图各处的节点，用于叠加并播放动画。插槽通常和动画蒙太奇一起使用，但也可以与Sequencer一起使用。&lt;/p></description></item><item><title>动画蒙太奇</title><link>https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E8%92%99%E5%A4%AA%E5%A5%87/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E8%92%99%E5%A4%AA%E5%A5%87/</guid><description>&lt;img src="https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E8%92%99%E5%A4%AA%E5%A5%87/ue5-hero.png" alt="Featured image of post 动画蒙太奇" />&lt;p>你可以使用动画蒙太奇（Animation Montage）（简称蒙太奇（Montage））来讲多个动画序列（Animation Sequence）合并为单个资产并通过蓝图播放。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E8%92%99%E5%A4%AA%E5%A5%87/montagedemo.gif"
+width="1060"
+height="535"
+srcset="https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E8%92%99%E5%A4%AA%E5%A5%87/montagedemo_hu_603da3b7f909075d.gif 480w, https://zentia.github.io/p/%E5%8A%A8%E7%94%BB%E8%92%99%E5%A4%AA%E5%A5%87/montagedemo_hu_ceb3b24a67a5a715.gif 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="198"
+data-flex-basis="475px"
+>&lt;/p>
+&lt;p>蒙太奇除了可以让你将多个动画序列合并为动画外，还可以切分多个蒙太奇分段（Montage Sections），以便在运行时，按一定逻辑以任何顺序动态播放。&lt;/p></description></item><item><title>根运动</title><link>https://zentia.github.io/p/%E6%A0%B9%E8%BF%90%E5%8A%A8/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%A0%B9%E8%BF%90%E5%8A%A8/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%A0%B9%E8%BF%90%E5%8A%A8/ue5-hero.png" alt="Featured image of post 根运动" />&lt;p>通过根运动（Root Motion）动画，你可以用动画数据驱动角色的动作，从而在关卡中创建更真实的动作。&lt;/p>
+&lt;h1 id="先决条件">先决条件
+&lt;/h1>&lt;ul>
+&lt;li>你的项目需要包含一个角色，并且其骨架包含一个根骨骼。&lt;/li>
+&lt;li>你的项目需要包含一个动画序列或者蒙太奇，并且为其骨架的根骨骼指定了动作数据。&lt;/li>
+&lt;/ul></description></item><item><title>混合空间</title><link>https://zentia.github.io/p/%E6%B7%B7%E5%90%88%E7%A9%BA%E9%97%B4/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%B7%B7%E5%90%88%E7%A9%BA%E9%97%B4/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%B7%B7%E5%90%88%E7%A9%BA%E9%97%B4/ue5-hero.png" alt="Featured image of post 混合空间" />&lt;p>你可以使用动画蒙太奇（Animation Montage）（简称蒙太奇（Montage））来讲多个动画序列（Animation Sequence）合并为单个资产并通过蓝图播放。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E6%B7%B7%E5%90%88%E7%A9%BA%E9%97%B4/montagedemo.gif"
+width="1060"
+height="535"
+srcset="https://zentia.github.io/p/%E6%B7%B7%E5%90%88%E7%A9%BA%E9%97%B4/montagedemo_hu_603da3b7f909075d.gif 480w, https://zentia.github.io/p/%E6%B7%B7%E5%90%88%E7%A9%BA%E9%97%B4/montagedemo_hu_ceb3b24a67a5a715.gif 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="198"
+data-flex-basis="475px"
+>&lt;/p>
+&lt;p>蒙太奇除了可以让你将多个动画序列合并为动画外，还可以切分多个蒙太奇分段（Montage Sections），以便在运行时，按一定逻辑以任何顺序动态播放。&lt;/p></description></item></channel></rss>
