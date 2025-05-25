@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>为场景设置光照 on zentia</title><link>https://zentia.github.io/categories/%E4%B8%BA%E5%9C%BA%E6%99%AF%E8%AE%BE%E7%BD%AE%E5%85%89%E7%85%A7/</link><description>Recent content in 为场景设置光照 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E4%B8%BA%E5%9C%BA%E6%99%AF%E8%AE%BE%E7%BD%AE%E5%85%89%E7%85%A7/index.xml" rel="self" type="application/rss+xml"/><item><title>Lumens性能指南</title><link>https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/</guid><description>&lt;img src="https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/ue5-hero.png" alt="Featured image of post Lumens性能指南" />&lt;p>Lumen的目标是，能够在主机上分别以8毫秒和4毫秒的帧预算实现30和60FPS，并为不透明和半透明材质以及体积雾实现全局光照和反射效果。引擎采用了一系列预先配置好的&amp;quot;可扩展/弹性（Scalability）&amp;ldquo;设置让Lumen应对不同的目标帧率需求。超高（Epic） 级别对应的帧率为30FPS。高（High） 级别对应的目标帧率为60FPS。&lt;/p>
+&lt;p>Lumen依赖&lt;a class="link" href="https://zentia.github.io/p/%E5%8A%A8%E6%80%81%E5%88%86%E8%BE%A8%E7%8E%87/" target="_blank" rel="noopener"
+>时间上采样&lt;/a>和虚幻引擎5的&lt;a class="link" href="https://zentia.github.io/p/%E6%97%B6%E9%97%B4%E8%B6%85%E7%BA%A7%E5%88%86%E8%BE%A8%E7%8E%87/" target="_blank" rel="noopener"
+>时间超级分辨率&lt;/a>（TSR）功能来提供4k输出。Lumen和一些其他功能本身只使用较低的内部分辨率（1080p），这样能赋予TSR最佳的最终图像质量。否则，如果直接以4K原生分辨率渲染这些功能，则需要降低质量设置，这样才能实现30或60 FPS的帧率。&lt;/p>
+&lt;h1 id="可扩展性设置">可扩展性设置
+&lt;/h1>&lt;p>你可以在关卡编辑器中的 设置（Settings）&amp;gt; 引擎可扩展性设置（Engine Scalability Settings） 视口下找到可扩展性设置。在游戏中，请使用GameUserSettings和图形设置菜单来控制可扩展性设置（相关示例请参阅Lyra项目）。Lumen的品质可以通过 全局光照（Global Illumination） 和 反射（Reflections） 质量组进行设置：&lt;/p>
+&lt;ul>
+&lt;li>电影级（Cinematic） 可扩展性级别适合用于影片渲染队列。&lt;/li>
+&lt;li>超高（Epic） 可扩展性级别的性能目标是在主机上实现30 FPS。&lt;/li>
+&lt;li>高（High） 可扩展性级别的性能目标是在主机上实现60 FPS。&lt;/li>
+&lt;li>低（Low） 和 中（Medium） 可扩展性级别下，Lumen功能会被禁用。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/engine-scalability-settings.png"
+width="848"
+height="654"
+srcset="https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/engine-scalability-settings_hu_220907a2d89a6b20.png 480w, https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/engine-scalability-settings_hu_39ca8212dc519f8a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="129"
+data-flex-basis="311px"
+>&lt;/p>
+&lt;p>默认情况下，虚幻引擎在主机上的性能目标是30 FPS。如需以60 FPS为目标，将 全局光照（Global Illumination） 和 反射（Reflections） 质量组设置为 高（High） 。相关配置描述位于 [你的项目名称]\Platforms[主机]\Config\ 文件夹。例如，[你的项目名称]\Platforms\PS5\Config\PS5DeviceProfiles.ini 。&lt;/p>
+&lt;p>例如，以60 FPS为目标的PlayStation 5的设备描述如下所示：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-c++" data-lang="c++">&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="n">PS5&lt;/span> &lt;span class="n">DeviceProfile&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">;&lt;/span>&lt;span class="err">将&lt;/span>&lt;span class="n">Lumen&lt;/span> &lt;span class="n">GI和反射质量设置为&lt;/span>&lt;span class="s">&amp;#34;高&amp;#34;&lt;/span>&lt;span class="err">，目标为&lt;/span>&lt;span class="mi">60&lt;/span> &lt;span class="n">fps&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">+&lt;/span>&lt;span class="n">CVars&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GlobalIlluminationQuality&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">+&lt;/span>&lt;span class="n">CVars&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ReflectionQuality&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">2&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h1 id="其他质量级别不启用lumen">其他质量级别(不启用Lumen)
+&lt;/h1>&lt;p>全局光照（Global Illumination） 和 反射（Reflections） 的默认质量设置位于 \Engine\Config\BaseScalability.ini 中。这些设置会试图让间接光照的品质在不同质量级别下保持相似。这么做的额外好处是，你无需在不同平台上重新设置你的光照参数，同时还能缩减Lumen的开销。&lt;/p>
+&lt;p>中质量级别&lt;/p>
+&lt;ul>
+&lt;li>对于大规模的环境光遮蔽， 距离场环境光遮蔽（Distance Field Ambient Occlusion） 会取代 Lumen全局光照（Lumen Global Illumination） 。&lt;/li>
+&lt;li>对于小规模的环境光遮蔽，会启用 屏幕空间环境光遮蔽（Screen Space Ambient Occlusion） 。&lt;/li>
+&lt;/ul>
+&lt;p>低质量级别&lt;/p>
+&lt;ul>
+&lt;li>仅使用无阴影的天空光照。&lt;/li>
+&lt;li>降低天空光照强度（r.SkylightIntensityMultiplier=0.7），以近似模拟 中（Medium） 质量级别中的效果，因为此时没有天空光照阴影。&lt;/li>
+&lt;/ul>
+&lt;h2 id="软件光线追踪">软件光线追踪
+&lt;/h2></description></item><item><title>Lumens技术细节</title><link>https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/</guid><description>&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/ue5-hero.png" alt="Featured image of post Lumens技术细节" />&lt;p>Lumen使用多种光线追踪方法来解决全局光照和反射。首先执行屏幕追踪，然后使用更加可靠的方法。在默认情况下，Lumen通过有向距离场使用 软件光线追踪（Software Ray Tracing） ，同时在启用 硬件光线追踪（Hardware Ray Tracing） 时，在支持的视频显卡上达到更高品质。&lt;/p>
+&lt;blockquote>
+&lt;p>Lumen的全局光照和反射最初的主要目标是支持在下一代主机上以每秒60帧（FPS）运行的大型开放世界。引擎的 高（High） 可扩展性级别中就包括以60FPS为目标的Lumen设置。&lt;/p>
+&lt;p>Lumen的次要关注点就是在下一代主机上以30FPS实现通透的室内光照。引擎的 超高（Epic） 可扩展性级别在下一代主机上能够在8毫秒内以1080p内部分辨率实现全局光照和反射，这个目标依赖&lt;a class="link" href="https://zentia.github.io/p/%E6%97%B6%E9%97%B4%E8%B6%85%E7%BA%A7%E5%88%86%E8%BE%A8%E7%8E%87/" target="_blank" rel="noopener"
+>时序超分辨率（TSR）&lt;/a>来输出接近原生4K的画质。&lt;/p>
+&lt;p>更多关于Lumen性能的信息，请参阅&lt;a class="link" href="https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/" target="_blank" rel="noopener"
+>Lumens性能指南&lt;/a>.&lt;/p>&lt;/blockquote>
+&lt;h1 id="表面缓存">表面缓存
+&lt;/h1>&lt;p>Lumen生成附近场景表面的自动参数化，这种方法称为 表面缓存（Surface Cache） 。使用这种方法可以快速查找场景中光线接触点的光照。Lumen会从多个角度捕获每个网格体的材质属性。这些捕获位置（即 卡片（Cards） ）是针对每个网格体脱机生成的。&lt;/p>
+&lt;p>可以使用控制台命令 &lt;code>r.Lumen.Visualize.CardPlacement 1&lt;/code> 来可视化卡片。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/mesh-card-placement-visualization-alt.png"
+width="1340"
+height="862"
+srcset="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/mesh-card-placement-visualization-alt_hu_ca45ee53b0a17502.png 480w, https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/mesh-card-placement-visualization-alt_hu_690649c6b4c5328f.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="155"
+data-flex-basis="373px"
+>&lt;/p>
+&lt;p>默认情况下，Lumen在一个网格体上放置12个卡，但可以通过在静态网格体编辑器的 构建设置（Build Settings） 中设置 最大Lumen网格体卡片数量（Max Lumen Mesh Cards） 来增加该数量。调整卡的数量对于更复杂的内部或具有不规则形状的单个网格体非常有用。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/static-mesh-editor-max-lumen-mesh-cards-setting.png"
+width="541"
+height="816"
+srcset="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/static-mesh-editor-max-lumen-mesh-cards-setting_hu_93edbb7ce9fed6fe.png 480w, https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/static-mesh-editor-max-lumen-mesh-cards-setting_hu_7cb52ab3768f8d9a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="66"
+data-flex-basis="159px"
+>&lt;/p>
+&lt;p>没有表面缓存覆盖的区域将在关卡编辑器的 表面缓存(Surface Cache) 视图模式中变成粉色。&lt;/p>
+&lt;blockquote>
+&lt;p>这些区域不会反射光线，在反射过程中显示为黑色。此类问题可以通过增加最大Lumen网格体卡片数量中的卡片数来解决，但可能无法解决所有问题。或者，将网格体分解成不太复杂的几部分也可以解决这类问题。&lt;/p>&lt;/blockquote>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/viewmode-lumen-surface-cache.png"
+width="605"
+height="612"
+srcset="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/viewmode-lumen-surface-cache_hu_e417fd8c254ee87b.png 480w, https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/viewmode-lumen-surface-cache_hu_88ba30688906d1ee.png 1024w"
+loading="lazy"
+alt="视图模式（View Mode） &amp;gt; Lumen &amp;gt; 表面缓存（Surface Cache）"
+class="gallery-image"
+data-flex-grow="98"
+data-flex-basis="237px"
+>
+&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/lumen-surface-cache-visualization.png"
+width="1199"
+height="926"
+srcset="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/lumen-surface-cache-visualization_hu_885c3c020704d7f2.png 480w, https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/lumen-surface-cache-visualization_hu_6d4fe9f5e54076f8.png 1024w"
+loading="lazy"
+alt="复杂网格体的Lumen表面缓存可视化（Lumen Surface Cache Visualization of Complex Mesh）"
+class="gallery-image"
+data-flex-grow="129"
+data-flex-basis="310px"
+>&lt;/p>
+&lt;p>具有视图相关逻辑的材质，例如像素深度、摄像机位置或摄像机矢量，在Lumen表面缓存视图模式下看起来可能不正确。使用这些节点的材质可能使用 光线追踪质量切换（Ray Tracing Quality Switch） 节点来提供采用Lumen表面缓存的材质版本，或为复杂材质而优化表面缓存捕获。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/ray-tracing-quality-switch-node.png"
+width="355"
+height="125"
+srcset="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/ray-tracing-quality-switch-node_hu_278909caa898f28d.png 480w, https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/ray-tracing-quality-switch-node_hu_c0f656a9a732a6fe.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="284"
+data-flex-basis="681px"
+>&lt;/p>
+&lt;blockquote>
+&lt;p>如需详细了解如何使用光线追踪质量切换节点，请参阅光线追踪性能指南。&lt;/p>&lt;/blockquote>
+&lt;p>Nanite可以加速用于使表面缓存与三角形场景保持同步的网格体捕获。尤其是多边形网格体，需要使用&lt;a class="link" href="https://zentia.github.io/p/nanite%E8%99%9A%E6%8B%9F%E5%87%A0%E4%BD%95%E4%BD%93/" target="_blank" rel="noopener"
+>Nanite&lt;/a>进行有效捕获。只有网格体使用了Nanite，才支持植被和实例化的静态网格体组件。&lt;/p></description></item><item><title>指数高度雾（Exponential Height Fog）</title><link>https://zentia.github.io/p/%E6%8C%87%E6%95%B0%E9%AB%98%E5%BA%A6%E9%9B%BEexponential-height-fog/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%8C%87%E6%95%B0%E9%AB%98%E5%BA%A6%E9%9B%BEexponential-height-fog/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%8C%87%E6%95%B0%E9%AB%98%E5%BA%A6%E9%9B%BEexponential-height-fog/ue5-hero.png" alt="Featured image of post 指数高度雾（Exponential Height Fog）" />&lt;p>指数高度雾在地图的低处创造更多的密度，在高处创造更少的密度。过渡是平稳的，所以当你增加高度时，你永远不会遇到一个硬的切断。指数高度雾也提供了两种雾色：一种时面向主导方向光的半球（或者如果不存在直接向上），另一种时面向相反半球的颜色。&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>属性&lt;/th>
+&lt;th>描述&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>雾密度（Fog Density）&lt;/td>
+&lt;td>此为整体密度稀疏，是可视雾层的厚度。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>雾高度衰减（Fog Height Falloff）&lt;/td>
+&lt;td>高度密度系数，控制高度降低时密度增加的成都。值越小，过渡就越大。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>高度雾偏移（Height Fog Offset）&lt;/td>
+&lt;td>此控制相对于Actor放置Z（高度）的雾层高度偏移。&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item><item><title>虚拟阴影贴图</title><link>https://zentia.github.io/p/%E8%99%9A%E6%8B%9F%E9%98%B4%E5%BD%B1%E8%B4%B4%E5%9B%BE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%99%9A%E6%8B%9F%E9%98%B4%E5%BD%B1%E8%B4%B4%E5%9B%BE/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%99%9A%E6%8B%9F%E9%98%B4%E5%BD%B1%E8%B4%B4%E5%9B%BE/ue5-hero.png" alt="Featured image of post 虚拟阴影贴图" />&lt;p>虚拟阴影贴图（VSM）是一种全新的阴影贴图方法，可以提供稳定的高分辨率阴影。通过与虚幻引擎5的&lt;a class="link" href="https://zentia.github.io/p/nanite%E8%99%9A%E6%8B%9F%E5%87%A0%E4%BD%95%E4%BD%93/" target="_blank" rel="noopener"
+>Nanite虚拟几何体&lt;/a>、Lumen全局光照和反射以及世界分区功能结合使用，它能够实现电影级的品质效果，为大型开放场景提供光照。&lt;/p></description></item><item><title>Lumen全局光照和反射</title><link>https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/</guid><description>&lt;img src="https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/ue5-hero.png" alt="Featured image of post Lumen全局光照和反射" />&lt;p>Lumen是虚幻引擎5的全动态全局光照和反射系统，专门针对下一代主机进行设计，是默认的全局光照和反射系统。Lumen能够在拥有大量细节的宏大场景中渲染间接漫反射，并确保无限次数的反弹以及间接高光度反射效果；无论是毫米级别的场景细节，还是数以千米的宏大场景，它都能应对得游刃有余。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/lumen-scionti-04.png"
+width="1920"
+height="1080"
+srcset="https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/lumen-scionti-04_hu_838cdccfad3513a1.png 480w, https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/lumen-scionti-04_hu_ca894aaced6f2e95.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h1 id="lumen入门">Lumen入门
+&lt;/h1>&lt;p>新创建的项目默认启用Lumen全局光照和反射，及其依赖功能，例如生成网格体距离场。项目从虚幻引擎4升级到虚幻引擎5时， 不会 自动启用Lumen功能。这能防止破坏或更改这些项目中的光照路线。&lt;/p></description></item><item><title>距离场环境光遮蔽</title><link>https://zentia.github.io/p/%E8%B7%9D%E7%A6%BB%E5%9C%BA%E7%8E%AF%E5%A2%83%E5%85%89%E9%81%AE%E8%94%BD/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%B7%9D%E7%A6%BB%E5%9C%BA%E7%8E%AF%E5%A2%83%E5%85%89%E9%81%AE%E8%94%BD/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%B7%9D%E7%A6%BB%E5%9C%BA%E7%8E%AF%E5%A2%83%E5%85%89%E9%81%AE%E8%94%BD/ue5-hero.png" alt="Featured image of post 距离场环境光遮蔽" />&lt;p>使用有向距离场体积能获得可移动天空光照的阴影；该有向距离场体积在各刚性网格体周围预计算，以产生中等范围的环境光遮蔽。在 虚幻引擎 中，这被称为 距离场环境光遮蔽（Distance Field Ambient Occlusion）（DFAO）。其支持动态场景变化；刚性网格体可移动或隐藏，其会影响遮蔽。与屏幕空间环境光遮蔽（SSAO）不同，遮蔽在场景空间遮挡物中进行计算，因此出屏丢失数据不会导致瑕疵。&lt;/p></description></item><item><title>网格体距离场</title><link>https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/</guid><description>&lt;img src="https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/ue5-hero.png" alt="Featured image of post 网格体距离场" />&lt;p>虚幻引擎 使用 距离场（Distance Fields） 的强大功能来实现游戏中静态网格体Actor的动态环境光遮蔽和阴影。除此之外，Actor的网格体距离场表达还可用于其他一些特性，例如GPU粒子碰撞，甚至还可以使用材质编辑器创建动态流动贴图等等。&lt;/p>
+&lt;p>继续阅读下面的内容可以了解网格体距离场的工作原理，以及可通过哪些方法把它应用在游戏中。&lt;/p>
+&lt;h1 id="它的工作原理是什么">它的工作原理是什么？
+&lt;/h1>&lt;p>此技术中使用的距离场是代表静态网格体表面的 有向距离场（Signed Distance Field） （SDF）。有向距离场在每个点将距离最近表面的距离保存到体积纹理中。网格体外的每个点保存的距离为正值，网格体内的每个点保存的距离为负值。以下示例跟踪并保存了为正的距离，以在稍后表现出树的形象。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/01-distance-field-positive-distance-tracing.png"
+width="375"
+height="429"
+srcset="https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/01-distance-field-positive-distance-tracing_hu_36100c03609f98e6.png 480w, https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/01-distance-field-positive-distance-tracing_hu_8f8a95f9058649b0.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="87"
+data-flex-basis="209px"
+>&lt;/p>
+&lt;p>SDF首个实用属性的作用是，在追踪光线时安全地跳过空白空间，因为到最近表面的距离已经明确（有时称这种方法为球体追踪）。只需区区几步就可以判定出交叉点。对距离场进行光线追踪将生成可见性效果， 也就是说如果光线和网格体交叉，光线就会投射出阴影。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/02-distance-field-sphere-tracing.png"
+width="375"
+height="425"
+srcset="https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/02-distance-field-sphere-tracing_hu_aa1af62f49cd7211.png 480w, https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/02-distance-field-sphere-tracing_hu_aaab4b76362aa57b.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="88"
+data-flex-basis="211px"
+>&lt;/p>
+&lt;p>距离场第二个实用属性的作用是，在追踪光线时，通过追踪经过遮挡物的距离最近的光线就可以计算出近似的锥体交叉点，而不产生额外成本。这种近似法可以利用距离场来实现非常柔和的区域阴影和天空遮蔽。这个属性是距离场环境光遮蔽的关键，因为少量的锥体即可为接收器点的整个半球计算出柔和的可见性。&lt;/p></description></item><item><title>体积雾</title><link>https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/</guid><description>&lt;img src="https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/ue5-hero.png" alt="Featured image of post 体积雾" />&lt;p>体积雾（Volumetric Fog）时指数高度雾组件的一个部分。体积雾（Volumetric Fog）将计算摄像机视锥体中每个点的参与介质密度和照明，以支持不同的密度和影响雾的任意数量光源。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/volumetricfog.png"
+width="947"
+height="542"
+srcset="https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/volumetricfog_hu_c0727b36b4fd701c.png 480w, https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/volumetricfog_hu_820a4bb94b1cc3d5.png 1024w"
+loading="lazy"
+alt="此场景中的体积雾来自于穿过拱门的定向光源，在周边区域中生成带阴影效果的雾气。"
+class="gallery-image"
+data-flex-grow="174"
+data-flex-basis="419px"
+>&lt;/p>
+&lt;h1 id="体积雾控制">体积雾控制
+&lt;/h1>&lt;p>设置和调整体积雾时，你可以全局控制它，也可以在场景中局部控制它。全局控制功能使你能够使用指数高度雾（Exponential Height Fog）组件控制整个场景的雾。局部控制功能使你能够通过在可以生成粒子的区域中使用粒子的方式控制雾。&lt;/p>
+&lt;h2 id="全局控制">全局控制
+&lt;/h2>&lt;p>要控制体积雾，你可以调整指数高度雾（Exponential Height Fog）中的属性和每个光源上的属性，以控制光源的贡献量。&lt;/p>
+&lt;h2 id="指数高度雾">指数高度雾
+&lt;/h2>&lt;h1 id="性能">性能
+&lt;/h1>&lt;p>体积雾的GPU开销主要通过体积纹理分辨率控制，可在引擎可延展性的阴影级别设置它。&lt;/p></description></item></channel></rss>

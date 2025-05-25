@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>颜色分级和胶片色调映射器 on zentia</title><link>https://zentia.github.io/categories/%E9%A2%9C%E8%89%B2%E5%88%86%E7%BA%A7%E5%92%8C%E8%83%B6%E7%89%87%E8%89%B2%E8%B0%83%E6%98%A0%E5%B0%84%E5%99%A8/</link><description>Recent content in 颜色分级和胶片色调映射器 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E9%A2%9C%E8%89%B2%E5%88%86%E7%BA%A7%E5%92%8C%E8%83%B6%E7%89%87%E8%89%B2%E8%B0%83%E6%98%A0%E5%B0%84%E5%99%A8/index.xml" rel="self" type="application/rss+xml"/><item><title>色彩分级面板</title><link>https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/ue5_1-rendering-hero-banner-5-0.png" alt="Featured image of post 色彩分级面板" />&lt;p>颜色分级面板是一个专用的界面，用于在场景中操纵颜色。它使用可以执行颜色分级操作的角色，如后期处理体积和颜色校正区域。&lt;/p>
+&lt;p>您可以使用此窗格直接配置颜色分级属性和设置，而不是通过任何单个Actor的详细信息面板。这将使美术人员的配置更直接。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-scene.png"
+width="1999"
+height="1125"
+srcset="https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-scene_hu_34d8d5237cf49672.png 480w, https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-scene_hu_32dc2c7aec3027e7.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h1 id="色彩分级面板接口">色彩分级面板接口
+&lt;/h1>&lt;p>您可以通过选择Window &amp;gt; Color Grading从编辑器的主菜单打开Color Grading面板。这个面板在关卡视口的底部打开。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-panelinterface.png"
+width="1988"
+height="440"
+srcset="https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-panelinterface_hu_47be657d90b6c411.png 480w, https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-panelinterface_hu_908171332a3043ad.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="451"
+data-flex-basis="1084px"
+>&lt;/p></description></item><item><title>高动态范围显示输出</title><link>https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/</guid><description>&lt;img src="https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/ue5_1-rendering-hero-banner-5-0.png" alt="Featured image of post 高动态范围显示输出" />&lt;p>你可以输出到高动态范围（HDR）显示器，以充分利用更高的对比度和更宽的色域等功能！其目标是使显示的图像具有的特性更类似于&amp;quot;现实世界&amp;quot;中所经历的自然光条件。这是转向 学院色彩编码系统（ACES）标准行动的一部分，该标准是一个确保在多种格式和显示器上保持色彩一致性的管线，也是一种确保所用源材质 不会过时 且无需针对其他介质进行调整的方法&lt;/p>
+&lt;p>在当前实现下，渲染场景的完整处理通过 ACES Viewing Transform 进行处理。此流程的工作原理是使用&amp;quot;参考场景的&amp;quot;和&amp;quot;参考显示的&amp;quot;图像。&lt;/p>
+&lt;ul>
+&lt;li>参考场景的 图像保有源材质的原始 线性光照 数值，不限制曝光范围。&lt;/li>
+&lt;li>参考显示的 图像是最终的图像，将变为所用显示的色彩空间。&lt;/li>
+&lt;/ul>
+&lt;p>使用此流程后，初始源文件用于不同显示时便无需每次进行较色编辑。相反，输出的显示将映射到正确的色彩空间。&lt;/p>
+&lt;p>ACES Viewing Transform在查看流程中将按以下顺序进行：&lt;/p>
+&lt;ul>
+&lt;li>Look Modification Transform (LMT) - 这部分抓取应用了创意&amp;quot;外观&amp;quot;（颜色分级和矫正）的ACES颜色编码图像，输出由ACES和Reference Rendering Transform（RRT）及Output Device Transform（ODT）渲染的图像。&lt;/li>
+&lt;li>Reference Rendering Transform (RRT) - 之后，这部分抓取参考场景的颜色值，将它们转换为参考显示。 在此流程中，它使渲染图像不再依赖于特定显示器，反而能保证它输出到特定显示器时拥有正确而宽泛的色域和动态范围（尚未创建的图像同样如此）。&lt;/li>
+&lt;li>Output Device Transform (ODT) - 最后，这部分抓取RRT的HDR数据输出，将其与它们能够显示的不同设备和色彩空间进行比对。 因此，每个目标需要将其自身的ODT与Rec709、Rec2020、DCI-P3等进行比对。&lt;/li>
+&lt;/ul>
+&lt;h1 id="启用hdr输出">启用HDR输出
+&lt;/h1>&lt;p>开启控制台变量或使用蓝图中的 GameUserSettings 节点即可启用运行时的HDR输出。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/ue5_1-high-dynamic-range-display-game-user-settings.png"
+width="1065"
+height="267"
+srcset="https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/ue5_1-high-dynamic-range-display-game-user-settings_hu_97a1851f6f77c11c.png 480w, https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/ue5_1-high-dynamic-range-display-game-user-settings_hu_6fa3a4726d26c1b1.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="398"
+data-flex-basis="957px"
+>&lt;/p>
+&lt;p>Game User Settings 控制将自动锁定当前可用的最接近输出设备，并相应设置全部标记。 另外，还可使用以下控制台变量启用并对HDR设备和色域输出所需的可用选项进行修改。&lt;/p>
+&lt;h1 id="hdr-中的低动态范围ldrui支持">HDR 中的低动态范围（LDR）UI支持
+&lt;/h1>&lt;p>启用HDR输出后，用户界面（UI）可能出现显示问题。 因此虚幻引擎新增了实验性的LDR UI合成支持。 它将尝试尽量匹配LDR的外观。 推荐对UI稍微进行增强，以免和鲜艳主场景相比之下显得黯淡。&lt;/p></description></item><item><title>使用查找表（LUT）进行颜色校正</title><link>https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/</guid><description>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/ue5_1-rendering-hero-banner-5-0.png" alt="Featured image of post 使用查找表（LUT）进行颜色校正" />&lt;p>可以利用 查找表（LUT）来实现使用后期处理体积的颜色校正。 不要使用三个一维（1D）查找表，而应该使用一个三维（3D）查找表。 这样可以提供更精细的色彩变换，从而可用于去饱和度之类的用途。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1.png"
+width="256"
+height="16"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1_hu_ab67779999497148.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1_hu_e289048aa8ff7c11.png 1024w"
+loading="lazy"
+alt="中性色调LUT"
+class="gallery-image"
+data-flex-grow="1600"
+data-flex-basis="3840px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_sepia.png"
+width="256"
+height="16"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_sepia_hu_15f4a5f79c4d41a8.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_sepia_hu_1462e5c68f13812e.png 1024w"
+loading="lazy"
+alt="棕褐色调LUT"
+class="gallery-image"
+data-flex-grow="1600"
+data-flex-basis="3840px"
+>&lt;/p>
+&lt;p>虚幻引擎中使用的一种查找表是16x16x16的中性色调LUT，解压后为256x16的纹理。 这些示例显示了中性色调和棕褐色调的LUT。 如果要应用中性色调LUT，你将不会看到默认场景有任何变化，但是如果使用棕褐色调的LUT，就会看到类似于下图这样的情况：&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1.png"
+width="1336"
+height="923"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_84ebf4216f5e03b7.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_fb114baba6d55fdb.png 1024w"
+loading="lazy"
+alt="中性色调LUT"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut4.png"
+width="1336"
+height="923"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut4_hu_36ddbb63ab9b95e3.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut4_hu_660280c302dc0877.png 1024w"
+loading="lazy"
+alt="棕褐色调LUT"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+>&lt;/p>
+&lt;h1 id="使用lut纹理">使用LUT纹理
+&lt;/h1>&lt;p>要使用LUT，请使用下列属性将LUT纹理分配到要搭配它使用的后期处理体积并调整它的强度。&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>属性&lt;/th>
+&lt;th>说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>颜色分级LUT强度（Color Grading LUT Intensity）&lt;/td>
+&lt;td>一种控制颜色校正效果的比例因子。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>颜色分级LUT&lt;/td>
+&lt;td>用作颜色校正的查找表的LUT纹理。 详见下方示例&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="颜色分级lut">颜色分级LUT
+&lt;/h2>&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_none.png"
+width="1311"
+height="866"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_none_hu_e65d2b41ad8552a0.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_none_hu_e3f7bdb7873e7b8e.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="151"
+data-flex-basis="363px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_green.png"
+width="1311"
+height="866"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_green_hu_12584ece67fbdec0.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_green_hu_48d2eaf1bc33ad38.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="151"
+data-flex-basis="363px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_red.png"
+width="1311"
+height="866"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_red_hu_ac881720ecd7af54.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_red_hu_1e825931915799c3.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="151"
+data-flex-basis="363px"
+>&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1.png"
+width="256"
+height="16"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1_hu_ab67779999497148.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1_hu_e289048aa8ff7c11.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="1600"
+data-flex-basis="3840px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_greenish.png"
+width="256"
+height="16"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_greenish_hu_9df8746fa4e2af14.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_greenish_hu_bab230f15d2d39a8.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="1600"
+data-flex-basis="3840px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_reddish.png"
+width="256"
+height="16"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_reddish_hu_78472e19df8ffd97.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_reddish_hu_1ca2d2687a30f999.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="1600"
+data-flex-basis="3840px"
+>&lt;/p>
+&lt;h1 id="创建自己的lut纹理">创建自己的LUT纹理
+&lt;/h1>&lt;p>要创建你自己的LUT纹理，首先需要一个能够对捕获的图像进行颜色调整的图像编辑应用程序（例如Photoshop或GIMP）。 在这个演示中， 我们将使用在Epic Games启动程序中的 学习（Learn） 选项卡中提供的 Sun Temple 项目，并选择Photoshop作为LUT图像编辑应用程序。 在这个示例中使用的某些术语可能是 Photoshop特有的。&lt;/p>
+&lt;ol>
+&lt;li>首先对你也要应用颜色校正的场景截取至少一张有代表性的屏幕截图。 可以使用编辑器中提供的 截图工具来截取场景的高分辨率图像。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1.png"
+width="1336"
+height="923"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_84ebf4216f5e03b7.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_fb114baba6d55fdb.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+>&lt;/p>
+&lt;ol start="2">
+&lt;li>在Photoshop中打开该屏幕截图，然后从右侧图层（Layers）面板上方的调整（Adjustments）选项卡添加你自己的 调整 图层。 在这里可以找到许多不同的图标，分别代表可以对图像执行的各种更改类型，例如亮度和对比度、色调、饱和度，等等。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut2.png"
+width="1800"
+height="975"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut2_hu_2ddc9bbb20d91632.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut2_hu_262f3bb5571fc7ad.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="184"
+data-flex-basis="443px"
+>&lt;/p>
+&lt;ol start="3">
+&lt;li>在 调整（Adjustments） 面板中，单击任何图标以向图层（Layers）面板添加图层。 可以使用这些图层对最终图像作特定的颜色校正。 在此示例中， 已经添加和调整了 Vibrance 和 亮度/对比度（Brightness/Contrasts）。 将这些图层添加到图层（Layers）面板之后，从列表中选择它们以公开它们的属性，如果看不到属性， 可以右键单击并选择 编辑调整（Edit Adjustment） 来公开它们。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3.png"
+width="734"
+height="479"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3_hu_c3ebae96aecae360.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3_hu_87569d5eaa72a3a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="153"
+data-flex-basis="367px"
+>&lt;/p>
+&lt;ol start="4">
+&lt;li>你进行的任何调整都可以显示在视口中。 请调整调整图层的属性，直到获得想要的颜色校正效果为止。 在下面的示例中，已经调整了 Vibrance和亮度/对比度（Brightness/Contrasts）的调整图层属性，使屏幕截图的颜色饱和度和清晰度更高，更有视觉吸引力。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1.png"
+width="1336"
+height="923"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_84ebf4216f5e03b7.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_fb114baba6d55fdb.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3.png"
+width="734"
+height="479"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3_hu_c3ebae96aecae360.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3_hu_87569d5eaa72a3a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="153"
+data-flex-basis="367px"
+>&lt;/p>
+&lt;ol start="5">
+&lt;li>既然你已经通过调整图层实现了所需的视觉效果，那就需要另外打开 中性色调LUT 的一个副本。 可以将为屏幕截图创建的调整图层拖动到该中性色调LUT上。打开带有调整图层的屏幕截图和中性色调LUT后，将调整图层从屏幕截图的图层（Layers）面板 拖放 到中性色调LUT图像上。 此时你应该会看到它们填充在LUT的图层（Layers）面板中。&lt;/li>
+&lt;li>现在，导航到 File（文件） &amp;gt; Save As（另存为），给经过颜色校正的LUT提供一个名称。&lt;/li>
+&lt;li>将经过颜色校正的LUT导入编辑器中，可以将其 拖放 到内容浏览器（Content Browser），也可以使用内容浏览器（Content Browser）中提供的 Import（导入） 按钮。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut5.png"
+width="868"
+height="393"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut5_hu_3f1c68d5b8335fe4.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut5_hu_2109ff0dc59f6f9a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="220"
+data-flex-basis="530px"
+>&lt;/p>
+&lt;ol start="8">
+&lt;li>要在后期处理体积中使用LUT获得最佳效果，在纹理编辑器（Texture Editor）中打开LUT图像，设置下列属性：&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut6.png"
+width="461"
+height="135"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut6_hu_d24a7d2be6a685fb.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut6_hu_ea4f43a92be780f0.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="341"
+data-flex-basis="819px"
+>&lt;/p>
+&lt;ol start="9">
+&lt;li>接下来，在后期处理体积中，使用 细节（Details） 面板，在 颜色分级（Color Grading） &amp;gt; 全局（Global） 部分，启用 颜色分级LUT（Color Grading LUT） 并应用您的LUT。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut8.png"
+width="453"
+height="408"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut8_hu_42921edce6a5ae19.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut8_hu_fb8b09784e480436.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="111"
+data-flex-basis="266px"
+>&lt;/p></description></item></channel></rss>

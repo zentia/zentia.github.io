@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>可视性和遮挡剔除 on zentia</title><link>https://zentia.github.io/categories/%E5%8F%AF%E8%A7%86%E6%80%A7%E5%92%8C%E9%81%AE%E6%8C%A1%E5%89%94%E9%99%A4/</link><description>Recent content in 可视性和遮挡剔除 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E5%8F%AF%E8%A7%86%E6%80%A7%E5%92%8C%E9%81%AE%E6%8C%A1%E5%89%94%E9%99%A4/index.xml" rel="self" type="application/rss+xml"/><item><title>可视性和遮挡剔除参考</title><link>https://zentia.github.io/p/%E5%8F%AF%E8%A7%86%E6%80%A7%E5%92%8C%E9%81%AE%E6%8C%A1%E5%89%94%E9%99%A4%E5%8F%82%E8%80%83/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E5%8F%AF%E8%A7%86%E6%80%A7%E5%92%8C%E9%81%AE%E6%8C%A1%E5%89%94%E9%99%A4%E5%8F%82%E8%80%83/</guid><description>&lt;img src="https://zentia.github.io/p/%E5%8F%AF%E8%A7%86%E6%80%A7%E5%92%8C%E9%81%AE%E6%8C%A1%E5%89%94%E9%99%A4%E5%8F%82%E8%80%83/ue5-hero.png" alt="Featured image of post 可视性和遮挡剔除参考" />&lt;p>本页面包含虚拟纹理系统的要求、设置、控制台命令的相关信息。&lt;/p>
+&lt;h1 id="流送虚拟纹理设置">流送虚拟纹理设置
+&lt;/h1>&lt;p>以下为用于设置和处理流送虚拟纹理的设置和属性。&lt;/p></description></item><item><title>预计算可视性体积</title><link>https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/</guid><description>&lt;img src="https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/ue5-hero.png" alt="Featured image of post 预计算可视性体积" />&lt;p>像其他剔除方法一样，预计算可视性体积用于实现中小型场景的性能优化，通常用于因为硬件问题而使动态遮挡剔除受到限制的移动平台。预计算可视性体积根据玩家或摄像机的位置，将Actor位置的可视性状态存储在场景中。因此，预计算可视性对于主要为静态点亮的环境项目、玩家运动受限和某些2D游戏区域最有用。&lt;/p>
+&lt;p>在照明构建期间，会在阴影投射几何体上方生成可视性单元格。Actor可视性从每个单元格位置存储。由于预计算可视性是在线下生成的，因此你省去的是通常用于硬件遮挡查询的渲染线程时间，但代价是会增加运行时内存和照明构建时间。基于这一点，建议仅在玩家或摄像机可访问区域放置体积来保持可视性剔除。&lt;/p>
+&lt;h1 id="设置和用法">设置和用法
+&lt;/h1>&lt;p>首先，需要为关卡启用预计算可视性。方法是打开世界场景设置（World Settings）并找到预计算可视性（Precomputed Visibility）部分。找到后，启用预计算可视性（Precomputed Visibility）旁边的复选框。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/ws_enablepvis.png"
+width="501"
+height="243"
+srcset="https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/ws_enablepvis_hu_ff7454136b0cf587.png 480w, https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/ws_enablepvis_hu_fd5ffa0c6d38ac85.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="206"
+data-flex-basis="494px"
+>&lt;/p>
+&lt;p>从模式（Modes）面板中，将预计算可视性&lt;/p></description></item><item><title>预计算可视性体积</title><link>https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/</guid><description>&lt;img src="https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/ue5-hero.png" alt="Featured image of post 预计算可视性体积" />&lt;p>像其他剔除方法一样，预计算可视性体积用于实现中小型场景的性能优化，通常用于因为硬件问题而使动态遮挡剔除受到限制的移动平台。预计算可视性体积根据玩家或摄像机的位置，将Actor位置的可视性状态存储在场景中。因此，预计算可视性对于主要为静态点亮的环境项目、玩家运动受限和某些2D游戏区域最有用。&lt;/p>
+&lt;p>在照明构建期间，会在阴影投射几何体上方生成可视性单元格。Actor可视性从每个单元格位置存储。由于预计算可视性是在线下生成的，因此你省去的是通常用于硬件遮挡查询的渲染线程时间，但代价是会增加运行时内存和照明构建时间。基于这一点，建议仅在玩家或摄像机可访问区域放置体积来保持可视性剔除。&lt;/p>
+&lt;h1 id="设置和用法">设置和用法
+&lt;/h1>&lt;p>首先，需要为关卡启用预计算可视性。方法是打开世界场景设置（World Settings）并找到预计算可视性（Precomputed Visibility）部分。找到后，启用预计算可视性（Precomputed Visibility）旁边的复选框。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/ws_enablepvis.png"
+width="501"
+height="243"
+srcset="https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/ws_enablepvis_hu_ff7454136b0cf587.png 480w, https://zentia.github.io/p/%E9%A2%84%E8%AE%A1%E7%AE%97%E5%8F%AF%E8%A7%86%E6%80%A7%E4%BD%93%E7%A7%AF/ws_enablepvis_hu_fd5ffa0c6d38ac85.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="206"
+data-flex-basis="494px"
+>&lt;/p>
+&lt;p>从模式（Modes）面板中，将预计算可视性&lt;/p></description></item><item><title>剔除距离体积</title><link>https://zentia.github.io/p/%E5%89%94%E9%99%A4%E8%B7%9D%E7%A6%BB%E4%BD%93%E7%A7%AF/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E5%89%94%E9%99%A4%E8%B7%9D%E7%A6%BB%E4%BD%93%E7%A7%AF/</guid><description>&lt;img src="https://zentia.github.io/p/%E5%89%94%E9%99%A4%E8%B7%9D%E7%A6%BB%E4%BD%93%E7%A7%AF/randg_herobanner.png" alt="Featured image of post 剔除距离体积" />&lt;p>剔除距离体积（Cull Distance Volume） 是非常有用的优化工具，它定义绘制（显现）该体积中的Actor的距离。这些体积可存储任意数量的&amp;quot;大小&amp;quot;和&amp;quot;距离&amp;quot;组合（称为 剔除距离对）。这些剔除距离对会被映射到Actor（沿其最长有效维度）的边界，然后指定给关卡中的该Actor实例。剔除距离体积（Cull Distance Volume）对于优化包含精细内部空间的大型室外关卡非常有用。当室内空间小到可被视为不重要时，可以剔除它们。&lt;/p></description></item></channel></rss>

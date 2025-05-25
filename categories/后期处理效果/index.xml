@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>后期处理效果 on zentia</title><link>https://zentia.github.io/categories/%E5%90%8E%E6%9C%9F%E5%A4%84%E7%90%86%E6%95%88%E6%9E%9C/</link><description>Recent content in 后期处理效果 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E5%90%8E%E6%9C%9F%E5%A4%84%E7%90%86%E6%95%88%E6%9E%9C/index.xml" rel="self" type="application/rss+xml"/><item><title>过场动画景深</title><link>https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/randg_herobanner.png" alt="Featured image of post 过场动画景深" />&lt;p>以下景深方法具有影视级视觉效果，十分接近使用延迟着色渲染器和群集前向渲染器的桌面及主机平台上照片和电影的效果。&lt;/p>
+&lt;p>类似于圆圈景深和散景景深，&amp;ldquo;影视级&amp;quot;景深的效果跟真实摄像机不相上下，你可以在锐化&lt;a class="link" href="" >高动态范围 (HDR)&lt;/a>内容中看到圆形散景（离焦区域）。此方法使用程序化散景模拟技术，具有动态分辨率稳定性和阿尔法通道支持，在台式机和主机上开发的项目还具有更快速、可扩展和性能优化等特性。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_disabled.png"
+width="1916"
+height="1015"
+srcset="https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_disabled_hu_3989771e759a9fa6.png 480w, https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_disabled_hu_216ec5c823000df5.png 1024w"
+loading="lazy"
+alt="Depth of Field Disabled"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="453px"
+>
+&lt;img src="https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_enabled.png"
+width="1916"
+height="1015"
+srcset="https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_enabled_hu_75955f69df7591d6.png 480w, https://zentia.github.io/p/%E8%BF%87%E5%9C%BA%E5%8A%A8%E7%94%BB%E6%99%AF%E6%B7%B1/dof_cine_enabled_hu_38507762aa83299c.png 1024w"
+loading="lazy"
+alt="Cinematic Depth of Field"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="453px"
+>&lt;/p>
+&lt;h1 id="对焦拍摄对象">对焦拍摄对象
+&lt;/h1>&lt;p>实现美学意义上宜人景深效果的关键在于对焦拍摄对象。对于特定拍摄情形，影响景深设置的核心因素有三个：&lt;/p>
+&lt;ul>
+&lt;li>确定镜头要使用的 焦距（Focal Length）。&lt;/li>
+&lt;li>选择合适的 孔径（Aperture）（F值）。&lt;/li>
+&lt;li>选择拍摄对象与摄像机之间的 对象距离（Distance to your Subject）。&lt;/li>
+&lt;/ul>
+&lt;p>为了理解调整这些设置时会产生怎样的效果，我们来分析一下构成摄像机和拍摄场景的各个要素：&lt;/p></description></item><item><title>可混合物</title><link>https://zentia.github.io/p/%E5%8F%AF%E6%B7%B7%E5%90%88%E7%89%A9/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E5%8F%AF%E6%B7%B7%E5%90%88%E7%89%A9/</guid><description>&lt;img src="https://zentia.github.io/p/%E5%8F%AF%E6%B7%B7%E5%90%88%E7%89%A9/ue5-hero.png" alt="Featured image of post 可混合物" />&lt;p>利用项目对虚拟纹理的这次hi，可在运行时以更低内存占用率和更高一致性创建和使用大尺寸纹理。&lt;/p></description></item><item><title>色彩分级面板</title><link>https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/ue5_1-rendering-hero-banner-5-0.png" alt="Featured image of post 色彩分级面板" />&lt;p>颜色分级面板是一个专用的界面，用于在场景中操纵颜色。它使用可以执行颜色分级操作的角色，如后期处理体积和颜色校正区域。&lt;/p>
+&lt;p>您可以使用此窗格直接配置颜色分级属性和设置，而不是通过任何单个Actor的详细信息面板。这将使美术人员的配置更直接。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-scene.png"
+width="1999"
+height="1125"
+srcset="https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-scene_hu_34d8d5237cf49672.png 480w, https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-scene_hu_32dc2c7aec3027e7.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h1 id="色彩分级面板接口">色彩分级面板接口
+&lt;/h1>&lt;p>您可以通过选择Window &amp;gt; Color Grading从编辑器的主菜单打开Color Grading面板。这个面板在关卡视口的底部打开。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-panelinterface.png"
+width="1988"
+height="440"
+srcset="https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-panelinterface_hu_47be657d90b6c411.png 480w, https://zentia.github.io/p/%E8%89%B2%E5%BD%A9%E5%88%86%E7%BA%A7%E9%9D%A2%E6%9D%BF/cg-panelinterface_hu_908171332a3043ad.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="451"
+data-flex-basis="1084px"
+>&lt;/p></description></item><item><title>泛光</title><link>https://zentia.github.io/p/%E6%B3%9B%E5%85%89/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%B3%9B%E5%85%89/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/randg_herobanner.png" alt="Featured image of post 泛光" />&lt;p>泛光（Bloom）是一种真实世界中的光现象，通过它能够以较为适度的渲染性能成本极大地渲染图像的真实感。用肉眼观察黑暗背景下非常明亮的物体时会看到泛光效果。亮度更高的物体还会造成其他效果（条纹、镜头光斑），但这些效果不在经典的泛光效果范畴内。我们的显示器（电视、TFT屏等）通常不支持HDR（高动态范围），因此实际上无法渲染太亮的物体。于是我们模拟了当光线射到胶片（胶片次表面散射）或摄像机（乳白色玻璃滤光片）时眼睛中出现的效果（视网膜的次表面散射）。这种效果不一定符合实际清空，但它可以帮助表现对象的相对亮度，或者给屏幕上显示的LDR（地动态范围）图像添加真实感。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom.png"
+width="1174"
+height="523"
+srcset="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_hu_a99ee83ad225010.png 480w, https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_hu_93b1c8b33470498.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="224"
+data-flex-basis="538px"
+>&lt;/p>
+&lt;p>泛光可以用一个高斯模糊来实现。为了提高质量，我们将多个不同半径的高斯模糊组合起来。为了获得更好的性能，我们在大大降低的分辨率下 进行很宽范围的模糊。在UE 3中，高斯模糊的分辨率为1/4、1/8和1/16。而现在我们可以使用多种模糊，分辨率从1/2（Blur1）到1/32（Blur5）。&lt;/p>
+&lt;p>通过改变模糊效果的组合方式，我们可以进行更多的控制，取得更高的质量。为了获得最佳的性能，应该使用高分辨率模糊（小值）来实现较窄的模糊，而主要使用低分辨率模糊 （大值）实现较宽的模糊。&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>属性&lt;/th>
+&lt;th>说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>强度（Intensity）&lt;/td>
+&lt;td>线性调节整个泛光效果的颜色。可用于：随着时间的推移淡入或淡出，变暗。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>阈值（Threshold）&lt;/td>
+&lt;td>定义了单一颜色需要多少亮度单位才能产生泛光。除了阈值之外，还有一个线性部分（1个单位宽度），其中的颜色仅部分地影响泛光。如果希望场景中的所有颜色都参与泛光效果，需要使用数值-1。可用于：对某些不真实的HDR内容、梦序进行调整。详见下方示例&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>着色&lt;/td>
+&lt;td>修改每个泛光的亮度和颜色。如果你使用黑色，尽管不会使得渲染速度加快，但也是可以的。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="强度">强度
+&lt;/h2>&lt;p>&lt;img src="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_intensity_0_small.png"
+width="368"
+height="164"
+srcset="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_intensity_0_small_hu_fbc3c0399d45e259.png 480w, https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_intensity_0_small_hu_12e802d250a67252.png 1024w"
+loading="lazy"
+alt="0.0"
+class="gallery-image"
+data-flex-grow="224"
+data-flex-basis="538px"
+>
+&lt;img src="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_intensity_1_small.png"
+width="368"
+height="164"
+srcset="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_intensity_1_small_hu_f50d0a5f8df30725.png 480w, https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_intensity_1_small_hu_114d0fc33ab53539.png 1024w"
+loading="lazy"
+alt="1.0"
+class="gallery-image"
+data-flex-grow="224"
+data-flex-basis="538px"
+>
+&lt;img src="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_intensity_5_small.png"
+width="370"
+height="165"
+srcset="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_intensity_5_small_hu_2183bfba471a2559.png 480w, https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_intensity_5_small_hu_3dab3d1504bd7aab.png 1024w"
+loading="lazy"
+alt="5.0"
+class="gallery-image"
+data-flex-grow="224"
+data-flex-basis="538px"
+>&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_tint_1_small.png"
+width="220"
+height="98"
+srcset="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_tint_1_small_hu_2d89569f7645e8fe.png 480w, https://zentia.github.io/p/%E6%B3%9B%E5%85%89/bloom_tint_1_small_hu_2209f02f1bca9187.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="224"
+data-flex-basis="538px"
+>&lt;/p>
+&lt;h1 id="泛光卷积">泛光卷积
+&lt;/h1>&lt;p>使用泛光 卷积（Convolution） 效果可以添加自定义泛光内核形状，其纹理能够展现逼真的泛光效果。 它利用内核图像对源图像进行卷积运算，以此来模拟摄像机或人眼中光线的散射和衍射。&lt;/p>
+&lt;p>内核表示光学设备对视野中间的单点源的响应。源中的每个像素按照内核图像的指示 将其部分亮度贡献给相邻像素。源像素越亮，生成的泛光越明显。究其根本而言，这种能量守恒散射可以转化为卷积运算公式， 并通过使用快速傅里叶变换（FFT）加速。&lt;/p>
+&lt;blockquote>
+&lt;p>泛光卷积专门用于游戏内过场动画、离线过场动画，或在高端硬件中使用，但 标准 泛光 可用于大多数游戏应用程序。 就利弊而言，标准泛光在性能方面具有明显优势，但它并不稳妥（它会导致图像整体变得更亮）， 并且无法赶上泛光卷积的视觉复杂性。&lt;/p>&lt;/blockquote>
+&lt;p>要启用&amp;quot;泛光卷积（Bloom Convolution）&amp;quot;，请在&amp;quot;后期处理体积（Post Process Volume）&amp;ldquo;的 镜头（Lens） 部分中，使用 方法（Method） 旁边的选择框选择 卷积（Convolution）。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/convolution-bloom-settings.png"
+width="482"
+height="341"
+srcset="https://zentia.github.io/p/%E6%B3%9B%E5%85%89/convolution-bloom-settings_hu_a7b88a9c59d0a6ed.png 480w, https://zentia.github.io/p/%E6%B3%9B%E5%85%89/convolution-bloom-settings_hu_626e115a966ebd4.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="141"
+data-flex-basis="339px"
+>&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>属性&lt;/th>
+&lt;th>说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>卷积内核（Convolution Kernel）&lt;/td>
+&lt;td>用于选择定义内核的纹理。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>卷积缩放（Convolution Scale）&lt;/td>
+&lt;td>表示以视口为单位的卷积内核图像的相对大小。默认值为1。主要用于减少泛光的大小。&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="内核图像最佳实践">内核图像最佳实践
+&lt;/h2>&lt;p>基于图像的卷积之所以能产生额外的真实感，是因为它能够使用视觉上很有趣的非对称内核图像。当 创建内核并将其设置用于泛光卷积时，需要注意一些事项。&lt;/p></description></item><item><title>高动态范围显示输出</title><link>https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/</guid><description>&lt;img src="https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/ue5_1-rendering-hero-banner-5-0.png" alt="Featured image of post 高动态范围显示输出" />&lt;p>你可以输出到高动态范围（HDR）显示器，以充分利用更高的对比度和更宽的色域等功能！其目标是使显示的图像具有的特性更类似于&amp;quot;现实世界&amp;quot;中所经历的自然光条件。这是转向 学院色彩编码系统（ACES）标准行动的一部分，该标准是一个确保在多种格式和显示器上保持色彩一致性的管线，也是一种确保所用源材质 不会过时 且无需针对其他介质进行调整的方法&lt;/p>
+&lt;p>在当前实现下，渲染场景的完整处理通过 ACES Viewing Transform 进行处理。此流程的工作原理是使用&amp;quot;参考场景的&amp;quot;和&amp;quot;参考显示的&amp;quot;图像。&lt;/p>
+&lt;ul>
+&lt;li>参考场景的 图像保有源材质的原始 线性光照 数值，不限制曝光范围。&lt;/li>
+&lt;li>参考显示的 图像是最终的图像，将变为所用显示的色彩空间。&lt;/li>
+&lt;/ul>
+&lt;p>使用此流程后，初始源文件用于不同显示时便无需每次进行较色编辑。相反，输出的显示将映射到正确的色彩空间。&lt;/p>
+&lt;p>ACES Viewing Transform在查看流程中将按以下顺序进行：&lt;/p>
+&lt;ul>
+&lt;li>Look Modification Transform (LMT) - 这部分抓取应用了创意&amp;quot;外观&amp;quot;（颜色分级和矫正）的ACES颜色编码图像，输出由ACES和Reference Rendering Transform（RRT）及Output Device Transform（ODT）渲染的图像。&lt;/li>
+&lt;li>Reference Rendering Transform (RRT) - 之后，这部分抓取参考场景的颜色值，将它们转换为参考显示。 在此流程中，它使渲染图像不再依赖于特定显示器，反而能保证它输出到特定显示器时拥有正确而宽泛的色域和动态范围（尚未创建的图像同样如此）。&lt;/li>
+&lt;li>Output Device Transform (ODT) - 最后，这部分抓取RRT的HDR数据输出，将其与它们能够显示的不同设备和色彩空间进行比对。 因此，每个目标需要将其自身的ODT与Rec709、Rec2020、DCI-P3等进行比对。&lt;/li>
+&lt;/ul>
+&lt;h1 id="启用hdr输出">启用HDR输出
+&lt;/h1>&lt;p>开启控制台变量或使用蓝图中的 GameUserSettings 节点即可启用运行时的HDR输出。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/ue5_1-high-dynamic-range-display-game-user-settings.png"
+width="1065"
+height="267"
+srcset="https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/ue5_1-high-dynamic-range-display-game-user-settings_hu_97a1851f6f77c11c.png 480w, https://zentia.github.io/p/%E9%AB%98%E5%8A%A8%E6%80%81%E8%8C%83%E5%9B%B4%E6%98%BE%E7%A4%BA%E8%BE%93%E5%87%BA/ue5_1-high-dynamic-range-display-game-user-settings_hu_6fa3a4726d26c1b1.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="398"
+data-flex-basis="957px"
+>&lt;/p>
+&lt;p>Game User Settings 控制将自动锁定当前可用的最接近输出设备，并相应设置全部标记。 另外，还可使用以下控制台变量启用并对HDR设备和色域输出所需的可用选项进行修改。&lt;/p>
+&lt;h1 id="hdr-中的低动态范围ldrui支持">HDR 中的低动态范围（LDR）UI支持
+&lt;/h1>&lt;p>启用HDR输出后，用户界面（UI）可能出现显示问题。 因此虚幻引擎新增了实验性的LDR UI合成支持。 它将尝试尽量匹配LDR的外观。 推荐对UI稍微进行增强，以免和鲜艳主场景相比之下显得黯淡。&lt;/p></description></item><item><title>使用查找表（LUT）进行颜色校正</title><link>https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/</guid><description>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/ue5_1-rendering-hero-banner-5-0.png" alt="Featured image of post 使用查找表（LUT）进行颜色校正" />&lt;p>可以利用 查找表（LUT）来实现使用后期处理体积的颜色校正。 不要使用三个一维（1D）查找表，而应该使用一个三维（3D）查找表。 这样可以提供更精细的色彩变换，从而可用于去饱和度之类的用途。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1.png"
+width="256"
+height="16"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1_hu_ab67779999497148.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1_hu_e289048aa8ff7c11.png 1024w"
+loading="lazy"
+alt="中性色调LUT"
+class="gallery-image"
+data-flex-grow="1600"
+data-flex-basis="3840px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_sepia.png"
+width="256"
+height="16"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_sepia_hu_15f4a5f79c4d41a8.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_sepia_hu_1462e5c68f13812e.png 1024w"
+loading="lazy"
+alt="棕褐色调LUT"
+class="gallery-image"
+data-flex-grow="1600"
+data-flex-basis="3840px"
+>&lt;/p>
+&lt;p>虚幻引擎中使用的一种查找表是16x16x16的中性色调LUT，解压后为256x16的纹理。 这些示例显示了中性色调和棕褐色调的LUT。 如果要应用中性色调LUT，你将不会看到默认场景有任何变化，但是如果使用棕褐色调的LUT，就会看到类似于下图这样的情况：&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1.png"
+width="1336"
+height="923"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_84ebf4216f5e03b7.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_fb114baba6d55fdb.png 1024w"
+loading="lazy"
+alt="中性色调LUT"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut4.png"
+width="1336"
+height="923"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut4_hu_36ddbb63ab9b95e3.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut4_hu_660280c302dc0877.png 1024w"
+loading="lazy"
+alt="棕褐色调LUT"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+>&lt;/p>
+&lt;h1 id="使用lut纹理">使用LUT纹理
+&lt;/h1>&lt;p>要使用LUT，请使用下列属性将LUT纹理分配到要搭配它使用的后期处理体积并调整它的强度。&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>属性&lt;/th>
+&lt;th>说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>颜色分级LUT强度（Color Grading LUT Intensity）&lt;/td>
+&lt;td>一种控制颜色校正效果的比例因子。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>颜色分级LUT&lt;/td>
+&lt;td>用作颜色校正的查找表的LUT纹理。 详见下方示例&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="颜色分级lut">颜色分级LUT
+&lt;/h2>&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_none.png"
+width="1311"
+height="866"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_none_hu_e65d2b41ad8552a0.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_none_hu_e3f7bdb7873e7b8e.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="151"
+data-flex-basis="363px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_green.png"
+width="1311"
+height="866"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_green_hu_12584ece67fbdec0.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_green_hu_48d2eaf1bc33ad38.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="151"
+data-flex-basis="363px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_red.png"
+width="1311"
+height="866"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_red_hu_ac881720ecd7af54.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_red_hu_1e825931915799c3.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="151"
+data-flex-basis="363px"
+>&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1.png"
+width="256"
+height="16"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1_hu_ab67779999497148.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/rgbtable16x1_hu_e289048aa8ff7c11.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="1600"
+data-flex-basis="3840px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_greenish.png"
+width="256"
+height="16"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_greenish_hu_9df8746fa4e2af14.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_greenish_hu_bab230f15d2d39a8.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="1600"
+data-flex-basis="3840px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_reddish.png"
+width="256"
+height="16"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_reddish_hu_78472e19df8ffd97.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut_reddish_hu_1ca2d2687a30f999.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="1600"
+data-flex-basis="3840px"
+>&lt;/p>
+&lt;h1 id="创建自己的lut纹理">创建自己的LUT纹理
+&lt;/h1>&lt;p>要创建你自己的LUT纹理，首先需要一个能够对捕获的图像进行颜色调整的图像编辑应用程序（例如Photoshop或GIMP）。 在这个演示中， 我们将使用在Epic Games启动程序中的 学习（Learn） 选项卡中提供的 Sun Temple 项目，并选择Photoshop作为LUT图像编辑应用程序。 在这个示例中使用的某些术语可能是 Photoshop特有的。&lt;/p>
+&lt;ol>
+&lt;li>首先对你也要应用颜色校正的场景截取至少一张有代表性的屏幕截图。 可以使用编辑器中提供的 截图工具来截取场景的高分辨率图像。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1.png"
+width="1336"
+height="923"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_84ebf4216f5e03b7.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_fb114baba6d55fdb.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+>&lt;/p>
+&lt;ol start="2">
+&lt;li>在Photoshop中打开该屏幕截图，然后从右侧图层（Layers）面板上方的调整（Adjustments）选项卡添加你自己的 调整 图层。 在这里可以找到许多不同的图标，分别代表可以对图像执行的各种更改类型，例如亮度和对比度、色调、饱和度，等等。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut2.png"
+width="1800"
+height="975"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut2_hu_2ddc9bbb20d91632.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut2_hu_262f3bb5571fc7ad.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="184"
+data-flex-basis="443px"
+>&lt;/p>
+&lt;ol start="3">
+&lt;li>在 调整（Adjustments） 面板中，单击任何图标以向图层（Layers）面板添加图层。 可以使用这些图层对最终图像作特定的颜色校正。 在此示例中， 已经添加和调整了 Vibrance 和 亮度/对比度（Brightness/Contrasts）。 将这些图层添加到图层（Layers）面板之后，从列表中选择它们以公开它们的属性，如果看不到属性， 可以右键单击并选择 编辑调整（Edit Adjustment） 来公开它们。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3.png"
+width="734"
+height="479"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3_hu_c3ebae96aecae360.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3_hu_87569d5eaa72a3a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="153"
+data-flex-basis="367px"
+>&lt;/p>
+&lt;ol start="4">
+&lt;li>你进行的任何调整都可以显示在视口中。 请调整调整图层的属性，直到获得想要的颜色校正效果为止。 在下面的示例中，已经调整了 Vibrance和亮度/对比度（Brightness/Contrasts）的调整图层属性，使屏幕截图的颜色饱和度和清晰度更高，更有视觉吸引力。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1.png"
+width="1336"
+height="923"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_84ebf4216f5e03b7.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut1_hu_fb114baba6d55fdb.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="144"
+data-flex-basis="347px"
+>
+&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3.png"
+width="734"
+height="479"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3_hu_c3ebae96aecae360.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut3_hu_87569d5eaa72a3a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="153"
+data-flex-basis="367px"
+>&lt;/p>
+&lt;ol start="5">
+&lt;li>既然你已经通过调整图层实现了所需的视觉效果，那就需要另外打开 中性色调LUT 的一个副本。 可以将为屏幕截图创建的调整图层拖动到该中性色调LUT上。打开带有调整图层的屏幕截图和中性色调LUT后，将调整图层从屏幕截图的图层（Layers）面板 拖放 到中性色调LUT图像上。 此时你应该会看到它们填充在LUT的图层（Layers）面板中。&lt;/li>
+&lt;li>现在，导航到 File（文件） &amp;gt; Save As（另存为），给经过颜色校正的LUT提供一个名称。&lt;/li>
+&lt;li>将经过颜色校正的LUT导入编辑器中，可以将其 拖放 到内容浏览器（Content Browser），也可以使用内容浏览器（Content Browser）中提供的 Import（导入） 按钮。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut5.png"
+width="868"
+height="393"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut5_hu_3f1c68d5b8335fe4.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut5_hu_2109ff0dc59f6f9a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="220"
+data-flex-basis="530px"
+>&lt;/p>
+&lt;ol start="8">
+&lt;li>要在后期处理体积中使用LUT获得最佳效果，在纹理编辑器（Texture Editor）中打开LUT图像，设置下列属性：&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut6.png"
+width="461"
+height="135"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut6_hu_d24a7d2be6a685fb.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut6_hu_ea4f43a92be780f0.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="341"
+data-flex-basis="819px"
+>&lt;/p>
+&lt;ol start="9">
+&lt;li>接下来，在后期处理体积中，使用 细节（Details） 面板，在 颜色分级（Color Grading） &amp;gt; 全局（Global） 部分，启用 颜色分级LUT（Color Grading LUT） 并应用您的LUT。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut8.png"
+width="453"
+height="408"
+srcset="https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut8_hu_42921edce6a5ae19.png 480w, https://zentia.github.io/p/%E4%BD%BF%E7%94%A8%E6%9F%A5%E6%89%BE%E8%A1%A8lut%E8%BF%9B%E8%A1%8C%E9%A2%9C%E8%89%B2%E6%A0%A1%E6%AD%A3/lut8_hu_fb8b09784e480436.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="111"
+data-flex-basis="266px"
+>&lt;/p></description></item><item><title>移动平台景深方法</title><link>https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/</guid><description>&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/randg_herobanner.png" alt="Featured image of post 移动平台景深方法" />&lt;h1 id="高斯">高斯
+&lt;/h1>&lt;blockquote>
+&lt;p>已移除高斯景深与 延迟渲染器（Deferred Renderer） 和 桌面前向渲染器（Desktop Forward Renderer） 的配合使用，该景深仅支持移动平台。如需在桌面计算机上在编辑器内工作时使用此高斯景深，请使用移动预览器启用其中一个移动平台预览器。&lt;/p>&lt;/blockquote>
+&lt;p>高斯 景深方法使用标准的&lt;a class="link" href="https://zh.wikipedia.org/wiki/%E9%AB%98%E6%96%AF%E6%A8%A1%E7%B3%8A" target="_blank" rel="noopener"
+>高斯模糊&lt;/a>（也叫高斯平滑）函数对场景进行模糊处理。高斯DOF使用固定大小的高斯模糊核对前景和背景进行模糊处理，在移动设备等低端硬件上它的速度非常快。在非常注重性能的场合，它可以在降低开销的情况下保持高性能。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_0.png"
+width="1415"
+height="796"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_0_hu_4fecfe220d92d046.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_0_hu_e1f7c743d28f242f.png 1024w"
+loading="lazy"
+alt="无景深"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>
+&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_1.png"
+width="1415"
+height="796"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_1_hu_5f95c64f3d699239.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_1_hu_1aec8e03adb98eef.png 1024w"
+loading="lazy"
+alt="高斯景深"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h1 id="查看景深">查看景深
+&lt;/h1>&lt;p>可以使用关卡视口中的 景深图层（Depth of Field layers） 显示标志来使包括过渡区在内的图层可视化，该显示标志位于 显示（Show） &amp;gt; 可视化（Visualize） 下。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_2.png"
+width="1916"
+height="1015"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_2_hu_7dd9e637e0c3bf70.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_2_hu_65d4db5bdb216334.png 1024w"
+loading="lazy"
+alt="最终场景"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="453px"
+>
+&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_3.png"
+width="1916"
+height="1015"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_3_hu_2ed0772d4a7b30bb.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_3_hu_30a6a8862b3a15a6.png 1024w"
+loading="lazy"
+alt="景深查看"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="453px"
+>&lt;/p>
+&lt;h1 id="对焦距离focal-distance">对焦距离（Focal Distance）
+&lt;/h1>&lt;p>对焦距离（Focal Distance） 表示对焦区域和捕捉的视角。焦距越长，景深越浅，对焦区域外的对象越模糊；焦距越短，景深越大，聚焦越准确而且失焦的对象越少。光圈数值可以保持不变，更改透镜尺寸将调整景深效果的深浅。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_5.png"
+width="2500"
+height="1946"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_5_hu_dc9299fc1fcae59d.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_5_hu_64bc36050e0c1c0d.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="128"
+data-flex-basis="308px"
+>&lt;/p>
+&lt;p>设置好 对焦距离（Focal Distance） 和 对焦区域（Focal Region） 之后，就可以使用 近过渡（Near Transition） 和 远过渡（Far Transition） 来调整对焦区域和完全模糊的场景之间的距离。另外，你甚至还可以调整 近景模糊尺寸（Near Blur Size） 和 远景模糊尺寸（Far Blur Size） 来进一步对高斯景深的外观进行微调。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_6.png"
+width="1916"
+height="1015"
+srcset="https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_6_hu_4abb0c0ce2ea3f61.png 480w, https://zentia.github.io/p/%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%8F%B0%E6%99%AF%E6%B7%B1%E6%96%B9%E6%B3%95/image_6_hu_b0749e0bddcf6ff.png 1024w"
+loading="lazy"
+alt="为得到良好的景深效果，对近/远过渡和模糊尺寸的数值进行了调整之后的高斯景深。"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="453px"
+>&lt;/p>
+&lt;p>在本示例中，为了实现近景和远景区域的柔和景深效果，我们设置了以下数值。&lt;/p>
+&lt;ul>
+&lt;li>对焦距离（Focal Distance）： 215&lt;/li>
+&lt;li>影调范围（Scale）： 2500&lt;/li>
+&lt;li>近过渡（Near Transition）： 500&lt;/li>
+&lt;li>远过渡（Far Transition）： 400&lt;/li>
+&lt;li>近景模糊尺寸（Near Blur Size）： 2.0&lt;/li>
+&lt;li>远景模糊尺寸（Far Blur Size）： 2.5&lt;/li>
+&lt;/ul>
+&lt;h1 id="可用设置">可用设置
+&lt;/h1>&lt;p>高斯景深的设置和属性可以在后期处理体积的 细节 面板中找到，位于 移动景深（Mobile Depth of Field） 的 镜头（Lens） 分类中。&lt;/p></description></item><item><title>颜色分级和胶片色调映射器</title><link>https://zentia.github.io/p/%E9%A2%9C%E8%89%B2%E5%88%86%E7%BA%A7%E5%92%8C%E8%83%B6%E7%89%87%E8%89%B2%E8%B0%83%E6%98%A0%E5%B0%84%E5%99%A8/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E9%A2%9C%E8%89%B2%E5%88%86%E7%BA%A7%E5%92%8C%E8%83%B6%E7%89%87%E8%89%B2%E8%B0%83%E6%98%A0%E5%B0%84%E5%99%A8/</guid><description>&lt;img src="https://zentia.github.io/p/%E9%A2%9C%E8%89%B2%E5%88%86%E7%BA%A7%E5%92%8C%E8%83%B6%E7%89%87%E8%89%B2%E8%B0%83%E6%98%A0%E5%B0%84%E5%99%A8/randg_herobanner.png" alt="Featured image of post 颜色分级和胶片色调映射器" />&lt;p>在虚幻引擎中，颜色分级 一词涵盖了高动态范围（HDR）显示输出使用的色调映射功能（HDR到LDR转换），并改进了图像的颜色校正（用于筛选颜色变换的LDR颜色）处理。&lt;/p></description></item><item><title>景深</title><link>https://zentia.github.io/p/%E6%99%AF%E6%B7%B1/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%99%AF%E6%B7%B1/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%99%AF%E6%B7%B1/randg_herobanner.png" alt="Featured image of post 景深" />&lt;p>与真实世界的摄像机类似，景深（DOF）基于距离对焦点前后的场景应用模糊处理。 这种效果可以用来基于景深将观者的注意力吸引到特定的拍摄物体上，同时增加美学观感，使渲染看起来更像照片或影片。&lt;/p>
+&lt;h1 id="景深类型">景深类型
+&lt;/h1>&lt;p>在虚幻引擎中，您可以使用几种方法来执行景深效果。 这些方法被分为两大类：&lt;/p>
+&lt;ul>
+&lt;li>影片： 此方法向景深效果提供了一种影视的观感。 对此方法进行调整可以与摄影和影片摄影中常见的摄像机选项更加一致。 该选项对于个人电脑和主机平台来说非常适合。&lt;/li>
+&lt;li>移动： 该方法提供了移动平台可以接受的最优化、低开销的DOF选项。&lt;/li>
+&lt;/ul>
+&lt;p>从以下方法中选择，了解它们的更多功能：&lt;/p></description></item><item><title>自动曝光</title><link>https://zentia.github.io/p/%E8%87%AA%E5%8A%A8%E6%9B%9D%E5%85%89/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%87%AA%E5%8A%A8%E6%9B%9D%E5%85%89/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%87%AA%E5%8A%A8%E6%9B%9D%E5%85%89/rendering-herobanner-5-0.png" alt="Featured image of post 自动曝光" />&lt;p>后期处理体积（Post Process Volume） 提供 自动曝光（Automatic Exposure） （通常称为眼部适应）控制选项，可自动调整当前场景视图的明暗。此效果可再现人眼适应不同光照条件的体验，例如从昏暗的室内走到明亮的室外，或从室外走到室内。&lt;/p>
+&lt;h1 id="曝光测光模式">曝光测光模式
+&lt;/h1>&lt;p>在场景中设置自动曝光时，引擎提供几种测光模式选项。此类不同测光模式提供可精确模拟实际摄像机的设置，可在后期处理过程中控制场景中的曝光。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E8%87%AA%E5%8A%A8%E6%9B%9D%E5%85%89/exposuremeteringmodes.png"
+width="473"
+height="169"
+srcset="https://zentia.github.io/p/%E8%87%AA%E5%8A%A8%E6%9B%9D%E5%85%89/exposuremeteringmodes_hu_e38fe788089f76f5.png 480w, https://zentia.github.io/p/%E8%87%AA%E5%8A%A8%E6%9B%9D%E5%85%89/exposuremeteringmodes_hu_1b5084dde9f1ae7.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="279"
+data-flex-basis="671px"
+>&lt;/p>
+&lt;ul>
+&lt;li>自动曝光直方图（Auto Exposure Histogram） 模式通过由64bin直方图构成的高级设置更好地控制自动曝光。这是虚幻引擎中的默认曝光测光模式。&lt;/li>
+&lt;li>基本自动曝光（Auto Exposure Basic） 模式提供的设置较少，但这是通过下采样曝光计算单个值的更快速方法。&lt;/li>
+&lt;li>手动（Manual） 模式支持使用后期处理和摄像机设置中的 摄像机（Camera） 设置控制曝光，而非仅使用 曝光（Exposure） 类别中的设置。&lt;/li>
+&lt;/ul>
+&lt;h2 id="直方图和基本算法">直方图和基本算法
+&lt;/h2></description></item><item><title>Panini 投影</title><link>https://zentia.github.io/p/panini-%E6%8A%95%E5%BD%B1/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/panini-%E6%8A%95%E5%BD%B1/</guid><description>&lt;img src="https://zentia.github.io/p/panini-%E6%8A%95%E5%BD%B1/randg_herobanner.png" alt="Featured image of post Panini 投影" /></description></item><item><title>后期处理材质</title><link>https://zentia.github.io/p/%E5%90%8E%E6%9C%9F%E5%A4%84%E7%90%86%E6%9D%90%E8%B4%A8/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E5%90%8E%E6%9C%9F%E5%A4%84%E7%90%86%E6%9D%90%E8%B4%A8/</guid><description>&lt;img src="https://zentia.github.io/p/%E5%90%8E%E6%9C%9F%E5%A4%84%E7%90%86%E6%9D%90%E8%B4%A8/randg_herobanner.png" alt="Featured image of post 后期处理材质" /></description></item></channel></rss>

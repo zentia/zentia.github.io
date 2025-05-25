@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Unreal Insights on zentia</title><link>https://zentia.github.io/categories/unreal-insights/</link><description>Recent content in Unreal Insights on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/unreal-insights/index.xml" rel="self" type="application/rss+xml"/><item><title>Unreal Insights</title><link>https://zentia.github.io/p/unreal-insights/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/unreal-insights/</guid><description>&lt;img src="https://zentia.github.io/p/unreal-insights/testingandoptimization-heroimg.png" alt="Featured image of post Unreal Insights" />&lt;p>Unreal Insights是一个遥测捕获和分析套件，它可以从您的项目中以高数据率捕获事件。Unreal Insights可以帮你识别出可能需要优化的数据区域。&lt;/p>
+&lt;p>Unreal Insights的主要组成部分分为：&lt;/p>
+&lt;ul>
+&lt;li>Trace事件，包含了事件名称和字段名称参数，用于定义一个事件并指定事件应包括的字段。&lt;/li>
+&lt;li>Unreal Trace Server，用于记录并保存来自应用程序的踪迹。&lt;/li>
+&lt;li>Unreal Insights，对数据进行分析和可视化处理。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://zentia.github.io/p/unreal-insights/insightsdiagram.jpg"
+width="1501"
+height="415"
+srcset="https://zentia.github.io/p/unreal-insights/insightsdiagram_hu_e7bdd9c06048a7b5.jpg 480w, https://zentia.github.io/p/unreal-insights/insightsdiagram_hu_2babbda7e923e17f.jpg 1024w"
+loading="lazy"
+alt="Unrael Insights框架的主要组件的可视化"
+class="gallery-image"
+data-flex-grow="361"
+data-flex-basis="868px"
+>&lt;/p>
+&lt;p>Trace会话是自描述的，并且与不同的引擎发布版本兼容。它们被存储在.utrace文件中。任何同时生成的数据都存储在与Trace文件相同目录下的.ucache文件中。&lt;/p></description></item><item><title>会话浏览器</title><link>https://zentia.github.io/p/%E4%BC%9A%E8%AF%9D%E6%B5%8F%E8%A7%88%E5%99%A8/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E4%BC%9A%E8%AF%9D%E6%B5%8F%E8%A7%88%E5%99%A8/</guid><description>&lt;img src="https://zentia.github.io/p/%E4%BC%9A%E8%AF%9D%E6%B5%8F%E8%A7%88%E5%99%A8/testingandoptimization-heroimg.png" alt="Featured image of post 会话浏览器" /></description></item></channel></rss>

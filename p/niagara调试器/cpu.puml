@@ -1,0 +1,15 @@
+start
+:FNiagaraWorldManager::Tick;
+split
+:FNiagaraSystemSimulation::Tick_GameThread;
+:FNiagaraSystemInstance::Tick_GameThread;
+split again
+    :FNiagaraSystemSimulation::Tick_Concurrent;
+    split
+        :FNiagaraEmitterInstance::PreTick;
+    split again
+        :FNiagaraEmitterInstance::Tick;
+    split again
+        #00FF00:FNiagaraEmitterInstance::GenerateAndSubmitGPUTick;
+    end split
+end split

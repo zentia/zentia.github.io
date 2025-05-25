@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Actors on zentia</title><link>https://zentia.github.io/categories/actors/</link><description>Recent content in Actors on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/actors/index.xml" rel="self" type="application/rss+xml"/><item><title>Actor生命周期</title><link>https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</guid><description>&lt;img src="https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/ue5-hero.png" alt="Featured image of post Actor生命周期" />&lt;p>本文档大致介绍了Actor的生命周期，其中包括：&lt;/p>
+&lt;ul>
+&lt;li>如何在关卡中实例化或生成Actor，包括如何初始化Actor。&lt;/li>
+&lt;li>如何将Actor标识为PendingKill，然后通过垃圾回收移除或销毁。&lt;/li>
+&lt;li>下方流程图展示了如何实例化Actor的主要路径。无论Actor是如何创建的，它们的销毁路径均相同。&lt;/li>
+&lt;/ul>
+&lt;h1 id="生命周期详解">生命周期详解
+&lt;/h1>&lt;p>&lt;img src="https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/actorlifecycle1.png"
+width="923"
+height="1912"
+srcset="https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/actorlifecycle1_hu_4ed41f252bf8bad9.png 480w, https://zentia.github.io/p/actor%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/actorlifecycle1_hu_b2359199f1e34b31.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="48"
+data-flex-basis="115px"
+>&lt;/p>
+&lt;h1 id="从磁盘加载">从磁盘加载
+&lt;/h1>&lt;p>从磁盘加载（Load From Disk）路径适用于已经在关卡中的Actor，如当 UEngine::LoadMap 发生时，或当关卡流送调用 UWorld::AddToWorld 时。&lt;/p></description></item></channel></rss>

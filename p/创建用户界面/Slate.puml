@@ -1,0 +1,28 @@
+start
+:控件绘制(GameThread);
+:FSlateApplication::TickApplication;
+:FSlateApplication::DrawWindows;
+:FSlateApplication::PrivateDrawWindows;
+split
+    :FSlateApplication::DrawWindowAndChildren;
+    :SWindow::PaintWindow;
+    :FSlateInvalidationRoot::PaintInvalidationRoot;
+    :SWindow::PaintSlowPath;
+    :SWidget::Paint;
+    :XXX::OnPaint;
+    :FSlateDrawElements::MakeBox;
+split again
+    :绘制指令生成渲染指令(GameThread);
+    :FSlateRHIRenderer::DrawWindows;
+    split
+    :FSlateElementBatcher::AddElements;
+    :FSlateElementBatcher::AddElementsInternal;
+    :FSlateElementBatcher::AddXXXElement;
+    :FSlateElementBatcher::CreateRenderBatch;
+    split again
+    :合批并执行渲染(RenderThread);
+    :FSlateRHIRenderer::DrawWindow;
+    :FSlateRHIRenderingPolicy::BuildRenderingBuffers;
+    :FSlateBatchData::MergeRenderBatches;
+    end split
+end split

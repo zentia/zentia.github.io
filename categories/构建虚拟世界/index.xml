@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>构建虚拟世界 on zentia</title><link>https://zentia.github.io/categories/%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E4%B8%96%E7%95%8C/</link><description>Recent content in 构建虚拟世界 on zentia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://zentia.github.io/categories/%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E4%B8%96%E7%95%8C/index.xml" rel="self" type="application/rss+xml"/><item><title>Lumens性能指南</title><link>https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/</guid><description>&lt;img src="https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/ue5-hero.png" alt="Featured image of post Lumens性能指南" />&lt;p>Lumen的目标是，能够在主机上分别以8毫秒和4毫秒的帧预算实现30和60FPS，并为不透明和半透明材质以及体积雾实现全局光照和反射效果。引擎采用了一系列预先配置好的&amp;quot;可扩展/弹性（Scalability）&amp;ldquo;设置让Lumen应对不同的目标帧率需求。超高（Epic） 级别对应的帧率为30FPS。高（High） 级别对应的目标帧率为60FPS。&lt;/p>
+&lt;p>Lumen依赖&lt;a class="link" href="https://zentia.github.io/p/%E5%8A%A8%E6%80%81%E5%88%86%E8%BE%A8%E7%8E%87/" target="_blank" rel="noopener"
+>时间上采样&lt;/a>和虚幻引擎5的&lt;a class="link" href="https://zentia.github.io/p/%E6%97%B6%E9%97%B4%E8%B6%85%E7%BA%A7%E5%88%86%E8%BE%A8%E7%8E%87/" target="_blank" rel="noopener"
+>时间超级分辨率&lt;/a>（TSR）功能来提供4k输出。Lumen和一些其他功能本身只使用较低的内部分辨率（1080p），这样能赋予TSR最佳的最终图像质量。否则，如果直接以4K原生分辨率渲染这些功能，则需要降低质量设置，这样才能实现30或60 FPS的帧率。&lt;/p>
+&lt;h1 id="可扩展性设置">可扩展性设置
+&lt;/h1>&lt;p>你可以在关卡编辑器中的 设置（Settings）&amp;gt; 引擎可扩展性设置（Engine Scalability Settings） 视口下找到可扩展性设置。在游戏中，请使用GameUserSettings和图形设置菜单来控制可扩展性设置（相关示例请参阅Lyra项目）。Lumen的品质可以通过 全局光照（Global Illumination） 和 反射（Reflections） 质量组进行设置：&lt;/p>
+&lt;ul>
+&lt;li>电影级（Cinematic） 可扩展性级别适合用于影片渲染队列。&lt;/li>
+&lt;li>超高（Epic） 可扩展性级别的性能目标是在主机上实现30 FPS。&lt;/li>
+&lt;li>高（High） 可扩展性级别的性能目标是在主机上实现60 FPS。&lt;/li>
+&lt;li>低（Low） 和 中（Medium） 可扩展性级别下，Lumen功能会被禁用。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/engine-scalability-settings.png"
+width="848"
+height="654"
+srcset="https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/engine-scalability-settings_hu_220907a2d89a6b20.png 480w, https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/engine-scalability-settings_hu_39ca8212dc519f8a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="129"
+data-flex-basis="311px"
+>&lt;/p>
+&lt;p>默认情况下，虚幻引擎在主机上的性能目标是30 FPS。如需以60 FPS为目标，将 全局光照（Global Illumination） 和 反射（Reflections） 质量组设置为 高（High） 。相关配置描述位于 [你的项目名称]\Platforms[主机]\Config\ 文件夹。例如，[你的项目名称]\Platforms\PS5\Config\PS5DeviceProfiles.ini 。&lt;/p>
+&lt;p>例如，以60 FPS为目标的PlayStation 5的设备描述如下所示：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-c++" data-lang="c++">&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="n">PS5&lt;/span> &lt;span class="n">DeviceProfile&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">;&lt;/span>&lt;span class="err">将&lt;/span>&lt;span class="n">Lumen&lt;/span> &lt;span class="n">GI和反射质量设置为&lt;/span>&lt;span class="s">&amp;#34;高&amp;#34;&lt;/span>&lt;span class="err">，目标为&lt;/span>&lt;span class="mi">60&lt;/span> &lt;span class="n">fps&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">+&lt;/span>&lt;span class="n">CVars&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">GlobalIlluminationQuality&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">+&lt;/span>&lt;span class="n">CVars&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">ReflectionQuality&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">2&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h1 id="其他质量级别不启用lumen">其他质量级别(不启用Lumen)
+&lt;/h1>&lt;p>全局光照（Global Illumination） 和 反射（Reflections） 的默认质量设置位于 \Engine\Config\BaseScalability.ini 中。这些设置会试图让间接光照的品质在不同质量级别下保持相似。这么做的额外好处是，你无需在不同平台上重新设置你的光照参数，同时还能缩减Lumen的开销。&lt;/p>
+&lt;p>中质量级别&lt;/p>
+&lt;ul>
+&lt;li>对于大规模的环境光遮蔽， 距离场环境光遮蔽（Distance Field Ambient Occlusion） 会取代 Lumen全局光照（Lumen Global Illumination） 。&lt;/li>
+&lt;li>对于小规模的环境光遮蔽，会启用 屏幕空间环境光遮蔽（Screen Space Ambient Occlusion） 。&lt;/li>
+&lt;/ul>
+&lt;p>低质量级别&lt;/p>
+&lt;ul>
+&lt;li>仅使用无阴影的天空光照。&lt;/li>
+&lt;li>降低天空光照强度（r.SkylightIntensityMultiplier=0.7），以近似模拟 中（Medium） 质量级别中的效果，因为此时没有天空光照阴影。&lt;/li>
+&lt;/ul>
+&lt;h2 id="软件光线追踪">软件光线追踪
+&lt;/h2></description></item><item><title>关卡流送概述</title><link>https://zentia.github.io/p/%E5%85%B3%E5%8D%A1%E6%B5%81%E9%80%81%E6%A6%82%E8%BF%B0/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E5%85%B3%E5%8D%A1%E6%B5%81%E9%80%81%E6%A6%82%E8%BF%B0/</guid><description>&lt;img src="https://zentia.github.io/p/%E5%85%B3%E5%8D%A1%E6%B5%81%E9%80%81%E6%A6%82%E8%BF%B0/ue5-hero.png" alt="Featured image of post 关卡流送概述" />&lt;p>关卡流送功能可以将地图文件加载到内存中，或者从内存中卸载，并在游戏过程中切换地图的可视性。这样一来，场景便能拆分为较小的地图块，并且只有相关部分才会占用资源并被渲染。正确设置后，开发者便能创建大型世界、无缝衔接的游戏场景，让玩家彷佛置身于“大世界”之中。&lt;/p>
+&lt;h1 id="持久关卡">持久关卡
+&lt;/h1>&lt;p>实现关卡无缝衔接第一步是创建持久关卡（Persistent Level）。你可以把它看作是一个主关卡，用来管理加载或卸载哪些关卡。&lt;/p>
+&lt;h1 id="流送关卡">流送关卡
+&lt;/h1>&lt;p>流送关卡通过 Levels 窗口 进行管理。它可与持久关卡重叠，或偏移创建更大的世界场景。 使用流送关卡的流送类型可设为 Always Loaded 或 Blueprint。右键单击关卡分段即可在 Levels 窗口中开启此设置。&lt;/p></description></item><item><title>Lumens技术细节</title><link>https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/</guid><description>&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/ue5-hero.png" alt="Featured image of post Lumens技术细节" />&lt;p>Lumen使用多种光线追踪方法来解决全局光照和反射。首先执行屏幕追踪，然后使用更加可靠的方法。在默认情况下，Lumen通过有向距离场使用 软件光线追踪（Software Ray Tracing） ，同时在启用 硬件光线追踪（Hardware Ray Tracing） 时，在支持的视频显卡上达到更高品质。&lt;/p>
+&lt;blockquote>
+&lt;p>Lumen的全局光照和反射最初的主要目标是支持在下一代主机上以每秒60帧（FPS）运行的大型开放世界。引擎的 高（High） 可扩展性级别中就包括以60FPS为目标的Lumen设置。&lt;/p>
+&lt;p>Lumen的次要关注点就是在下一代主机上以30FPS实现通透的室内光照。引擎的 超高（Epic） 可扩展性级别在下一代主机上能够在8毫秒内以1080p内部分辨率实现全局光照和反射，这个目标依赖&lt;a class="link" href="https://zentia.github.io/p/%E6%97%B6%E9%97%B4%E8%B6%85%E7%BA%A7%E5%88%86%E8%BE%A8%E7%8E%87/" target="_blank" rel="noopener"
+>时序超分辨率（TSR）&lt;/a>来输出接近原生4K的画质。&lt;/p>
+&lt;p>更多关于Lumen性能的信息，请参阅&lt;a class="link" href="https://zentia.github.io/p/lumens%E6%80%A7%E8%83%BD%E6%8C%87%E5%8D%97/" target="_blank" rel="noopener"
+>Lumens性能指南&lt;/a>.&lt;/p>&lt;/blockquote>
+&lt;h1 id="表面缓存">表面缓存
+&lt;/h1>&lt;p>Lumen生成附近场景表面的自动参数化，这种方法称为 表面缓存（Surface Cache） 。使用这种方法可以快速查找场景中光线接触点的光照。Lumen会从多个角度捕获每个网格体的材质属性。这些捕获位置（即 卡片（Cards） ）是针对每个网格体脱机生成的。&lt;/p>
+&lt;p>可以使用控制台命令 &lt;code>r.Lumen.Visualize.CardPlacement 1&lt;/code> 来可视化卡片。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/mesh-card-placement-visualization-alt.png"
+width="1340"
+height="862"
+srcset="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/mesh-card-placement-visualization-alt_hu_ca45ee53b0a17502.png 480w, https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/mesh-card-placement-visualization-alt_hu_690649c6b4c5328f.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="155"
+data-flex-basis="373px"
+>&lt;/p>
+&lt;p>默认情况下，Lumen在一个网格体上放置12个卡，但可以通过在静态网格体编辑器的 构建设置（Build Settings） 中设置 最大Lumen网格体卡片数量（Max Lumen Mesh Cards） 来增加该数量。调整卡的数量对于更复杂的内部或具有不规则形状的单个网格体非常有用。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/static-mesh-editor-max-lumen-mesh-cards-setting.png"
+width="541"
+height="816"
+srcset="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/static-mesh-editor-max-lumen-mesh-cards-setting_hu_93edbb7ce9fed6fe.png 480w, https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/static-mesh-editor-max-lumen-mesh-cards-setting_hu_7cb52ab3768f8d9a.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="66"
+data-flex-basis="159px"
+>&lt;/p>
+&lt;p>没有表面缓存覆盖的区域将在关卡编辑器的 表面缓存(Surface Cache) 视图模式中变成粉色。&lt;/p>
+&lt;blockquote>
+&lt;p>这些区域不会反射光线，在反射过程中显示为黑色。此类问题可以通过增加最大Lumen网格体卡片数量中的卡片数来解决，但可能无法解决所有问题。或者，将网格体分解成不太复杂的几部分也可以解决这类问题。&lt;/p>&lt;/blockquote>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/viewmode-lumen-surface-cache.png"
+width="605"
+height="612"
+srcset="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/viewmode-lumen-surface-cache_hu_e417fd8c254ee87b.png 480w, https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/viewmode-lumen-surface-cache_hu_88ba30688906d1ee.png 1024w"
+loading="lazy"
+alt="视图模式（View Mode） &amp;gt; Lumen &amp;gt; 表面缓存（Surface Cache）"
+class="gallery-image"
+data-flex-grow="98"
+data-flex-basis="237px"
+>
+&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/lumen-surface-cache-visualization.png"
+width="1199"
+height="926"
+srcset="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/lumen-surface-cache-visualization_hu_885c3c020704d7f2.png 480w, https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/lumen-surface-cache-visualization_hu_6d4fe9f5e54076f8.png 1024w"
+loading="lazy"
+alt="复杂网格体的Lumen表面缓存可视化（Lumen Surface Cache Visualization of Complex Mesh）"
+class="gallery-image"
+data-flex-grow="129"
+data-flex-basis="310px"
+>&lt;/p>
+&lt;p>具有视图相关逻辑的材质，例如像素深度、摄像机位置或摄像机矢量，在Lumen表面缓存视图模式下看起来可能不正确。使用这些节点的材质可能使用 光线追踪质量切换（Ray Tracing Quality Switch） 节点来提供采用Lumen表面缓存的材质版本，或为复杂材质而优化表面缓存捕获。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/ray-tracing-quality-switch-node.png"
+width="355"
+height="125"
+srcset="https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/ray-tracing-quality-switch-node_hu_278909caa898f28d.png 480w, https://zentia.github.io/p/lumens%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/ray-tracing-quality-switch-node_hu_c0f656a9a732a6fe.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="284"
+data-flex-basis="681px"
+>&lt;/p>
+&lt;blockquote>
+&lt;p>如需详细了解如何使用光线追踪质量切换节点，请参阅光线追踪性能指南。&lt;/p>&lt;/blockquote>
+&lt;p>Nanite可以加速用于使表面缓存与三角形场景保持同步的网格体捕获。尤其是多边形网格体，需要使用&lt;a class="link" href="https://zentia.github.io/p/nanite%E8%99%9A%E6%8B%9F%E5%87%A0%E4%BD%95%E4%BD%93/" target="_blank" rel="noopener"
+>Nanite&lt;/a>进行有效捕获。只有网格体使用了Nanite，才支持植被和实例化的静态网格体组件。&lt;/p></description></item><item><title>指数高度雾（Exponential Height Fog）</title><link>https://zentia.github.io/p/%E6%8C%87%E6%95%B0%E9%AB%98%E5%BA%A6%E9%9B%BEexponential-height-fog/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%8C%87%E6%95%B0%E9%AB%98%E5%BA%A6%E9%9B%BEexponential-height-fog/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%8C%87%E6%95%B0%E9%AB%98%E5%BA%A6%E9%9B%BEexponential-height-fog/ue5-hero.png" alt="Featured image of post 指数高度雾（Exponential Height Fog）" />&lt;p>指数高度雾在地图的低处创造更多的密度，在高处创造更少的密度。过渡是平稳的，所以当你增加高度时，你永远不会遇到一个硬的切断。指数高度雾也提供了两种雾色：一种时面向主导方向光的半球（或者如果不存在直接向上），另一种时面向相反半球的颜色。&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>属性&lt;/th>
+&lt;th>描述&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>雾密度（Fog Density）&lt;/td>
+&lt;td>此为整体密度稀疏，是可视雾层的厚度。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>雾高度衰减（Fog Height Falloff）&lt;/td>
+&lt;td>高度密度系数，控制高度降低时密度增加的成都。值越小，过渡就越大。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>高度雾偏移（Height Fog Offset）&lt;/td>
+&lt;td>此控制相对于Actor放置Z（高度）的雾层高度偏移。&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item><item><title>世界分区 - 数据层</title><link>https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA-%E6%95%B0%E6%8D%AE%E5%B1%82/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA-%E6%95%B0%E6%8D%AE%E5%B1%82/</guid><description>&lt;img src="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA-%E6%95%B0%E6%8D%AE%E5%B1%82/ue5-hero.png" alt="Featured image of post 世界分区 - 数据层" />&lt;p>数据层（Data Layers） 是世界分区中的一个系统，用于在编辑器中和在运行时整理Actor。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA-%E6%95%B0%E6%8D%AE%E5%B1%82/data-layer-sample-finished.png"
+width="1920"
+height="1127"
+srcset="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA-%E6%95%B0%E6%8D%AE%E5%B1%82/data-layer-sample-finished_hu_5c2b41aa07bed477.png 480w, https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA-%E6%95%B0%E6%8D%AE%E5%B1%82/data-layer-sample-finished_hu_142a8c80fb8220c2.png 1024w"
+loading="lazy"
+alt="一个使用数据层完成的示例关卡。"
+class="gallery-image"
+data-flex-grow="170"
+data-flex-basis="408px"
+>&lt;/p>
+&lt;p>使用数据层资产和数据层实例，你可以在编辑器中动态加载和卸载层，以此实现复杂的关卡效果。该系统旨在取代旧版本虚幻引擎中先前的层系统。&lt;/p>
+&lt;p>借助数据层，你可以在编辑器中将游戏逻辑类元素和环境资产分隔开来。美术师可以单独处理特定元素，不会受到游戏逻辑触发器或游戏对象的干扰。设计师则可以借助数据层的动态加载来设计有趣的游戏体验，并让关卡过度更加丰富多变。&lt;/p>
+&lt;p>在运行时，你可以使用蓝图或C++代码切换数据层，进而驱动游戏逻辑（如任务、进度和游戏内事件）。数据层是在世界分区工作流程中管理资产流送的重要工具。&lt;/p>
+&lt;h1 id="创建数据层">创建数据层
+&lt;/h1>&lt;p>数据层分为两种类型的资产：数据层资产和数据层实例。数据层资产包含交叉世界数据，使用数据层大纲视图（Data Layers Outliner）或在 内容浏览器（Content Browser） 中创建。数据层实例包含世界特定数据，在 数据层大纲视图（Data Layers Outliner） 中创建。&lt;/p>
+&lt;blockquote>
+&lt;p>数据层（Data Layers）系统要求你在地图中启用 世界分区（World Partition） 。你可以使用 工具（Tools）&amp;gt; 转换关卡（Convert Level） 或使用命令将地图转换为世界分区。有关将现有关卡转换为世界分区的更多信息，请参阅世界分区。&lt;/p>&lt;/blockquote></description></item><item><title>虚拟阴影贴图</title><link>https://zentia.github.io/p/%E8%99%9A%E6%8B%9F%E9%98%B4%E5%BD%B1%E8%B4%B4%E5%9B%BE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%99%9A%E6%8B%9F%E9%98%B4%E5%BD%B1%E8%B4%B4%E5%9B%BE/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%99%9A%E6%8B%9F%E9%98%B4%E5%BD%B1%E8%B4%B4%E5%9B%BE/ue5-hero.png" alt="Featured image of post 虚拟阴影贴图" />&lt;p>虚拟阴影贴图（VSM）是一种全新的阴影贴图方法，可以提供稳定的高分辨率阴影。通过与虚幻引擎5的&lt;a class="link" href="https://zentia.github.io/p/nanite%E8%99%9A%E6%8B%9F%E5%87%A0%E4%BD%95%E4%BD%93/" target="_blank" rel="noopener"
+>Nanite虚拟几何体&lt;/a>、Lumen全局光照和反射以及世界分区功能结合使用，它能够实现电影级的品质效果，为大型开放场景提供光照。&lt;/p></description></item><item><title>Lumen全局光照和反射</title><link>https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/</guid><description>&lt;img src="https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/ue5-hero.png" alt="Featured image of post Lumen全局光照和反射" />&lt;p>Lumen是虚幻引擎5的全动态全局光照和反射系统，专门针对下一代主机进行设计，是默认的全局光照和反射系统。Lumen能够在拥有大量细节的宏大场景中渲染间接漫反射，并确保无限次数的反弹以及间接高光度反射效果；无论是毫米级别的场景细节，还是数以千米的宏大场景，它都能应对得游刃有余。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/lumen-scionti-04.png"
+width="1920"
+height="1080"
+srcset="https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/lumen-scionti-04_hu_838cdccfad3513a1.png 480w, https://zentia.github.io/p/lumen%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7%E5%92%8C%E5%8F%8D%E5%B0%84/lumen-scionti-04_hu_ca894aaced6f2e95.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h1 id="lumen入门">Lumen入门
+&lt;/h1>&lt;p>新创建的项目默认启用Lumen全局光照和反射，及其依赖功能，例如生成网格体距离场。项目从虚幻引擎4升级到虚幻引擎5时， 不会 自动启用Lumen功能。这能防止破坏或更改这些项目中的光照路线。&lt;/p></description></item><item><title>一Actor一文件</title><link>https://zentia.github.io/p/%E4%B8%80actor%E4%B8%80%E6%96%87%E4%BB%B6/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E4%B8%80actor%E4%B8%80%E6%96%87%E4%BB%B6/</guid><description>&lt;img src="https://zentia.github.io/p/%E4%B8%80actor%E4%B8%80%E6%96%87%E4%BB%B6/ue5-hero.png" alt="Featured image of post 一Actor一文件" />&lt;p>在之前的虚幻引擎版本中，要更改关卡中的一个或多个Actor，必须从源控制中检出文件。在你完成工作之前，其他团队成员访问不了该文件；这样会导致开发流程速度变慢，因为一次只有一个人员可以处理该文件。&lt;/p>
+&lt;p>一Actor一文件（One File Per Actor，简称OFPA） 可以将Actor实例的数据保存到外部文件中，更改Actor时不再需要保存主关卡文件，从而减少用户之间的重叠。&lt;/p>
+&lt;blockquote>
+&lt;p>&amp;ldquo;一Actor一文件&amp;quot;功能仅在编辑器中可用。在烘焙时，所有Actor都嵌入到各自的关卡文件。&lt;/p>&lt;/blockquote>
+&lt;h1 id="启用一actor一文件">启用&amp;quot;一Actor一文件&amp;rdquo;
+&lt;/h1>&lt;p>使用世界分区时，默认启用&amp;quot;一Actor一文件&amp;quot;。要在非分区世界中启用OFPA，请执行以下操作：&lt;/p></description></item><item><title>距离场环境光遮蔽</title><link>https://zentia.github.io/p/%E8%B7%9D%E7%A6%BB%E5%9C%BA%E7%8E%AF%E5%A2%83%E5%85%89%E9%81%AE%E8%94%BD/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E8%B7%9D%E7%A6%BB%E5%9C%BA%E7%8E%AF%E5%A2%83%E5%85%89%E9%81%AE%E8%94%BD/</guid><description>&lt;img src="https://zentia.github.io/p/%E8%B7%9D%E7%A6%BB%E5%9C%BA%E7%8E%AF%E5%A2%83%E5%85%89%E9%81%AE%E8%94%BD/ue5-hero.png" alt="Featured image of post 距离场环境光遮蔽" />&lt;p>使用有向距离场体积能获得可移动天空光照的阴影；该有向距离场体积在各刚性网格体周围预计算，以产生中等范围的环境光遮蔽。在 虚幻引擎 中，这被称为 距离场环境光遮蔽（Distance Field Ambient Occlusion）（DFAO）。其支持动态场景变化；刚性网格体可移动或隐藏，其会影响遮蔽。与屏幕空间环境光遮蔽（SSAO）不同，遮蔽在场景空间遮挡物中进行计算，因此出屏丢失数据不会导致瑕疵。&lt;/p></description></item><item><title>网格体距离场</title><link>https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/</guid><description>&lt;img src="https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/ue5-hero.png" alt="Featured image of post 网格体距离场" />&lt;p>虚幻引擎 使用 距离场（Distance Fields） 的强大功能来实现游戏中静态网格体Actor的动态环境光遮蔽和阴影。除此之外，Actor的网格体距离场表达还可用于其他一些特性，例如GPU粒子碰撞，甚至还可以使用材质编辑器创建动态流动贴图等等。&lt;/p>
+&lt;p>继续阅读下面的内容可以了解网格体距离场的工作原理，以及可通过哪些方法把它应用在游戏中。&lt;/p>
+&lt;h1 id="它的工作原理是什么">它的工作原理是什么？
+&lt;/h1>&lt;p>此技术中使用的距离场是代表静态网格体表面的 有向距离场（Signed Distance Field） （SDF）。有向距离场在每个点将距离最近表面的距离保存到体积纹理中。网格体外的每个点保存的距离为正值，网格体内的每个点保存的距离为负值。以下示例跟踪并保存了为正的距离，以在稍后表现出树的形象。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/01-distance-field-positive-distance-tracing.png"
+width="375"
+height="429"
+srcset="https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/01-distance-field-positive-distance-tracing_hu_36100c03609f98e6.png 480w, https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/01-distance-field-positive-distance-tracing_hu_8f8a95f9058649b0.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="87"
+data-flex-basis="209px"
+>&lt;/p>
+&lt;p>SDF首个实用属性的作用是，在追踪光线时安全地跳过空白空间，因为到最近表面的距离已经明确（有时称这种方法为球体追踪）。只需区区几步就可以判定出交叉点。对距离场进行光线追踪将生成可见性效果， 也就是说如果光线和网格体交叉，光线就会投射出阴影。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/02-distance-field-sphere-tracing.png"
+width="375"
+height="425"
+srcset="https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/02-distance-field-sphere-tracing_hu_aa1af62f49cd7211.png 480w, https://zentia.github.io/p/%E7%BD%91%E6%A0%BC%E4%BD%93%E8%B7%9D%E7%A6%BB%E5%9C%BA/02-distance-field-sphere-tracing_hu_aaab4b76362aa57b.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="88"
+data-flex-basis="211px"
+>&lt;/p>
+&lt;p>距离场第二个实用属性的作用是，在追踪光线时，通过追踪经过遮挡物的距离最近的光线就可以计算出近似的锥体交叉点，而不产生额外成本。这种近似法可以利用距离场来实现非常柔和的区域阴影和天空遮蔽。这个属性是距离场环境光遮蔽的关键，因为少量的锥体即可为接收器点的整个半球计算出柔和的可见性。&lt;/p></description></item><item><title>世界分区</title><link>https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/</guid><description>&lt;img src="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/ue5-hero.png" alt="Featured image of post 世界分区" />&lt;p>以往开发者在制作大型地图时，需要手动将其分为多个子关卡，然后在玩家穿越地形时使用关卡流送系统加载和卸载子关卡。 这样的方法往往导致多用户共用文件的问题，并且使得开发者难以同时审视整个地图。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/world-partition-in-fortnite.jpg"
+width="1400"
+height="788"
+srcset="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/world-partition-in-fortnite_hu_91d1eb2243962d14.jpg 480w, https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/world-partition-in-fortnite_hu_ff0e820879f3d089.jpg 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>世界分区是一种自动数据管理和基于距离的关卡流送系统，为大型世界管理提供了完整的解决方案。 以前需要将单个持久关卡中的世界存储到网格单元格中，以便将大型关卡划分成子关卡，但现在的系统已经不需要如此操作，并且你能够使用自动流送系统，根据与流送源的距离来加载和卸载这些单元格。&lt;/p>
+&lt;p>世界分区常常与以下功能搭配使用:&lt;/p>
+&lt;ul>
+&lt;li>一Actor一文件&lt;/li>
+&lt;li>世界分区 - 数据层&lt;/li>
+&lt;li>关卡实例&lt;/li>
+&lt;li>世界分区 - 分层细节级别&lt;/li>
+&lt;/ul>
+&lt;h1 id="启用世界分区">启用世界分区
+&lt;/h1>&lt;p>在虚幻引擎中启用世界分区的三种方法：&lt;/p>
+&lt;ul>
+&lt;li>使用游戏（Games）类别下的模板创建新项目。&lt;/li>
+&lt;li>使用开放世界（Open World）模板创建新关卡。&lt;/li>
+&lt;li>转换已有的关卡来使用世界分区。&lt;/li>
+&lt;/ul>
+&lt;h2 id="使用游戏模板创建你的项目">使用游戏模板创建你的项目
+&lt;/h2>&lt;p>在游戏（Games）类目下的很多项目模板中，世界分区默认启用。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/create-project-template.png"
+width="1400"
+height="745"
+srcset="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/create-project-template_hu_ded071323ed18978.png 480w, https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/create-project-template_hu_a880a6b477f82ce0.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="187"
+data-flex-basis="451px"
+>&lt;/p>
+&lt;p>为了在创建新项目时化繁为简并提供可伸缩的解决方案，可使用世界设置（World Settings）下的启用流送（Enable Streaming）选项来启用或禁用网格单元格流送。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/enable-streaming.png"
+width="417"
+height="368"
+srcset="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/enable-streaming_hu_db23652c95ed213f.png 480w, https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/enable-streaming_hu_1c88cab79037b656.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="113"
+data-flex-basis="271px"
+>&lt;/p>
+&lt;p>以下模板使用世界分区，但默认禁用启用流送（Enable Streaming）选项：&lt;/p>
+&lt;ul>
+&lt;li>空白（Blank）&lt;/li>
+&lt;li>第一人称（First Person）&lt;/li>
+&lt;li>第三人称（Third Person）&lt;/li>
+&lt;li>俯视角（Top Down）&lt;/li>
+&lt;li>高级载具（Vehicle Advanced）&lt;/li>
+&lt;/ul>
+&lt;h2 id="使用开放世界默认地图">使用开放世界默认地图
+&lt;/h2>&lt;p>默认的开放世界（Open World）地图被设计为创建大型开放世界地图的起始参考，并且默认启用以下功能：&lt;/p>
+&lt;ul>
+&lt;li>世界分区&lt;/li>
+&lt;li>一Actor一文件&lt;/li>
+&lt;li>数据层&lt;/li>
+&lt;li>分层细节级别&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/open-world-template.png"
+width="1400"
+height="733"
+srcset="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/open-world-template_hu_9e8c218be7df2c.png 480w, https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/open-world-template_hu_9b87ccecafb50724.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="190"
+data-flex-basis="458px"
+>&lt;/p>
+&lt;p>该地图包括一个2km x 2km的地形示例，采用户外环境的地形材质和光照设定。 包括天空大气系统、天空光照、定向光源、指数高度雾、体积云。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/open-world-new-map.png"
+width="533"
+height="448"
+srcset="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/open-world-new-map_hu_37b92cc47f74a1f4.png 480w, https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/open-world-new-map_hu_885c0f899c399548.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="118"
+data-flex-basis="285px"
+>&lt;/p>
+&lt;p>在你的项目中使用默认的开放世界（Open World）类型地图：&lt;/p>
+&lt;ol>
+&lt;li>打开文件（File）菜单并选择新关卡（New Level）。&lt;/li>
+&lt;li>选择开放世界（Open World）地图类型。&lt;/li>
+&lt;li>点击创建（Create）按钮创建新地图。&lt;/li>
+&lt;/ol>
+&lt;h2 id="转换已有的关卡来使用世界分区">转换已有的关卡来使用世界分区
+&lt;/h2>&lt;p>你可以使用工具（Tools）&amp;gt; 转换关卡（Convert Level）选项向任何关卡添加世界分区，或者使用世界分区转换Commandlet。&lt;/p>
+&lt;p>使用世界分区转换Commandlet的步骤如下：&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/commandlet-format-wp.png"
+width="1400"
+height="788"
+srcset="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/commandlet-format-wp_hu_6552d1ba984b1c4.png 480w, https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/commandlet-format-wp_hu_b826c870e6b3c64f.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>命令：&lt;code>UnrealEditor.exe QAGame -run=WorldPartitionConvertCommandlet Playground.umap -AllowCommandletRendering&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">[/Script/UnrealEd.WorldPartitionConvertCommandlet]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> EditorHashClass=Class&amp;#39;/Script/Engine.WorldPartitionEditorSpatialHash
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> RuntimeHashClass=Class&amp;#39;/Script/Engine.WorldPartitionRuntimeSpatialHash
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> LevelsGridPlacement=((&amp;#34;/Game/Maps/Highrise_Audio&amp;#34;, Bounds),(&amp;#34;/Game/Maps/Highrise_Collisions_Temp&amp;#34;, Bounds),(&amp;#34;/Game/Maps/Highrise_Gameplay&amp;#34;, Bounds),(&amp;#34;/Game/Maps/Highrise_Lights&amp;#34;, Bounds),(&amp;#34;/Game/Maps/Highrise_Vista&amp;#34;, AlwaysLoaded))
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> HLODLayerAssetsPath=
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DefaultHLODLayerName=
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [/Script/Engine.WorldPartitionEditorSpatialHash]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> CellSize=51200
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> WorldImage=None
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> WorldImageTopLeftW=(X=0.000000,Y=0.000000)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> WorldImageBottomRightW=(X=0.000000,Y=0.000000)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [/Script/Engine.WorldPartitionRuntimeSpatialHash]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Grids=(GridName=&amp;#34;MainGrid&amp;#34;,CellSize=3200,LoadingRange=25600.000000,DebugColor=(R=0.500000,G=0.500000,B=0.500000,A=1.000000))
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h1 id="使用世界分区">使用世界分区
+&lt;/h1>&lt;p>世界分区系统将创建的世界储存在一个持久关卡文件中，并且使用可配置的运行时网格将空间划分为可流送的网格单元。 这些网格单元在运行时由流送源（比如玩家）控制加载和卸载。 这样一来，虚幻引擎只加载关卡中玩家能看到并与之互动的部分。&lt;/p>
+&lt;h2 id="世界分区中的actor">世界分区中的Actor
+&lt;/h2>&lt;p>编辑世界时，Actor可以被加入到任何地点，并根据其空间化加载（Is Spatially Loaded）的设置被自动分配至网格单元。该选项位于Actor细节（Details）面板的世界分区（World Partition）分段。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/world-partition-actor-options.png"
+width="432"
+height="607"
+srcset="https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/world-partition-actor-options_hu_5f80f8adb3fc6de4.png 480w, https://zentia.github.io/p/%E4%B8%96%E7%95%8C%E5%88%86%E5%8C%BA/world-partition-actor-options_hu_3a92bc34823f8df0.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="71"
+data-flex-basis="170px"
+>&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>选项&lt;/th>
+&lt;th>说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>运行时网格（Runtime Grid）&lt;/td>
+&lt;td>判定Actor被放置在哪一个分区网格。 如果为无（None），网格将会由分区系统决定。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>空间化加载（Is Spatially Loaded）&lt;/td>
+&lt;td>确定Actor是否为空间化加载：若启用，该Actor将会在进入任何流送源的范围内且并未被分配至禁用的数据层时加载。若禁用，则只要没有被分配至禁用的数据层，该Actor就会被加载。&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item><item><title>体积雾</title><link>https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/</guid><description>&lt;img src="https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/ue5-hero.png" alt="Featured image of post 体积雾" />&lt;p>体积雾（Volumetric Fog）时指数高度雾组件的一个部分。体积雾（Volumetric Fog）将计算摄像机视锥体中每个点的参与介质密度和照明，以支持不同的密度和影响雾的任意数量光源。&lt;/p>
+&lt;p>&lt;img src="https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/volumetricfog.png"
+width="947"
+height="542"
+srcset="https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/volumetricfog_hu_c0727b36b4fd701c.png 480w, https://zentia.github.io/p/%E4%BD%93%E7%A7%AF%E9%9B%BE/volumetricfog_hu_820a4bb94b1cc3d5.png 1024w"
+loading="lazy"
+alt="此场景中的体积雾来自于穿过拱门的定向光源，在周边区域中生成带阴影效果的雾气。"
+class="gallery-image"
+data-flex-grow="174"
+data-flex-basis="419px"
+>&lt;/p>
+&lt;h1 id="体积雾控制">体积雾控制
+&lt;/h1>&lt;p>设置和调整体积雾时，你可以全局控制它，也可以在场景中局部控制它。全局控制功能使你能够使用指数高度雾（Exponential Height Fog）组件控制整个场景的雾。局部控制功能使你能够通过在可以生成粒子的区域中使用粒子的方式控制雾。&lt;/p>
+&lt;h2 id="全局控制">全局控制
+&lt;/h2>&lt;p>要控制体积雾，你可以调整指数高度雾（Exponential Height Fog）中的属性和每个光源上的属性，以控制光源的贡献量。&lt;/p>
+&lt;h2 id="指数高度雾">指数高度雾
+&lt;/h2>&lt;h1 id="性能">性能
+&lt;/h1>&lt;p>体积雾的GPU开销主要通过体积纹理分辨率控制，可在引擎可延展性的阴影级别设置它。&lt;/p></description></item><item><title>构建HLOD网格体</title><link>https://zentia.github.io/p/%E6%9E%84%E5%BB%BAhlod%E7%BD%91%E6%A0%BC%E4%BD%93/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%9E%84%E5%BB%BAhlod%E7%BD%91%E6%A0%BC%E4%BD%93/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%9E%84%E5%BB%BAhlod%E7%BD%91%E6%A0%BC%E4%BD%93/hero-image.png" alt="Featured image of post 构建HLOD网格体" />&lt;p>为了使用分层细节级别（Hierarchical Level of Detail）（HLOD）模型，你必须完成两个步骤才能在关卡中设置HLOD模型。首先，你必须生成群集。群集会根据你在群集生成设置（Cluster Generation Settings）中指定设置对关卡的Actor进行分支。&lt;/p></description></item><item><title>HLOD概述</title><link>https://zentia.github.io/p/hlod%E6%A6%82%E8%BF%B0/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/hlod%E6%A6%82%E8%BF%B0/</guid><description>&lt;img src="https://zentia.github.io/p/hlod%E6%A6%82%E8%BF%B0/ue5-hero.png" alt="Featured image of post HLOD概述" />&lt;p>&lt;img src="https://zentia.github.io/p/hlod%E6%A6%82%E8%BF%B0/hlod_howto_header.png"
+width="1200"
+height="385"
+srcset="https://zentia.github.io/p/hlod%E6%A6%82%E8%BF%B0/hlod_howto_header_hu_4a191df7dee53d2.png 480w, https://zentia.github.io/p/hlod%E6%A6%82%E8%BF%B0/hlod_howto_header_hu_f900d6a75c83d61d.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="311"
+data-flex-basis="748px"
+>
+就其最简单的形式而言，分层细节级别（Hierarchical Level of Detail）（简称HLOD）将预先存在的静态网格体Actor组合为一个单一的HLOD代理模型和材质（带有图谱纹理）。因为HLOD可以将每个代理模型的多个绘制调用减少为一个调用，而不是每个静态网格体Actor一个绘制条用，因此使用它可以提升性能。生成HLOD代理模型时，可以调整几个参数，这些参数有助于定义如何将静态网格体Actor作为群集分组在一起，它们最终被编译到代理模型中。&lt;/p></description></item><item><title>水体Actor</title><link>https://zentia.github.io/p/%E6%B0%B4%E4%BD%93actor/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://zentia.github.io/p/%E6%B0%B4%E4%BD%93actor/</guid><description>&lt;img src="https://zentia.github.io/p/%E6%B0%B4%E4%BD%93actor/hero-image.png" alt="Featured image of post 水体Actor" />&lt;p>你可以使用水体Actor在关卡中定义水的位置、形状，以及睡眠过渡效果。水体是由许多的水网格体块组成，并由水网格体Actor（Water Mesh Actor）管理。这个actor决定了所有水体（water body）的质量和属性。你只需将水网格体actor放置在需要渲染水体的区域。之后，虚幻引擎会自动生成所需的网格体。系统会将所有水体渲染成单一的水网格体图块，实现平滑无缝的过渡效果。&lt;/p>
+&lt;h1 id="水体的种类">水体的种类
+&lt;/h1>&lt;p>有几种水体Actor可供选择。&lt;/p>
+&lt;ul>
+&lt;li>海洋、湖泊和河流水体。它们的区别在于组成它们的样条线使用了保存不同类型的数据。&lt;/li>
+&lt;li>自定义类型。它同样有一个用于查询数据的样条，但你需要用静态网格体来定义形状。&lt;/li>
+&lt;li>岛屿类型。用于在已定义的样条区域内升高地形。&lt;/li>
+&lt;/ul></description></item></channel></rss>
