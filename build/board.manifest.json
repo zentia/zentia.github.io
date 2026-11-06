@@ -12,12 +12,35 @@
     "note": "只产高配 HD 场景。High/Mid/Low 由项目既有自动降配流程（ArtTools/4.场景工具/--->HD转高中低配，或 FastAutoOptimization）从 HD 生成后由美术手调，本线不管；配置表（ResSceneCfg / ResPersonaliseChessboardDataBin）也不动。template 指向现成 HD 场景：unity_scene.py 默认只继承它开头的 4 个场景级文档（OcclusionCullingSettings / RenderSettings / LightmapSettings / NavMeshSettings，含完整 GI 与 LightingSettings），棋盘对象全部自己写，产物 86 文档 / 0 PrefabInstance。不能整份继承：AC10 的 31 个 PrefabInstance 里有 11 个 m_SourcePrefab GUID 在 trunk 不存在，稳定 Editor 实测打开会刷 Missing Prefab Asset 并报 Problem detected while opening the Scene file，且旧美术会被 SceneExportChecker 收进打包产物。--full-template 保留完整继承（仅诊断用），--no-template 用内置 HEADER。"
   },
   "delivered_lod": "HD",
-  "scene_parts": 15,
+  "scene_parts": 14,
   "core_contract": {
     "fixed": true,
     "visual_kind": "continuous_slab",
     "logical_grid_is_visual": false,
-    "note": "现网 7 套皮肤（长安舞榭/小鹿乐园/万象学园篮球场/河豚车站/新奇街区/高空赛场/万象对决）共性：中央是一整块连续台面，表面纹样与中央徽记靠贴图/浅浮雕，不是 56 个独立格子块。7x8 只是 GridUtil 的逻辑落点坐标。AI 不得改动本节；要改风格请换 style-pack.json。",
+    "required_elements": [
+      "square_outline",
+      "player_seats"
+    ],
+    "square_outline": {
+      "fixed_parts": [
+        "core_slab",
+        "frame_*"
+      ],
+      "note": "最外面一个方格：一整块连续台面 + 四段包边描边。概念草图里只有这一圈白色方格是必须的，台面本身仍与地面共面、不是 56 个独立格子块。"
+    },
+    "player_seats": {
+      "count": 2,
+      "corners": [
+        "south_west",
+        "north_east"
+      ],
+      "fixed_parts": [
+        "anchor_seat_home",
+        "anchor_seat_guest"
+      ],
+      "note": "两个棋手占位固定在左下角（-x, +z）与右上角（+x, -z）对角，与现网河豚车站等皮肤一致。冻结的只有位置与占地半径；桌椅、灯箱等具体造型属于概念图输出，不进核心契约。"
+    },
+    "note": "2026-11-06 用户纠正：棋盘的形式就是「一个方格 + 两个棋手的占位」。原概念草图里的中线、两个半圆、中圈同心圆、外侧小圆圈都不是必须元素，一律不冻结；台面纹样、中央徽记与周围装饰全部按 12 张概念图（web/worlds.json 的 board.marks / style-pack.json）输出，默认不绘制。7x8 只是 GridUtil 的逻辑落点坐标，永远不是可见几何。sky@* 是渲染层天穹几何，不属于棋盘本体。AI 不得改动本节；要改风格请换 style-pack.json / worlds.json。",
     "fixed_parts": [
       "core_slab",
       "frame_*",
@@ -28,7 +51,8 @@
       "decoration_*",
       "interactable_*",
       "cell_marks",
-      "sky_panorama"
+      "sky_panorama",
+      "surface_marks"
     ]
   },
   "grid": {
@@ -70,25 +94,17 @@
     {
       "id": "seat_home",
       "position": [
-        9.7,
+        -10.2,
         0.0,
-        -2.6
+        9.0
       ]
     },
     {
       "id": "seat_guest",
       "position": [
-        9.7,
+        10.2,
         0.0,
-        2.6
-      ]
-    },
-    {
-      "id": "info_plinth",
-      "position": [
-        -9.7,
-        0.0,
-        0.0
+        -9.0
       ]
     }
   ],
@@ -115,7 +131,8 @@
         2.8,
         2.8
       ],
-      "max_items": 8
+      "max_items": 0,
+      "reserved_by": "player_seat:seat_guest"
     },
     {
       "id": "corner_sw",
@@ -127,7 +144,8 @@
         2.8,
         2.8
       ],
-      "max_items": 8
+      "max_items": 0,
+      "reserved_by": "player_seat:seat_home"
     },
     {
       "id": "corner_se",
@@ -206,7 +224,6 @@
     "frame_3",
     "anchor_seat_home",
     "anchor_seat_guest",
-    "anchor_info_plinth",
     "sky@HD",
     "sky@High",
     "sky@Mid",
@@ -220,10 +237,10 @@
     "interactable_lantern_w",
     "interactable_lantern_e"
   ],
-  "parts": 18,
+  "parts": 17,
   "kinds": {
     "grid": 1,
-    "frame": 7,
+    "frame": 6,
     "sky": 4,
     "decoration": 4,
     "interactable": 2
@@ -295,36 +312,36 @@
   },
   "lods": {
     "HD": {
-      "parts": 15,
-      "vertices": 8172,
+      "parts": 14,
+      "vertices": 7884,
       "star_scale": 1.0,
       "decorations": 6,
       "max_decorations": 40
     },
     "High": {
-      "parts": 13,
-      "vertices": 6516,
+      "parts": 12,
+      "vertices": 6228,
       "star_scale": 0.7,
       "decorations": 4,
       "max_decorations": 26
     },
     "Mid": {
-      "parts": 12,
-      "vertices": 4932,
+      "parts": 11,
+      "vertices": 4644,
       "star_scale": 0.45,
       "decorations": 3,
       "max_decorations": 16
     },
     "Low": {
-      "parts": 11,
-      "vertices": 4428,
+      "parts": 10,
+      "vertices": 4140,
       "star_scale": 0.2,
       "decorations": 2,
       "max_decorations": 8
     }
   },
-  "zbrd_bytes": 390746,
-  "sha256": "f2ece2e4c6c94618b9cf43fc2217e41959920b7786a42dd9cf009c091671029a",
+  "zbrd_bytes": 380238,
+  "sha256": "86bbd81085e0c7f98668a86db3c45c48f8ca017e05164b04029b848fff4635b5",
   "external_mesh": {
     "schema": "zengine.chessboard.external-mesh/v1",
     "asset_format": "glb",
