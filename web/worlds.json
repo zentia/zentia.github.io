@@ -18,7 +18,8 @@
     },
     "board_is_terrain": "棋盘永远是画进同一片地面贴图的一块区域，不是独立 3D 台面；视觉包只改线的颜色，不改轮廓。",
     "board_required_elements": "冻结元素只有最外面一个方格 + 左下/右上两个棋手占位（位置与半径来自 board.zbrd 的 anchor_*）。中线、两个半圆、中圈同心圆、小圆圈都不是必须元素：overrides.board.marks 默认为空数组，只有某张概念图显式声明 center_line / half_circles / center_emblem 才绘制对应纹样，颜色取该视觉包的 board.line / board.emblem。其余台面表现（底色渐变、笔触、外框色、占位色）全部按概念图配色输出。",
-    "concept_images": "assets/worlds/<id>.png（AI 文生图），sha256 同时落在 worlds.json 与 assets/worlds/manifest.json；status=prompt_only 仍作为缺图时的降级分支保留，页面回退到程序化天空缩略图，不引用缺失文件。"
+    "concept_images": "assets/worlds/<id>.png（AI 文生图），sha256 同时落在 worlds.json 与 assets/worlds/manifest.json；status=prompt_only 仍作为缺图时的降级分支保留，页面回退到程序化天空缩略图，不引用缺失文件。",
+    "board_ceremony": "6 类局内演出（入场动画 / 回合胜利 / 回合失败 / 连续胜利 / 升级播报 / 互动彩蛋）的事件 id 与 payload 字段由根目录 ceremony.json 冻结，视觉包只提供 defaults.scenery.ceremony 配色；12 个画境可用 overrides.scenery.ceremony 覆盖。胜负、连胜数、等级一律由宿主传入，棋盘不判定、不推断。"
   },
   "default": "starry-night",
 
@@ -65,7 +66,15 @@
         "tag": "STREET LANTERN / 路边星灯",
         "hint": "星夜小路旁的一盏石灯，灯芯是这片夜色里为数不多的暖光。"
       },
-      "particles": { "star": [1.5, 1.42, 1.18], "dust": "#a9d4ee", "star_opacity": 0.82 }
+      "particles": { "star": [1.5, 1.42, 1.18], "dust": "#a9d4ee", "star_opacity": 0.82 },
+      "ceremony": {
+        "accent": "#e8b96a",
+        "win": "#ffd88a",
+        "lose": "#8fb0ca",
+        "streak": "#ffb45c",
+        "level": "#b9e6ff",
+        "egg": "#d2a8ff"
+      }
     },
     "lighting": {
       "directional_color": "#ffdca3", "directional_intensity": 1.12,
