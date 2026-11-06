@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ZEngine · 十二画境</title>
 <script>
-  // 默认落在「马尔利港的洪水」；/?world=<id> 可透传到任意画境。
-  const requested = new URLSearchParams(location.search).get("world");
+  // 默认落在「马尔利港的洪水」；/?world=<id> 与 /?event=<id> 可透传。
+  const params = new URLSearchParams(location.search);
+  const requested = params.get("world");
+  const event = params.get("event");
   location.replace("web/starry.html?world="
-    + encodeURIComponent(requested || "port-marly-flood"));
+    + encodeURIComponent(requested || "port-marly-flood")
+    + (event ? "&event=" + encodeURIComponent(event) : ""));
 </script>
 </head>
 <body style="font:14px system-ui;background:#0b1622;color:#dbe7f2;padding:24px">

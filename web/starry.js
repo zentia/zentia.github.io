@@ -36,6 +36,7 @@ import {
 } from "./world-pack.js";
 import { makeSkyPanorama } from "./world-sky.js";
 import { buildWorldScenery } from "./world-scenery.js";
+import { createCeremony } from "./board-ceremony.js";
 
 const BUILD = "../build/";
 const $ = (id) => document.getElementById(id);
@@ -65,6 +66,13 @@ const state = {
   external: { applied: 0, total: 0, textured: 0, error: "" },
   postAvailable: false,
 };
+
+// 棋盘演出：事件契约在 ../ceremony.json，DOM 表现由 board-ceremony.mjs 负责。
+// 3D 侧只做一段短暂氛围脉冲，绝不改 cam / tween，避免干扰环视与像素回归。
+let ceremonyDoc = null;
+let ceremony = null;
+let ceremonyPulse = null;
+const GROUND_PLANE = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(66, innerWidth / innerHeight, 0.1, 1400);
@@ -1121,6 +1129,37 @@ function showInspect(object) {
     ?? `${state.pack.title_zh}里的一处灯火。拖动环视，滚轮推进，或切到俯瞰看整座岛。`;
 }
 
+// 6 类演出各自的氛围参数：fov 是渲染层的临时广角偏移（不写回 cam），
+// bloom 是强度增量，dust 是星尘附加转速。数值只影响观感，不进任何契约。
+const CEREMONY_FX = {
+  entrance:   { fov: 12, bloom: 0.35, dust: 0.0006 },
+  round_win:  { fov: -2, bloom: 0.80, dust: 0.0012 },
+  round_lose: { fov: 4, bloom: -0.28, dust: 0.0 },
+  win_streak: { fov: -3, bloom: 1.00, dust: 0.0016 },
+  level_up:   { fov: -4, bloom: 0.70, dust: 0.0008 },
+  easter_egg: { fov: 3, bloom: 0.55, dust: 0.0020 },
+};
+
+function applyCeremonyFx(event, payload) {
+  // 页面加载完成的自动入场只显示横幅：此刻无头探针正在取像素与拖拽基线，
+  // 任何 fov / bloom 抖动都会污染回归。手动重播或 ?event= 才是完整演出。
+  if (payload.auto) return;
+  const fx = CEREMONY_FX[event.id] ?? CEREMONY_FX.entrance;
+  ceremonyPulse = {
+    start: performance.now(), duration: event.duration_ms,
+    fov: fx.fov, bloom: fx.bloom, dust: fx.dust,
+    bloomBase: bloomPass?.strength ?? 0,
+  };
+}
+
+function playCeremony(id, payload = {}) {
+  if (!ceremony || !ceremonyDoc) return false;
+  // 演示用的回合 / 连胜 / 等级来自契约里的 sample_payload；真实对局由宿主
+  // 直接传 payload 覆盖。棋盘自己不判定胜负、不累加连胜、不推断等级。
+  const sample = ceremonyDoc.events.find((event) => event.id === id)?.sample_payload ?? {};
+  return ceremony.dispatch(id, { ...sample, ...payload });
+}
+
 function bindEvents() {
   const canvas = renderer.domElement;
   // 拖过整个视口宽 ≈ 100°、整个视口高 ≈ 55°；按视口归一化，分辨率无关。
@@ -1195,6 +1234,16 @@ function bindEvents() {
       raycaster.setFromCamera(pointer, camera);
       const hits = raycaster.intersectObjects(state.interactive, true);
       showInspect(hits.length ? hits[0].object : null);
+      // 互动彩蛋：点中地面上的左下 / 右上棋手占位区（坐标来自 ZBRD anchors），
+      // 用 y=0 平面求交而不是 mesh raycast，避免被树丛 / 屋舍挡住。
+      if (!hits.length && state.board) {
+        const point = new THREE.Vector3();
+        if (raycaster.ray.intersectPlane(GROUND_PLANE, point)
+          && state.board.anchors.some(([ax, az, r]) =>
+            Math.hypot(point.x - ax, point.z - az) <= r * 1.4)) {
+          playCeremony("easter_egg");
+        }
+      }
     }
     dragging = null;
   });
@@ -1208,6 +1257,10 @@ function bindEvents() {
   }, { passive: false });
 
   addEventListener("keydown", (event) => {
+    if (event.key === "e" || event.key === "E") {
+      playCeremony("easter_egg");
+      return;
+    }
     const step = 1.6;
     const forward = cam.azimuth;
     let dx = 0;
@@ -1242,6 +1295,11 @@ function bindEvents() {
     tour = event.target.checked;
   });
   $("inspect-close").addEventListener("click", () => showInspect(null));
+  $("ceremony-select").addEventListener("change", (event) => {
+    const id = event.target.value;
+    event.target.value = "";
+    if (id) playCeremony(id);
+  });
 
   addEventListener("resize", () => {
     camera.aspect = innerWidth / innerHeight;
@@ -1281,6 +1339,24 @@ function animate(time) {
   if (skyMesh) skyMesh.rotation.y = (state.visual.skybox.rotation_deg ?? 0) * DEG
     + time * 0.000004;
   updateCamera(time);
+  // 演出脉冲必须在 updateCamera 之后：它会临时覆盖 camera.fov，但从不写回
+  // cam，所以拖拽 / setView / resize 的构图完全不受影响。
+  if (ceremonyPulse) {
+    const pulse = ceremonyPulse;
+    const t = THREE.MathUtils.clamp((time - pulse.start) / pulse.duration, 0, 1);
+    const decay = 1 - t;
+    const env = Math.sin(Math.PI * t);
+    camera.fov = cam.fov + pulse.fov * decay;
+    camera.updateProjectionMatrix();
+    if (bloomPass) bloomPass.strength = pulse.bloomBase + pulse.bloom * env;
+    if (dust) dust.rotation.y += pulse.dust * env;
+    if (t >= 1) {
+      camera.fov = cam.fov;
+      camera.updateProjectionMatrix();
+      if (bloomPass) bloomPass.strength = pulse.bloomBase;
+      ceremonyPulse = null;
+    }
+  }
   render();
 }
 
@@ -1292,6 +1368,15 @@ window.__zengineStarry = {
   get bloomPass() { return bloomPass; },
   view() { return { ...cam }; },
   setView, render,
+  // 宿主（游戏逻辑 / 控制台 / 自动化）从这里派发演出；棋盘不判定胜负。
+  ceremony: {
+    dispatch: (id, payload) => playCeremony(id, payload),
+    last: () => ceremony?.last() ?? null,
+    active: () => ceremony?.active() ?? null,
+    history: () => ceremony?.history() ?? [],
+    eventIds: () => ceremony?.eventIds() ?? [],
+    stop: () => ceremony?.stop(),
+  },
   probe() {
     // 直出一次只取 draw call / 三角形统计（composer 的 info 只反映最后一个 pass）。
     renderer.render(scene, camera);
@@ -1340,6 +1425,12 @@ window.__zengineStarry = {
       fog: scene.fog ? { density: scene.fog.density } : null,
       drawCalls, triangles,
       camera: camera.position.toArray().map((v) => +v.toFixed(1)),
+      ceremony: ceremony ? {
+        events: ceremony.eventIds().length,
+        last: ceremony.last()?.id ?? null,
+        active: ceremony.active(),
+        history: ceremony.history().length,
+      } : null,
     };
   },
   capture() {
@@ -1370,10 +1461,11 @@ async function main() {
     return;
   }
   try {
-    const [baseVisual, spec, worldsDoc] = await Promise.all([
+    const [baseVisual, spec, worldsDoc, ceremonyDocument] = await Promise.all([
       fetchJSON("../visual-pack.json"),
       fetchJSON("../board-spec.json"),
       fetchJSON("./worlds.json"),
+      fetchJSON("../ceremony.json"),
     ]);
     if (worldsDoc.schema !== WORLD_PACK_SCHEMA) {
       throw new Error(`worlds.json schema 不匹配：${worldsDoc.schema}`);
@@ -1389,6 +1481,13 @@ async function main() {
     state.visual = visual;
     state.spec = spec;
     applyWorldHud(worldsDoc, pack, $);
+    ceremonyDoc = ceremonyDocument;
+    ceremony = createCeremony({
+      doc: ceremonyDocument,
+      root: $("ceremony"),
+      palette: pack.scenery.ceremony ?? {},
+      onEvent: applyCeremonyFx,
+    });
 
     // 先解析 ZBRD 拿到棋盘区域轮廓，再把它画进地形贴图；顺序不能反。
     state.board = await loadBoardRegion();
@@ -1420,6 +1519,11 @@ async function main() {
     bindEvents();
     animate(performance.now());
     $("loading").classList.add("done");
+    // 加载完成自动来一次轻量入场；?event=<id> 可直接分享 / 回归任一演出。
+    const requestedEvent = new URLSearchParams(location.search).get("event");
+    if (!requestedEvent || !playCeremony(requestedEvent)) {
+      playCeremony("entrance", { auto: true });
+    }
   } catch (error) {
     fail(`${state.pack?.title_zh ?? "画境"}场景加载失败：${error.message}\n\n`
       + "请确认已执行 python integration/chessboard/zboard.py --variants，"

@@ -72,13 +72,15 @@ body::after {
 }
 .ctl-title { font-size: 9px; letter-spacing: .26em; color: #8fb0ca; margin-bottom: 8px; }
 .ctl-title.mt { margin-top: 16px; }
-#world-select {
+#world-select, #ceremony-select {
   width: 100%; padding: 6px 4px; font: inherit; font-size: 11px;
   color: #dce8f2; background: rgba(30, 56, 82, .65);
   border: 1px solid rgba(150, 190, 220, .28); cursor: pointer;
 }
-#world-select:hover, #world-select:focus { border-color: #e8b96a; outline: none; }
-#world-select option { background: #0a1a2b; color: #dce8f2; }
+#world-select:hover, #world-select:focus,
+#ceremony-select:hover, #ceremony-select:focus { border-color: #e8b96a; outline: none; }
+#world-select option, #ceremony-select option { background: #0a1a2b; color: #dce8f2; }
+#ceremony-select { margin-top: 8px; }
 .ctl-row { display: flex; gap: 6px; }
 .ctl-row button {
   flex: 1; padding: 6px 0; font: inherit; font-size: 11px; letter-spacing: .1em;
@@ -119,6 +121,60 @@ body::after {
 .inspect-tag { margin-top: 8px; font-size: 10px; letter-spacing: .18em; color: #8fb0ca; }
 .inspect-hint { margin-top: 10px; font-size: 11px; line-height: 1.7; color: #c8d9e8; }
 
+/* 棋盘演出：宿主派发 6 类事件，这里只做横幅表现。
+   pointer-events:none 保证不吞掉 canvas 拖拽 / touchmove，也不需要加进
+   starry.js 的 touchmove 白名单。 */
+#ceremony {
+  position: fixed; z-index: 20; left: 50%; top: 42%;
+  width: min(560px, calc(100vw - 40px));
+  transform: translate(-50%, calc(-50% + 18px));
+  text-align: center; pointer-events: none; opacity: 0;
+  transition: opacity .42s ease, transform .42s ease;
+  --ceremony-accent: #e8b96a;
+  --ceremony-duration: 2200ms;
+}
+#ceremony::before {
+  content: ""; position: absolute; inset: -110px -80px; z-index: -1;
+  /* 12 个画境里有浅灰白天空（马尔利港 / 阿尔让特伊），暗衬保证文字可读。 */
+  background: radial-gradient(ellipse at center,
+    rgba(6, 16, 31, .40) 0%, rgba(6, 16, 31, .18) 52%, transparent 82%);
+}
+#ceremony.show { opacity: 1; transform: translate(-50%, -50%); }
+.ceremony-kicker {
+  font-size: 9px; letter-spacing: .34em; color: var(--ceremony-accent);
+  text-shadow: 0 1px 8px rgba(6, 20, 40, .9);
+}
+.ceremony-title {
+  margin-top: 10px; font-size: clamp(28px, 5vw, 46px); font-weight: 300;
+  letter-spacing: .16em; color: #f6f9fc;
+  text-shadow: 0 0 26px var(--ceremony-accent), 0 2px 18px rgba(6, 20, 40, .9);
+}
+#ceremony.show .ceremony-title { animation: ceremonyTitle .85s ease-out both; }
+.ceremony-detail {
+  margin-top: 10px; font-size: 11px; letter-spacing: .14em; color: #dce8f2;
+  text-shadow: 0 1px 10px rgba(6, 20, 40, .95);
+}
+.ceremony-meter {
+  width: 180px; height: 2px; margin: 18px auto 0;
+  background: rgba(255, 255, 255, .12); overflow: hidden;
+}
+.ceremony-meter i {
+  display: block; width: 100%; height: 100%; transform-origin: left center;
+  background: var(--ceremony-accent);
+}
+#ceremony.show .ceremony-meter i {
+  animation: ceremonyMeter var(--ceremony-duration) linear both;
+}
+#ceremony[data-event="round_lose"] .ceremony-title { filter: saturate(.65); }
+@keyframes ceremonyTitle {
+  from { letter-spacing: .52em; opacity: 0; }
+  to { letter-spacing: .16em; opacity: 1; }
+}
+@keyframes ceremonyMeter {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
 @media (max-width: 820px) {
   #hud { top: 22px; left: 22px; }
   #hud h1 { font-size: 28px; }
@@ -150,9 +206,11 @@ body::after {
     padding: 10px; background: rgba(6, 16, 31, .74);
   }
   #controls .ctl-title, #controls .note { display: none; }
-  #world-select {
-    flex: 1 1 100%; min-height: 38px; padding: 9px 8px; font-size: 13px;
+  #world-select, #ceremony-select {
+    flex: 1 1 calc(50% - 4px); min-width: 0;
+    min-height: 38px; padding: 9px 8px; font-size: 13px;
   }
+  #ceremony-select { margin-top: 0; }
   .ctl-row { flex: 0 0 auto; gap: 8px; }
   .ctl-row button { min-height: 36px; padding: 8px 12px; font-size: 12px; }
   .ctl-check { margin: 0; font-size: 11px; min-height: 36px; }
@@ -165,6 +223,10 @@ body::after {
   }
   .loading-title { font-size: 17px; }
   .loading-sub { font-size: 10px; }
+  #ceremony { top: 40%; width: calc(100vw - 32px); }
+  .ceremony-title { font-size: 26px; }
+  .ceremony-detail { font-size: 10px; }
+  .ceremony-meter { width: 140px; }
 }
 
 /* 横屏手机：高度很小，把竖排控件压回紧凑尺寸并隐藏次要文字。 */
@@ -174,7 +236,18 @@ body::after {
   #hud .from, #hud .series { display: none; }
   #thumb { top: 12px; right: 18px; width: 58px; }
   #thumb span { display: none; }
-  #controls { top: 84px; right: 18px; width: 148px; padding: 10px; }
+  #controls {
+    top: 76px; right: 18px; width: 148px; padding: 8px;
+    max-height: calc(100vh - 86px); overflow-y: auto;
+  }
   #controls .note { display: none; }
+  #world-select, #ceremony-select {
+    padding: 4px 3px; font-size: 10px; min-height: 26px;
+  }
+  #ceremony-select { margin-top: 4px; }
+  #ceremony { top: 46%; width: min(420px, calc(100vw - 40px)); }
+  .ceremony-title { font-size: 22px; }
+  .ceremony-detail { font-size: 9px; }
+  .ceremony-meter { margin-top: 10px; }
   #credits, #hint { display: none; }
 }

@@ -51,7 +51,17 @@
   <label class="ctl-check"><input type="checkbox" id="toggle-bloom" checked> 星光辉映</label>
   <label class="ctl-check"><input type="checkbox" id="toggle-stars" checked> 流动星尘</label>
   <label class="ctl-check"><input type="checkbox" id="toggle-tour"> 自动巡游</label>
-  <div class="note">拖动环视 · 滚轮推进 · 方向键漫游</div>
+  <div class="ctl-title mt">局势 / CEREMONY</div>
+  <select id="ceremony-select" aria-label="播放棋盘演出">
+    <option value="">播放演出…</option>
+    <option value="entrance">入场动画</option>
+    <option value="round_win">回合胜利</option>
+    <option value="round_lose">回合失败</option>
+    <option value="win_streak">连续胜利</option>
+    <option value="level_up">升级播报</option>
+    <option value="easter_egg">互动彩蛋</option>
+  </select>
+  <div class="note">拖动环视 · 滚轮推进 · 方向键漫游 · 点击棋手占位 / 按 E 触发彩蛋</div>
 </aside>
 
 <footer id="credits">
@@ -62,6 +72,12 @@
 
 <div id="hint">拖动环视 · 滚轮推进 · 方向键漫游 · 点击发光物件</div>
 <div id="error" hidden></div>
+<div id="ceremony" aria-live="polite">
+  <div class="ceremony-kicker"></div>
+  <div class="ceremony-title"></div>
+  <div class="ceremony-detail"></div>
+  <div class="ceremony-meter"><i></i></div>
+</div>
 <div id="inspect" hidden>
   <div class="inspect-head"><span id="inspect-id"></span><button id="inspect-close" aria-label="关闭">×</button></div>
   <div class="inspect-tag" id="inspect-tag"></div>
