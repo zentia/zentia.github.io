@@ -90,7 +90,29 @@ const PRESETS = {
   immersive: { targetY: 6.0, radius: 32, elevation: -5, azimuth: 0, panX: 0, panZ: 0, fov: 66 },
   overview: { targetY: 0.0, radius: 82, elevation: 62, azimuth: 0, panX: 0, panZ: 0, fov: 52 },
 };
-const cam = { ...PRESETS.immersive };
+
+// 竖屏时 66° 的垂直 FOV 只换来约 33° 水平视野，桌面构图会被裁成一条。
+// 按视口放宽 FOV、拉远相机，同时把拖拽 sweep 调小：窄屏上同样 40px 手指
+// 位移对应更大的视口比例，直接沿用桌面 sweep 会转得过猛。
+function viewportTuning() {
+  const w = Math.max(1, innerWidth);
+  const h = Math.max(1, innerHeight);
+  const compact = Math.min(w, h) < 760;
+  if (!compact) return { key: "desktop", fov: 1, radius: 1, yaw: 1, tap: 5 };
+  return h / w > 1.15
+    ? { key: "portrait", fov: 1.30, radius: 1.34, yaw: 0.70, tap: 12 }
+    : { key: "landscape", fov: 1.06, radius: 1.10, yaw: 0.85, tap: 10 };
+}
+
+function tunedPreset(mode) {
+  const base = PRESETS[mode];
+  const tuning = viewportTuning();
+  return { ...base, fov: base.fov * tuning.fov, radius: base.radius * tuning.radius };
+}
+
+const cam = { ...tunedPreset("immersive") };
+let viewMode = "immersive";
+let lastTuneKey = viewportTuning().key;
 let tween = null;
 let tour = false;
 let dragging = null;
@@ -1091,7 +1113,8 @@ async function loadExternalMeshes(visual) {
 function setView(mode) {
   const preset = PRESETS[mode];
   if (!preset) return;
-  tween = { from: { ...cam }, to: { ...preset }, start: performance.now(), duration: 1150 };
+  viewMode = mode;
+  tween = { from: { ...cam }, to: tunedPreset(mode), start: performance.now(), duration: 1150 };
   $("view-immersive").classList.toggle("active", mode === "immersive");
   $("view-overview").classList.toggle("active", mode === "overview");
 }
@@ -1116,7 +1139,46 @@ function bindEvents() {
   // 拖过整个视口宽 ≈ 100°、整个视口高 ≈ 55°；按视口归一化，分辨率无关。
   const DRAG_YAW_SWEEP = 100 * DEG;
   const DRAG_PITCH_SWEEP = 55;
+
+  // 移动端手势：CSS 的 touch-action / overscroll-behavior 之外再兜一层，
+  // 防止 canvas 上的垂直拖动被当成页面滚动或下拉刷新。交互控件内不拦，
+  // 否则原生 select / checkbox 会被吃掉。
+  let pinchDistance = 0;
+  canvas.addEventListener("touchstart", (event) => {
+    if (event.touches.length >= 2) {
+      dragging = null;
+      pinchDistance = Math.hypot(
+        event.touches[0].clientX - event.touches[1].clientX,
+        event.touches[0].clientY - event.touches[1].clientY);
+    }
+  }, { passive: true });
+  canvas.addEventListener("touchmove", (event) => {
+    event.preventDefault();
+    // 触屏没有滚轮，用双指捏合推进 / 拉远。
+    if (event.touches.length >= 2 && pinchDistance > 0) {
+      const distance = Math.hypot(
+        event.touches[0].clientX - event.touches[1].clientX,
+        event.touches[0].clientY - event.touches[1].clientY);
+      if (distance > 0) {
+        tween = null;
+        cam.radius = THREE.MathUtils.clamp(
+          cam.radius * (pinchDistance / distance), 12, 170);
+        pinchDistance = distance;
+      }
+    }
+  }, { passive: false });
+  canvas.addEventListener("touchend", () => { pinchDistance = 0; }, { passive: true });
+  document.addEventListener("touchmove", (event) => {
+    const target = event.target;
+    if (target instanceof Element
+      && target.closest("#controls, #inspect, #thumb, #credits a")) return;
+    event.preventDefault();
+  }, { passive: false });
+  // iOS Safari 双指缩放页面会毁掉全屏构图。
+  document.addEventListener("gesturestart", (event) => event.preventDefault());
+
   canvas.addEventListener("pointerdown", (event) => {
+    if (!event.isPrimary) return;
     dragging = {
       x: event.clientX, y: event.clientY,
       azimuth: cam.azimuth, elevation: cam.elevation, moved: 0,
@@ -1124,7 +1186,7 @@ function bindEvents() {
     canvas.setPointerCapture(event.pointerId);
   });
   canvas.addEventListener("pointermove", (event) => {
-    if (!dragging) return;
+    if (!dragging || !event.isPrimary) return;
     const dx = event.clientX - dragging.x;
     const dy = event.clientY - dragging.y;
     // dx/dy 是「相对按下点」的累积量。以前每个 pointermove 都拿完整 dx 去
@@ -1132,12 +1194,15 @@ function bindEvents() {
     // 40px、发 8 个 move 事件就会转出几十度。改成按下时角度的绝对映射。
     dragging.moved = Math.max(dragging.moved, Math.abs(dx) + Math.abs(dy));
     tween = null;
-    cam.azimuth = dragging.azimuth - (dx / innerWidth) * DRAG_YAW_SWEEP;
+    const tuning = viewportTuning();
+    cam.azimuth = dragging.azimuth - (dx / innerWidth) * DRAG_YAW_SWEEP * tuning.yaw;
     cam.elevation = THREE.MathUtils.clamp(
-      dragging.elevation + (dy / innerHeight) * DRAG_PITCH_SWEEP, -14, 86);
+      dragging.elevation + (dy / innerHeight) * DRAG_PITCH_SWEEP * tuning.yaw,
+      -14, 86);
   });
   canvas.addEventListener("pointerup", (event) => {
-    if (dragging && dragging.moved < 5) {
+    // 手指比鼠标抖：触屏放宽点击阈值，否则点不中场景物件。
+    if (dragging && dragging.moved < viewportTuning().tap) {
       pointer.set((event.clientX / innerWidth) * 2 - 1,
         -(event.clientY / innerHeight) * 2 + 1);
       raycaster.setFromCamera(pointer, camera);
@@ -1146,6 +1211,9 @@ function bindEvents() {
     }
     dragging = null;
   });
+  // 浏览器接管手势（来电、系统手势、下拉刷新）会发 pointercancel，
+  // 不清理 dragging 会让下一次拖拽从错误的角度起跳。
+  canvas.addEventListener("pointercancel", () => { dragging = null; });
   canvas.addEventListener("wheel", (event) => {
     event.preventDefault();
     tween = null;
@@ -1193,6 +1261,16 @@ function bindEvents() {
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
     if (composer) composer.setSize(innerWidth, innerHeight);
+    // 只在横竖屏档位变化时重设构图；地址栏收起这类普通 resize
+    // 不能覆盖用户刚用滚轮 / 捏合调好的距离。
+    const tuning = viewportTuning();
+    if (tuning.key !== lastTuneKey) {
+      lastTuneKey = tuning.key;
+      const preset = tunedPreset(viewMode);
+      cam.fov = preset.fov;
+      cam.radius = preset.radius;
+      tween = null;
+    }
   });
 }
 

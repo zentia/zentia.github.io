@@ -7,11 +7,18 @@
 
 html, body {
   margin: 0; height: 100%; overflow: hidden;
+  /* 移动端下拉会触发浏览器 pull-to-refresh / iOS 橡皮筋，必须显式关掉。 */
+  overscroll-behavior: none;
   background: #06101f; color: #dce8f2;
   font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-#stage, #stage canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+/* touch-action:none 让 canvas 独占手势，浏览器不会再把它当滚动并派发
+   pointercancel（否则环视拖到一半就断，且容易触发下拉刷新）。 */
+#stage, #stage canvas {
+  position: fixed; inset: 0; width: 100%; height: 100%; display: block;
+  touch-action: none;
+}
 
 /* 顶部与底部压暗，让 HUD 文字在明亮星空上仍可读（2.png 的层次感）。 */
 body::before, body::after {
@@ -119,4 +126,55 @@ body::after {
   #controls { right: 20px; top: 140px; width: 142px; }
   #credits { left: 22px; bottom: 20px; }
   #hint { display: none; }
+}
+
+/* 竖屏手机 / 窄屏：桌面那套「左侧 HUD + 右侧竖排控件」会把画面挤成一条，
+   改成顶部紧凑标题 + 底部横向控件条，并避开 iOS home indicator。 */
+@media (max-width: 720px), (orientation: portrait) and (max-width: 900px) {
+  #hud { top: calc(12px + env(safe-area-inset-top)); left: 14px; right: 84px; }
+  #hud .eyebrow { font-size: 8px; letter-spacing: .2em; }
+  #hud .series, #hud .from { display: none; }
+  #hud h1 { margin-top: 8px; font-size: 22px; letter-spacing: .12em; }
+  #hud .sub { font-size: 10px; letter-spacing: .1em; }
+
+  #thumb {
+    top: calc(12px + env(safe-area-inset-top)); right: 12px;
+    width: 58px; padding: 3px;
+  }
+  #thumb span { display: none; }
+
+  #controls {
+    top: auto; bottom: calc(10px + env(safe-area-inset-bottom));
+    left: 10px; right: 10px; width: auto;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    padding: 10px; background: rgba(6, 16, 31, .74);
+  }
+  #controls .ctl-title, #controls .note { display: none; }
+  #world-select {
+    flex: 1 1 100%; min-height: 38px; padding: 9px 8px; font-size: 13px;
+  }
+  .ctl-row { flex: 0 0 auto; gap: 8px; }
+  .ctl-row button { min-height: 36px; padding: 8px 12px; font-size: 12px; }
+  .ctl-check { margin: 0; font-size: 11px; min-height: 36px; }
+  .ctl-check input { width: 16px; height: 16px; }
+
+  #credits, #hint { display: none; }
+  #inspect {
+    left: 10px; right: 10px; width: auto; top: auto;
+    bottom: calc(96px + env(safe-area-inset-bottom)); transform: none;
+  }
+  .loading-title { font-size: 17px; }
+  .loading-sub { font-size: 10px; }
+}
+
+/* 横屏手机：高度很小，把竖排控件压回紧凑尺寸并隐藏次要文字。 */
+@media (max-height: 480px) and (orientation: landscape) {
+  #hud { top: 12px; left: 18px; }
+  #hud h1 { margin-top: 8px; font-size: 22px; }
+  #hud .from, #hud .series { display: none; }
+  #thumb { top: 12px; right: 18px; width: 58px; }
+  #thumb span { display: none; }
+  #controls { top: 84px; right: 18px; width: 148px; padding: 10px; }
+  #controls .note { display: none; }
+  #credits, #hint { display: none; }
 }
