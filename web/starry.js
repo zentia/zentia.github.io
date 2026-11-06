@@ -339,9 +339,11 @@ function paintBoardBase(ctx, board, projection) {
   ctx.restore();
 }
 
-// 4.png 的语言：外框线 + 半场线 + 两个半圆 + 中圈徽记 + 边上的座席刻圆。
-// 全部是半透明细线，尺寸按 ZBRD 轮廓 / manifest 逻辑边界归一化派生。
-function paintBoardLines(ctx, board, projection, random) {
+// 2026-11-06 用户纠正：棋盘只冻结「最外面一个方格 + 左下/右上两个棋手占位」。
+// 概念草图里的中线、两个半圆、中圈同心圆、外侧小圆都不是必须元素，默认一条都不画；
+// 只有当某张概念图在 worlds.json 的 overrides.board.marks 里显式声明时才绘制，
+// 颜色同样取自该视觉包 —— 这就是「其它根据概念图来输出」。
+function paintBoardLines(ctx, board, projection) {
   const { scale, toPx } = projection;
   const [hx, hz] = board.half;
   ctx.save();
@@ -349,6 +351,9 @@ function paintBoardLines(ctx, board, projection, random) {
   ctx.lineCap = "round";
 
   const boardSkin = state.skin.board;
+  const marks = boardSkin.marks ?? [];
+
+  // 1) 唯一必须元素：最外面的方格，轮廓直接取 ZBRD core_slab 的凸包。
   const rim = board.outline.map(([x, z]) => [x * 0.94, z * 0.94]);
   ctx.strokeStyle = boardSkin.rim_halo;
   ctx.lineWidth = 9;
@@ -357,88 +362,70 @@ function paintBoardLines(ctx, board, projection, random) {
   ctx.lineWidth = 1.7;
   handStroke(ctx, rim, projection, 0.05);
 
-  // 逻辑落点边界：一圈很淡的虚线。7×8 只是逻辑坐标，不是 56 个可见格子。
-  if (board.logical) {
-    const [x0, x1, z0, z1] = board.logical;
-    ctx.setLineDash([3, 8]);
-    ctx.strokeStyle = boardSkin.logical;
-    ctx.lineWidth = 1;
-    handStroke(ctx, [[x0, z0], [x1, z0], [x1, z1], [x0, z1]], projection, 0.03);
-    ctx.setLineDash([]);
-  }
-
-  const [lr, lg, lb] = boardSkin.line;
-  const line = (ax, az, bx, bz, alpha, width) => {
-    const [px0, py0] = toPx(ax, az);
-    const [px1, py1] = toPx(bx, bz);
-    ctx.strokeStyle = `rgba(${lr}, ${lg}, ${lb}, ${alpha})`;
-    ctx.lineWidth = width;
-    ctx.beginPath();
-    ctx.moveTo(px0, py0);
-    ctx.lineTo(px1, py1);
-    ctx.stroke();
-  };
-  line(0, -hz * 0.9, 0, hz * 0.9, 0.40, 1.3);
-  for (const side of [-1, 1]) {
-    const [cx, cy] = toPx(side * hx * 0.66, 0);
-    ctx.strokeStyle = `rgba(${lr}, ${lg}, ${lb}, 0.32)`;
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.arc(cx, cy, hz * 0.42 * scale, -Math.PI / 2, Math.PI / 2, side > 0);
-    ctx.stroke();
-  }
-
-  // 中圈徽记：同心圆 + 八芒星 + 新月。
-  const [ex, ey] = toPx(0, 0);
-  const er = Math.min(hx, hz) * 0.36 * scale;
-  const [br, bg, bb] = boardSkin.emblem;
-  for (const [k, alpha] of [[1, 0.44], [0.78, 0.28], [0.42, 0.20]]) {
-    ctx.strokeStyle = `rgba(${br}, ${bg}, ${bb}, ${alpha})`;
-    ctx.lineWidth = k === 1 ? 1.6 : 1;
-    ctx.beginPath();
-    ctx.arc(ex, ey, er * k, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-  ctx.strokeStyle = `rgba(${br}, ${bg}, ${bb}, 0.32)`;
-  ctx.lineWidth = 1.1;
-  for (let i = 0; i < 8; i += 1) {
-    const a = (i / 8) * Math.PI * 2;
-    const r0 = er * 0.18;
-    const r1 = er * (i % 2 ? 0.62 : 0.78);
-    ctx.beginPath();
-    ctx.moveTo(ex + Math.cos(a) * r0, ey + Math.sin(a) * r0);
-    ctx.lineTo(ex + Math.cos(a) * r1, ey + Math.sin(a) * r1);
-    ctx.stroke();
-  }
-  ctx.strokeStyle = boardSkin.emblem_bright;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(ex, ey, er * 0.52, -1.15, 1.15);
-  ctx.stroke();
-
-  // 冻结锚点在地面上的浅刻圆（位置与半径都取自 ZBRD anchor_* 部件）。
+  // 2) 两个棋手占位：左下 / 右上对角，位置与半径全部来自 ZBRD 的 anchor_*。
+  //    这里只标「占位区」，桌椅等具体造型由概念图输出，不进冻结几何。
+  const [cx, cy] = toPx(0, 0);
   for (const [ax, az, radius] of board.anchors) {
     const [px, py] = toPx(ax, az);
-    ctx.strokeStyle = boardSkin.anchor;
-    ctx.lineWidth = 1.1;
+    const r = Math.max(6, radius * scale);
+    ctx.fillStyle = boardSkin.anchor;
     ctx.beginPath();
-    ctx.arc(px, py, Math.max(2, radius * scale), 0, Math.PI * 2);
+    ctx.arc(px, py, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = boardSkin.rim;
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.arc(px, py, r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = boardSkin.anchor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(px, py, r * 0.76, 0, Math.PI * 2);
+    ctx.stroke();
+    // 一条朝向台面中心的短刻线，提示这是「面朝棋盘的棋手座位」。
+    const length = Math.hypot(cx - px, cy - py) || 1;
+    const ux = (cx - px) / length;
+    const uy = (cy - py) / length;
+    ctx.strokeStyle = boardSkin.rim;
+    ctx.beginPath();
+    ctx.moveTo(px + ux * r * 0.76, py + uy * r * 0.76);
+    ctx.lineTo(px + ux * r * 1.3, py + uy * r * 1.3);
     ctx.stroke();
   }
 
-  // 再让一撮笔触压在线上，线就像长在这片夜色里，而不是贴花。
-  ctx.strokeStyle = state.skin.ground.stroke_color;
-  for (let i = 0; i < 150; i += 1) {
-    const x = (random() - 0.5) * hx * 2.1;
-    const z = (random() - 0.5) * hz * 2.1;
-    const [px, py] = toPx(x, z);
-    const a = Math.sin(x * 0.8 + z * 0.5) * 0.9 + (random() - 0.5);
-    ctx.globalAlpha = 0.05 + random() * 0.16;
-    ctx.lineWidth = 0.6 + random() * 1.4;
+  // 3) 概念图可选纹样：默认 marks=[]，台面就是一片干净的方格。
+  const [lr, lg, lb] = boardSkin.line;
+  const [br, bg, bb] = boardSkin.emblem;
+  if (marks.includes("center_line")) {
+    ctx.strokeStyle = `rgba(${lr}, ${lg}, ${lb}, 0.40)`;
+    ctx.lineWidth = 1.3;
+    const [x0, y0] = toPx(0, -hz * 0.9);
+    const [x1, y1] = toPx(0, hz * 0.9);
     ctx.beginPath();
-    ctx.moveTo(px, py);
-    ctx.lineTo(px + Math.cos(a) * 9, py + Math.sin(a) * 9);
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
     ctx.stroke();
+  }
+  if (marks.includes("half_circles")) {
+    for (const side of [-1, 1]) {
+      const [cx, cy] = toPx(side * hx * 0.66, 0);
+      ctx.strokeStyle = `rgba(${lr}, ${lg}, ${lb}, 0.32)`;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, hz * 0.42 * scale, -Math.PI / 2, Math.PI / 2, side > 0);
+      ctx.stroke();
+    }
+  }
+  if (marks.includes("center_emblem")) {
+    const [ex, ey] = toPx(0, 0);
+    const er = Math.min(hx, hz) * 0.36 * scale;
+    for (const [k, alpha] of [[1, 0.44], [0.78, 0.28], [0.42, 0.20]]) {
+      ctx.strokeStyle = `rgba(${br}, ${bg}, ${bb}, ${alpha})`;
+      ctx.lineWidth = k === 1 ? 1.6 : 1;
+      ctx.beginPath();
+      ctx.arc(ex, ey, er * k, 0, Math.PI * 2);
+      ctx.stroke();
+    }
   }
   ctx.restore();
 }
@@ -486,7 +473,7 @@ function makeGroundTexture(board) {
   }
   ctx.globalAlpha = 1;
 
-  paintBoardLines(ctx, board, projection, random);
+  paintBoardLines(ctx, board, projection);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
