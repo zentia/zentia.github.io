@@ -1,5 +1,5 @@
-// 12 个高完成度画境里，除 starry（沿用 starry.js 已有的树丛 / 柏树 / 村庄）
-// 之外的 11 套专属场景物件。全部是 InstancedMesh / 程序化几何，不引入任何
+// 13 个高完成度画境里，除 starry（沿用 starry.js 已有的树丛 / 柏树 / 村庄）
+// 之外的 12 套专属场景物件。全部是 InstancedMesh / 程序化几何，不引入任何
 // 外部模型或贴图；颜色取自 worlds.json 的 scenery / ground 调色板。
 //
 // 与棋盘的关系不变：所有物件都落在 CLEAR_R 之外，中央那块「画进地形的棋盘
@@ -13,6 +13,14 @@ import { KIND } from "./zbrd.js";
 // 专属物件一律避开这条轨道带，用户拖到任何 azimuth 都不会贴脸。
 const CAMERA_ORBIT_R = 32;
 const CAMERA_CLEARANCE = 8;
+
+// 场景特色登记：每个 preset 在生成地标时把「镜头要看的东西」记下来。focus
+// 与几何共用同一批变量 / 数组（bridgeZ、bridgeX、palms、flags、beds ...），
+// 镜头不再另写一份镜像坐标。kind 决定机位语言（桥 / 水面 / 建筑 / 山峰），
+// weight 是入场选站优先级，shot 可覆盖该 kind 的默认机位参数。
+function feature(ctx, id, label, kind, focus, extra = {}) {
+  ctx.features.push({ id, label, kind, focus, weight: 1, ...extra });
+}
 
 function annulus(random, clearR, islandR, pad = 2) {
   let radius = 0;
@@ -150,6 +158,13 @@ function buildWheat(ctx) {
     group.add(stone);
     ctx.interactive.push(stone);
   }
+  // 麦田环带 CLEAR_R..ISLAND_R 上的代表锚点；橄榄树用同一批生成锚点。
+  feature(ctx, "wheat_field", "金色麦浪", "field",
+    [-(CLEAR_R + 6), 2, CLEAR_R - 6], { weight: 2 });
+  feature(ctx, "wheat_olive", "银绿橄榄树", "grove",
+    [oliveTrees[0].x, oliveTrees[0].height, oliveTrees[0].z], { weight: 2 });
+  feature(ctx, "wheat_cypress", "柏树尖塔", "grove",
+    [-(CLEAR_R + 10), 9, -(CLEAR_R + 4)], { weight: 3 });
 }
 
 function buildPond(ctx) {
@@ -255,6 +270,13 @@ function buildPond(ctx) {
     group.add(stone);
     ctx.interactive.push(stone);
   }
+  // 拱桥用的是上面同一个 bridgeZ，垂柳用 strandCentres 的真实锚点。
+  feature(ctx, "pond_bridge", "青绿拱桥", "bridge",
+    [0, 2, bridgeZ], { weight: 4, shot: { r: 34, el: 8, arc: 20 } });
+  feature(ctx, "pond_willow", "垂柳池岸", "grove",
+    [strandCentres[0][0], 3, strandCentres[0][1]], { weight: 2 });
+  feature(ctx, "pond_lilies", "白粉睡莲", "water",
+    [CLEAR_R + 8, 0, CLEAR_R - 4], { weight: 2 });
 }
 
 function buildSunrise(ctx) {
@@ -335,6 +357,14 @@ function buildSunrise(ctx) {
   }
   // sun 变量让调色板里的日出色参与水面碎光的着色强度，避免未使用告警。
   group.userData.sun_color = sun;
+  // 太阳在天空贴图里（非 3D 几何），用高处的虚拟焦点让镜头抬眼；桅杆取
+  // 生成时用的 ISLAND_R-8 环带，小舟取环带代表点。
+  feature(ctx, "sunrise_sun", "橙色日出", "sky",
+    [0, 10, 0], { weight: 3, shot: { r: 38, el: -3, arc: 10 } });
+  feature(ctx, "sunrise_boat", "雾中小舟", "water",
+    [CLEAR_R + 12, 1, CLEAR_R], { weight: 2, shot: { el: 3 } });
+  feature(ctx, "sunrise_mast", "港口桅杆", "building",
+    [0, 3, -(ISLAND_R - 8)], { weight: 2 });
 }
 
 // ---------------------------------------------------------------------------
@@ -504,6 +534,13 @@ function buildCafe(ctx) {
   grove(ctx, 6, { height: 3.2, radius: 0.8 });
   glowOrbs(ctx, 34, [2.4, 1.55, 0.65], 0.14, 1.2);
   interactives(ctx, new THREE.CylinderGeometry(0.18, 0.24, 1.1, 6), 0.55);
+  // 露台桌椅与遮阳篷复用生成时的 tables / awnings 锚点。
+  feature(ctx, "cafe_terrace", "暖黄露台", "building",
+    [tables[0].x, 2, tables[0].z], { weight: 3 });
+  feature(ctx, "cafe_awning", "露台遮阳篷", "building",
+    [awnings[0].x, 3.4, awnings[0].z], { weight: 2 });
+  feature(ctx, "cafe_lamp", "煤气灯火", "lantern",
+    [-(CLEAR_R + 6), 2, CLEAR_R - 2], { weight: 2 });
 }
 
 // 04 阿尔勒卧室：把室内家具当「场景物件」散在环形地面上。
@@ -550,6 +587,13 @@ function buildBedroom(ctx) {
     });
   glowOrbs(ctx, 8, [1.8, 1.4, 0.9], 0.14, 1.4);
   interactives(ctx, new THREE.CylinderGeometry(0.22, 0.30, 0.9, 6), 0.45);
+  // 墙板半径就是上面生成用的 ISLAND_R-14，木床用 beds 的真实锚点。
+  feature(ctx, "bedroom_wall", "淡紫墙板", "interior",
+    [0, 3, -(ISLAND_R - 14)], { weight: 3 });
+  feature(ctx, "bedroom_bed", "木床与红毯", "interior",
+    [beds[0].x, 1, beds[0].z], { weight: 3 });
+  feature(ctx, "bedroom_cabinet", "墙角壁灯", "lantern",
+    [CLEAR_R + 8, 2, CLEAR_R - 10], { weight: 1 });
 }
 
 // 07 圣阿德雷斯花园：花圃、旗帜、露台栏杆、远处帆影。
@@ -596,11 +640,18 @@ function buildGarden(ctx) {
   boats(ctx, 4, skin.scenery.cypress, skin.ground.white_stroke);
   grove(ctx, 8, { height: 3.4, radius: 0.9 });
   interactives(ctx, new THREE.BoxGeometry(0.5, 0.9, 0.5), 0.45);
+  // 旗杆取 flags[0]（旗面 y=5.2），花圃取 beds[0]，栏杆就是 ISLAND_R-4 环。
+  feature(ctx, "garden_flag", "海风旗帜", "flag",
+    [flags[0].x, 5.2, flags[0].z], { weight: 3 });
+  feature(ctx, "garden_bed", "向日葵花圃", "field",
+    [beds[0].x, 0.4, beds[0].z], { weight: 2 });
+  feature(ctx, "garden_rail", "露台栏杆", "building",
+    [0, 1, ISLAND_R - 4], { weight: 1 });
 }
 
 // 08 阿让特伊桥：多跨石桥、帆船、河岸树。
 function buildArgenteuil(ctx) {
-  const { group, skin } = ctx;
+  const { group, skin, CLEAR_R } = ctx;
   strokesOnGround(ctx, 640, tones(skin.ground.strokes), 0.34, [0.8, 3.4]);
   const bridgeZ = -36;
   const span = 30;
@@ -622,11 +673,18 @@ function buildArgenteuil(ctx) {
   grove(ctx, 12, { height: 4.0, radius: 1.0 });
   glowOrbs(ctx, 14, [2.0, 1.8, 1.2], 0.12, 1.0);
   interactives(ctx, new THREE.CylinderGeometry(0.20, 0.28, 1.0, 6), 0.5);
+  // 桥面 y=3.3 与 bridgeZ 都是上面生成石桥用的变量。
+  feature(ctx, "argenteuil_bridge", "石拱桥", "bridge",
+    [0, 3.3, bridgeZ], { weight: 4, shot: { r: 34, el: 9, arc: 18 } });
+  feature(ctx, "argenteuil_boat", "白帆小船", "water",
+    [CLEAR_R + 12, 1, CLEAR_R - 4], { weight: 2, shot: { el: 3 } });
+  feature(ctx, "argenteuil_grove", "河岸树影", "grove",
+    [-(CLEAR_R + 6), 3, CLEAR_R - 2], { weight: 1 });
 }
 
 // 09 维伦纽夫桥：桥塔 + 悬索 + 桥面 + 彼岸屋舍。
 function buildVilleneuve(ctx) {
-  const { group, skin } = ctx;
+  const { group, skin, CLEAR_R } = ctx;
   strokesOnGround(ctx, 520, tones(skin.ground.strokes), 0.30, [0.7, 3.0]);
   const bridgeX = -34;
   instanced(group, new THREE.BoxGeometry(1.2, 8.0, 1.2),
@@ -653,6 +711,13 @@ function buildVilleneuve(ctx) {
   cottages(ctx, 10);
   grove(ctx, 9, { height: 3.6, radius: 0.9 });
   interactives(ctx, new THREE.BoxGeometry(0.8, 1.0, 0.8), 0.5);
+  // 桥塔 / 悬索 / 桥面都挂在 bridgeX 上，登记同一个锚点。
+  feature(ctx, "villeneuve_bridge", "悬索桥塔", "bridge",
+    [bridgeX, 4, 0], { weight: 4, shot: { r: 32, el: 12, arc: 16 } });
+  feature(ctx, "villeneuve_cottage", "彼岸屋舍", "building",
+    [CLEAR_R + 12, 3, CLEAR_R - 8], { weight: 2 });
+  feature(ctx, "villeneuve_bank", "沙岸石墩", "water",
+    [-(CLEAR_R + 2), 1, CLEAR_R + 2], { weight: 1 });
 }
 
 // 10 马尔利港洪水：水漫外圈、临水建筑与穿行的小船。
@@ -671,6 +736,13 @@ function buildMarly(ctx) {
   grove(ctx, 6, { height: 3.2, radius: 0.8 });
   glowOrbs(ctx, 12, [2.0, 1.7, 1.1], 0.12, 1.0);
   interactives(ctx, new THREE.CylinderGeometry(0.16, 0.20, 1.6, 6), 0.8);
+  // 水面 RingGeometry 覆盖 CLEAR_R+4..ISLAND_R，屋墙与小舟取环带代表点。
+  feature(ctx, "marly_water", "水街倒影", "water",
+    [0, 1, CLEAR_R + 12], { weight: 3, shot: { el: 3 } });
+  feature(ctx, "marly_house", "杏色屋墙", "building",
+    [CLEAR_R + 10, 2, -(CLEAR_R - 6)], { weight: 3 });
+  feature(ctx, "marly_boat", "穿行小船", "water",
+    [-(CLEAR_R + 6), 1, CLEAR_R + 2], { weight: 1 });
 }
 
 // 11 圣维克多山：远处蓝灰山脊、赭色田埂、松林。
@@ -693,6 +765,16 @@ function buildVictoire(ctx) {
   strokesOnGround(ctx, 220,
     tones([skin.ground.path_base, skin.ground.stroke_color]), 0.45, [3.0, 7.0]);
   interactives(ctx, new THREE.IcosahedronGeometry(0.6, 0), 0.4);
+  // 山脊与上面 7 个锥体共用 a / ISLAND_R-2 的生成参数，取中段代表角。
+  const ridgeAngle = Math.PI * 0.75 + Math.PI * 0.35;
+  feature(ctx, "victoire_mountain", "蓝灰山峰", "mountain",
+    [Math.cos(ridgeAngle) * (ISLAND_R - 2), 10,
+      Math.sin(ridgeAngle) * (ISLAND_R - 2)],
+    { weight: 4, shot: { r: 46, el: -4, arc: 12 } });
+  feature(ctx, "victoire_field", "赭色田埂", "field",
+    [-(ctx.CLEAR_R + 8), 1, ctx.CLEAR_R], { weight: 2 });
+  feature(ctx, "victoire_pines", "绿色松林", "grove",
+    [ctx.CLEAR_R - 6, 3, -(ctx.CLEAR_R + 10)], { weight: 1 });
 }
 
 // 12 塔希提小路：棕榈（树干与长叶共用锚点）、茅屋、火把。
@@ -724,6 +806,164 @@ function buildGauguin(ctx) {
   cottages(ctx, 8, { width: 2.8, height: 2.2 });
   glowOrbs(ctx, 22, [2.4, 1.2, 0.42], 0.18, 0.9);
   interactives(ctx, new THREE.CylinderGeometry(0.12, 0.18, 1.5, 6), 0.75);
+  // 棕榈复用 palms[0] 的生成锚点；小路沿 PATHS 的环带取代表点。
+  feature(ctx, "gauguin_palms", "热带树丛", "grove",
+    [palms[0].x, palms[0].height, palms[0].z], { weight: 3 });
+  feature(ctx, "gauguin_hut", "茅屋灯火", "building",
+    [-(CLEAR_R + 6), 2, CLEAR_R - 2], { weight: 2 });
+  feature(ctx, "gauguin_path", "红土小路", "path",
+    [-(CLEAR_R + 2), 1, CLEAR_R + 8], { weight: 2 });
+}
+
+
+// 13 金铲铲「枫染棋坪」的 3D 近似备份：双层飞檐亭阁、悬挂宫灯、屏风牌坊、
+// 云片盆景与贴地光环，几何全是程序化原语，颜色取自该画境调色板。
+// ⚠️ 默认不显示：第 13 画境走 overrides.artwork.mode=pixel_faithful，把用户
+// 的实机截图整幅铺在画布之上，与来源图逐像素一致。这里保留 preset 是为了
+// 维持「13 个画境各有一个专属 preset」的契约，并让用户关掉原画直出时有
+// 可对照的程序化 3D 版本 —— 它不是原画的复刻，只是近似。
+function buildJCC(ctx) {
+  const { group, skin, random, CLEAR_R, ISLAND_R } = ctx;
+  const goldTones = tones(skin.ground.strokes.slice(0, 4));
+  const jadeTones = tones(skin.scenery.foliage_tones);
+  const wood = skin.scenery.trunk;
+  const roofColor = skin.scenery.roof;
+
+  strokesOnGround(ctx, 620, tones(skin.ground.strokes), 0.34, [0.8, 3.0]);
+
+  // 亭阁：3 座，台基 / 立柱 / 两层四坡顶 / 翘角 / 暖光窗格共用同一份位置表。
+  const pavilions = Array.from({ length: 3 }, () => ({
+    ...annulus(random, CLEAR_R, ISLAND_R, 9),
+    height: 4.2 + random() * 1.6,
+    width: 2.6 + random() * 0.8,
+    rot: random() * Math.PI,
+  }));
+  instanced(group, new THREE.BoxGeometry(1, 1, 1),
+    flatMaterial({ color: wood }), pavilions.length, (dummy, i) => {
+      const p = pavilions[i];
+      dummy.position.set(p.x, 0.35, p.z);
+      dummy.rotation.set(0, p.rot, 0);
+      dummy.scale.set(p.width * 2.1, 0.7, p.width * 2.1);
+    });
+  instanced(group, new THREE.CylinderGeometry(0.16, 0.20, 1, 6),
+    flatMaterial({ color: skin.scenery.house }), pavilions.length * 4,
+    (dummy, i) => {
+      const p = pavilions[Math.floor(i / 4)];
+      const k = i % 4;
+      dummy.position.set(p.x + (k % 2 ? 1 : -1) * p.width * 0.72,
+        p.height / 2, p.z + (k < 2 ? 1 : -1) * p.width * 0.72);
+      dummy.scale.set(1, p.height, 1);
+    });
+  for (let layer = 0; layer < 2; layer += 1) {
+    instanced(group, new THREE.ConeGeometry(1, 1, 4), flatMaterial(),
+      pavilions.length, (dummy, i, mesh) => {
+        const p = pavilions[i];
+        const w = p.width * (layer === 0 ? 1.7 : 1.15);
+        dummy.position.set(p.x, p.height + (layer === 0 ? 0.5 : 2.0), p.z);
+        dummy.rotation.set(0, p.rot + Math.PI / 4, 0);
+        dummy.scale.set(w, layer === 0 ? 1.5 : 1.2, w);
+        mesh.setColorAt(i, goldTones[layer]);
+      });
+  }
+  instanced(group, new THREE.ConeGeometry(0.16, 0.9, 4),
+    flatMaterial({ color: skin.ground.rings }), pavilions.length * 4,
+    (dummy, i) => {
+      const p = pavilions[Math.floor(i / 4)];
+      const a = p.rot + (i % 4) * Math.PI / 2 + Math.PI / 4;
+      dummy.position.set(p.x + Math.cos(a) * p.width * 1.15,
+        p.height + 1.0, p.z + Math.sin(a) * p.width * 1.15);
+      dummy.rotation.set(Math.sin(a) * 0.5, 0, -Math.cos(a) * 0.5);
+    });
+  instanced(group, new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({
+      color: new THREE.Color().setRGB(...skin.scenery.window),
+      side: THREE.DoubleSide, toneMapped: false, transparent: true, opacity: 0.85,
+    }), pavilions.length * 2, (dummy, i) => {
+      const p = pavilions[Math.floor(i / 2)];
+      const side = i % 2 ? 1 : -1;
+      dummy.position.set(p.x + side * p.width * 0.62, p.height * 0.55,
+        p.z + p.width * 0.62);
+      dummy.rotation.set(0, p.rot + Math.PI / 4, 0);
+      dummy.scale.set(1.1, 1.6, 1);
+    });
+
+  // 悬挂宫灯：灯身与 HDR 灯芯分层，位置表共用。
+  const lanterns = Array.from({ length: 14 }, () => ({
+    ...annulus(random, CLEAR_R, ISLAND_R, 4),
+    y: 3.2 + random() * 2.4,
+  }));
+  instanced(group, new THREE.CylinderGeometry(0.26, 0.26, 1, 6),
+    flatMaterial({ color: skin.ground.rings }), lanterns.length,
+    (dummy, i) => {
+      const l = lanterns[i];
+      dummy.position.set(l.x, l.y, l.z);
+      dummy.scale.set(1, 1.5, 1);
+    });
+  glowOrbs(ctx, 26, skin.scenery.props.wick, 0.22, 2.4);
+
+  // 屏风 / 牌坊：布幔与两侧立柱共用同一份位置表。
+  const screens = Array.from({ length: 7 }, () => ({
+    ...annulus(random, CLEAR_R, ISLAND_R, 6),
+    rot: random() * Math.PI,
+    w: 2.2 + random() * 1.4,
+  }));
+  instanced(group, new THREE.PlaneGeometry(1, 1),
+    flatMaterial({ side: THREE.DoubleSide }), screens.length,
+    (dummy, i, mesh) => {
+      const s = screens[i];
+      dummy.position.set(s.x, 1.7, s.z);
+      dummy.rotation.set(0, s.rot, 0);
+      dummy.scale.set(s.w, 3.0, 1);
+      mesh.setColorAt(i, goldTones[i % goldTones.length]);
+    });
+  instanced(group, new THREE.CylinderGeometry(0.10, 0.12, 1, 6),
+    flatMaterial({ color: wood }), screens.length * 2, (dummy, i) => {
+      const s = screens[Math.floor(i / 2)];
+      const side = i % 2 ? 1 : -1;
+      dummy.position.set(s.x + Math.cos(s.rot) * side * s.w * 0.5, 1.7,
+        s.z + Math.sin(s.rot) * side * s.w * 0.5);
+      dummy.scale.set(1, 3.6, 1);
+    });
+
+  // 云片盆景：树干 / 圆冠由 grove 共用锚点，再叠两层压扁云片。
+  const bonsai = grove(ctx, 18, {
+    crown: "round", height: 3.0, radius: 1.35, trunk: wood, palette: jadeTones,
+  });
+  instanced(group, new THREE.IcosahedronGeometry(1, 1), flatMaterial(),
+    bonsai.length * 2, (dummy, i, mesh) => {
+      const t = bonsai[Math.floor(i / 2)];
+      const layer = i % 2;
+      dummy.position.set(t.x, t.height + 0.5 + layer * 0.9, t.z);
+      dummy.scale.set(1.5 - layer * 0.35, 0.35, 1.2 - layer * 0.3);
+      mesh.setColorAt(i, jadeTones[Math.floor(random() * jadeTones.length)]);
+    });
+
+  // 环绕光带：贴地的扁平开口环，水平旋转烘进几何体（不用 object.rotation）。
+  // 首轮用 Torus + 大角度倾斜，圆环近端直接贴脸把画面竖切成两半；第二轮改成
+  // 近水平 Torus 仍会斜插天空。贴地 Ring 与 12 画境的地面笔触同层，绝不进相机轨道。
+  const ribbonColors = ["#fff0bd", "#c9b7e8", "#e8d2f0"];
+  for (let k = 0; k < 3; k += 1) {
+    const inner = CLEAR_R + 1.5 + k * 2.0;
+    const ring = new THREE.RingGeometry(inner, inner + 0.42, 96, 1,
+      k * 0.6, Math.PI * 1.55);
+    ring.rotateX(-Math.PI / 2);
+    const band = new THREE.Mesh(ring, new THREE.MeshBasicMaterial({
+      color: ribbonColors[k], transparent: true, opacity: 0.20,
+      side: THREE.DoubleSide, depthWrite: false, toneMapped: false,
+    }));
+    band.position.y = 0.09 + k * 0.01;
+    group.add(band);
+  }
+
+  interactives(ctx, new THREE.CylinderGeometry(0.18, 0.24, 1.2, 6), 0.6);
+
+  feature(ctx, "jcc_pavilion", "流金亭阁", "building",
+    [pavilions[0].x, pavilions[0].height, pavilions[0].z],
+    { weight: 3, shot: { el: 10 } });
+  feature(ctx, "jcc_lantern", "宫灯长廊", "lantern",
+    [lanterns[0].x, lanterns[0].y, lanterns[0].z], { weight: 2 });
+  feature(ctx, "jcc_ribbon", "环绕缎带", "sky",
+    [0, 6, -(CLEAR_R + 10)], { weight: 2, shot: { el: -2 } });
 }
 
 const PRESETS = {
@@ -738,10 +978,12 @@ const PRESETS = {
   marly: buildMarly,
   victoire: buildVictoire,
   gauguin: buildGauguin,
+  jcc: buildJCC,
 };
 
 // 返回新增的顶层子对象数量，供无头探针核对「这个 preset 真的建了东西」。
 export function buildWorldScenery(preset, ctx) {
+  ctx.features ??= [];
   const build = PRESETS[preset];
   if (!build) return 0;
   const before = ctx.group.children.length;
