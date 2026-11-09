@@ -1,7 +1,8 @@
 // 棋盘演出：宿主派发事件，棋盘只负责表现。
 //
 // 本模块刻意不依赖 three.js / DOM 之外的任何东西：横幅、文案、时长、事件历史
-// 都是纯 DOM；3D 侧的镜头/粒子/灯光脉冲由 starry.js 通过 onEvent 回调实现。
+// 都是纯 DOM；3D 侧的镜头/粒子/灯光脉冲由 starry.js 通过 onEvent 回调实现，
+// 入场镜头每绕到一个特色站点再通过 stage() 让横幅点名那处特色。
 // 事件 id、payload 字段、时长、配色的唯一真源是根目录 ceremony.json。
 
 export const CEREMONY_SCHEMA = "zengine.chessboard.ceremony/v1";
@@ -46,7 +47,7 @@ function textFor(event, payload) {
   switch (event.id) {
     case "entrance":
       return { kicker: "BOARD ENTRANCE / 入场动画", title: "画境展开",
-        detail: "方格亮起 · 镜头推近 · 两位棋手就位" };
+        detail: "环绕画境特色 · 方格亮起 · 两位棋手就位" };
     case "round_win":
       return { kicker: "ROUND WON / 回合胜利", title: "回合胜利",
         detail: `第 ${payload.round ?? "—"} 回合 · 星屑上扬` };
@@ -89,6 +90,19 @@ export function createCeremony({ doc, root, palette = {}, onEvent = () => {} }) 
     root.removeAttribute("data-event");
   }
 
+  // 入场环绕按站点切换文案：只改 kicker / detail，不动标题、时长与事件历史，
+  // 冻结契约里的 entrance 仍然是同一个事件。
+  function stage(kickerText, detailText) {
+    if (active !== "entrance") return false;
+    kicker.textContent = kickerText;
+    detail.textContent = detailText;
+    // 每一站重新触发淡入，三段看点不会像硬切字幕。
+    detail.classList.remove("stage-flash");
+    void detail.offsetWidth;
+    detail.classList.add("stage-flash");
+    return true;
+  }
+
   function dispatch(id, payload = {}) {
     const event = byId.get(id);
     if (!event) return false;
@@ -113,7 +127,7 @@ export function createCeremony({ doc, root, palette = {}, onEvent = () => {} }) 
   }
 
   return {
-    dispatch, stop,
+    dispatch, stop, stage,
     last: () => (last ? { ...last } : null),
     active: () => active,
     history: () => [...history],

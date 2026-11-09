@@ -63,15 +63,19 @@ const state = {
   spec: null, manifest: null, visual: null, ext: null,
   worlds: null, pack: null, skin: null,
   interactive: [], hints: new Map(),
+  features: [],              // 场景生成时登记的地标，入场分镜从这里派生
   external: { applied: 0, total: 0, textured: 0, error: "" },
   postAvailable: false,
 };
 
 // 棋盘演出：事件契约在 ../ceremony.json，DOM 表现由 board-ceremony.mjs 负责。
-// 3D 侧只做一段短暂氛围脉冲，绝不改 cam / tween，避免干扰环视与像素回归。
+// entrance 在 3D 侧是一段「环绕画境特色」的入场镜头（临时接管 cam，结束即复位）；
+// 其余事件只做短暂氛围脉冲，不写回 cam，避免干扰环视与像素回归。
 let ceremonyDoc = null;
 let ceremony = null;
 let ceremonyPulse = null;
+let entranceShot = null;   // 入场环绕镜头；null = 没有正在播放的入场
+let entranceFx = null;     // 方格亮起 / 扩散光圈 / 灯光渐亮 / bloom 的入场光效
 const GROUND_PLANE = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
 const scene = new THREE.Scene();
@@ -651,6 +655,7 @@ function buildFoliage() {
 
   // 柏树：2.png 左侧那几株近乎黑色的尖塔剪影。
   const cypressCount = 16;
+  const cypressSites = [];
   const cypresses = new THREE.InstancedMesh(
     new THREE.ConeGeometry(1, 1, 7),
     new THREE.MeshStandardMaterial({
@@ -662,6 +667,7 @@ function buildFoliage() {
     const radius = CLEAR_R + 5 + random() * (ISLAND_R - CLEAR_R - 10);
     const height = 8 + random() * 9;
     dummy.position.set(Math.cos(angle) * radius, height / 2, Math.sin(angle) * radius);
+    cypressSites.push([Math.cos(angle) * radius, Math.sin(angle) * radius, height]);
     dummy.rotation.set(0, random() * Math.PI, (random() - 0.5) * 0.12);
     dummy.scale.set(1.1 + random() * 0.9, height, 1.1 + random() * 0.9);
     dummy.updateMatrix();
@@ -755,6 +761,23 @@ function buildFoliage() {
   strokes.instanceMatrix.needsUpdate = true;
   strokes.frustumCulled = false;
   islandGroup.add(strokes);
+  return { houses, cypressSites };
+}
+
+// starry / generic 的地标由 buildFoliage 生成：用它的真实锚点登记，
+// 与 world-scenery.mjs 的 feature() 汇入同一份 state.features。
+function registerStarryFeatures(anchors) {
+  const village = anchors.houses[0];
+  const [cx, cz, height] = anchors.cypressSites[0];
+  registerFeature("starry_village", "村庄灯火", "building",
+    [Math.cos(village.angle) * village.radius, village.h * 0.6,
+      Math.sin(village.angle) * village.radius], { weight: 3 });
+  registerFeature("starry_cypress", "柏树剪影", "grove",
+    [cx, height, cz], { weight: 3 });
+  registerFeature("starry_lantern", "路边星灯", "lantern",
+    [CLEAR_R + 6, 2, -(CLEAR_R - 10)], { weight: 2 });
+  registerFeature("starry_sky", "旋转的夜空", "sky",
+    [0, 9, 0], { weight: 2, shot: { r: 30, el: -2 } });
 }
 
 // ---------------------------------------------------------------- 场景物件
@@ -889,6 +912,8 @@ function addLights(visual) {
   //（不要用已废弃的 renderer.useLegacyLights）。
   const LUX_SCALE = Math.PI;
   const e = light.directional_euler;
+  // 全部灯光登记下来：入场演出会按进度把它们由暗渐明，结束再恢复原亮度。
+  const lights = [];
   const directional = new THREE.DirectionalLight(
     srgb(light.directional_color), light.directional_intensity * LUX_SCALE);
   directional.position.set(
@@ -896,11 +921,16 @@ function addLights(visual) {
     Math.max(12, Math.cos(e[0] * DEG) * 55),
     Math.cos(e[1] * DEG) * 40);
   scene.add(directional);
-  scene.add(new THREE.AmbientLight(
-    srgb(light.ambient_color), light.ambient_intensity * LUX_SCALE));
+  lights.push(directional);
+  const ambient = new THREE.AmbientLight(
+    srgb(light.ambient_color), light.ambient_intensity * LUX_SCALE);
+  scene.add(ambient);
+  lights.push(ambient);
   const lighting = state.skin.lighting;
-  scene.add(new THREE.HemisphereLight(
-    lighting.hemisphere[0], lighting.hemisphere[1], 0.55 * LUX_SCALE));
+  const hemisphere = new THREE.HemisphereLight(
+    lighting.hemisphere[0], lighting.hemisphere[1], 0.55 * LUX_SCALE);
+  scene.add(hemisphere);
+  lights.push(hemisphere);
 
   // 棋盘区域四角的灯池，让画出来的场地线与周围树丛有近景层次；亮度按画境定调。
   for (const [x, z] of [[-11, -9], [11, -9], [-11, 9], [11, 9]]) {
@@ -908,7 +938,9 @@ function addLights(visual) {
       lighting.lamps, lighting.lamp_intensity * LUX_SCALE, 26, 2);
     lamp.position.set(x, 3.2, z);
     scene.add(lamp);
+    lights.push(lamp);
   }
+  state.entranceLights = lights;
 }
 
 async function setupPost(visual) {
@@ -1108,6 +1140,7 @@ async function loadExternalMeshes(visual) {
 function setView(mode) {
   const preset = PRESETS[mode];
   if (!preset) return;
+  cancelEntranceOrbit();
   viewMode = mode;
   tween = { from: { ...cam }, to: tunedPreset(mode), start: performance.now(), duration: 1150 };
   $("view-immersive").classList.toggle("active", mode === "immersive");
@@ -1131,6 +1164,7 @@ function showInspect(object) {
 
 // 6 类演出各自的氛围参数：fov 是渲染层的临时广角偏移（不写回 cam），
 // bloom 是强度增量，dust 是星尘附加转速。数值只影响观感，不进任何契约。
+// entrance 不走 pulse：它有自己的环绕镜头，fov / bloom 由 driveEntranceFx 接管。
 const CEREMONY_FX = {
   entrance:   { fov: 12, bloom: 0.35, dust: 0.0006 },
   round_win:  { fov: -2, bloom: 0.80, dust: 0.0012 },
@@ -1140,10 +1174,295 @@ const CEREMONY_FX = {
   easter_egg: { fov: 3, bloom: 0.55, dust: 0.0020 },
 };
 
+// ---------------------------------------------------------------- 入场环绕
+// 镜头由场景自己长出来：world-scenery.mjs 与 buildFoliage 在生成地标时把
+// {label, kind, focus, weight, shot} 登记进 state.features（focus 与几何共用
+// 同一批变量 / 数组），这里只按 kind 查机位语言、按 weight 选站点，自动排出
+// 分镜。挪一个桥、加一个画境，镜头跟着变，不再维护第二份手写坐标表。
+//
+// 机位语言是共享的镜头语法：桥退远看全、水面贴低横移、建筑中近景、山脊
+// 仰视、树丛贴地、棋盘低空俯视；地标可用 shot 覆盖个别参数做特性化。
+// 运动刻意克制：短弧幅度由主地标的 arc 决定（30~54°），方向由它在岛上的
+// 方位决定，帧间 smoothstep 不过冲；末帧落回 tunedPreset(viewMode)。
+// 帧字段：az / el 用度，写进 cam.azimuth 时要 * DEG（轨道相机用弧度）。
+// 登记辅助：starry 内建画境（柏树 / 村庄 / 石灯 / 夜空）走这里，
+// 其余 12 个 preset 由 world-scenery.mjs 的 feature() 登记。
+function registerFeature(id, label, kind, focus, extra = {}) {
+  state.features.push({ id, label, kind, focus, weight: 1, ...extra });
+}
+
+// kind -> 机位语言（共享的镜头语法）。subject 同时用作横幅的「突出 X」。
+// 地标可用 shot 覆盖个别参数：桥要退远看全、山要仰视、水面要贴低。
+const SHOT_LANGUAGE = {
+  bridge:   { subject: "桥",   r: 32, el: 8,  fov: 52, arc: 20 },
+  water:    { subject: "河流", r: 30, el: 4,  fov: 55, arc: 16 },
+  building: { subject: "建筑", r: 32, el: 11, fov: 52, arc: 16 },
+  interior: { subject: "室内", r: 29, el: 10, fov: 54, arc: 14 },
+  mountain: { subject: "山峰", r: 44, el: -4, fov: 46, arc: 12 },
+  grove:    { subject: "树丛", r: 31, el: 9,  fov: 54, arc: 16 },
+  field:    { subject: "田野", r: 30, el: 6,  fov: 54, arc: 16 },
+  flag:     { subject: "旗帜", r: 32, el: 12, fov: 50, arc: 14 },
+  lantern:  { subject: "灯火", r: 30, el: 7,  fov: 55, arc: 12 },
+  sky:      { subject: "天光", r: 34, el: -2, fov: 56, arc: 10 },
+  path:     { subject: "小路", r: 29, el: 5,  fov: 57, arc: 14 },
+  board:    { subject: "棋盘", r: 27, el: 12, fov: 58, arc: 8  },
+};
+
+function languageOf(item) {
+  return { ...SHOT_LANGUAGE.board, ...SHOT_LANGUAGE[item.kind],
+    ...(item.shot ?? {}) };
+}
+
+function bearingOf(focus) {
+  return Math.atan2(focus[0], focus[2]) / DEG;
+}
+
+function angleDelta(a, b) {
+  return ((a - b + 540) % 360) - 180;
+}
+
+// 从登记的特色自动生成 5 帧：建立镜头 -> 绕主锚点 -> 收回棋盘 -> 落位。
+//
+// 相机位置与注视点解耦：updateCamera 按「棋盘中心 + az/radius/el」算稳定
+// 短弧，注视点 look 指向登记地标，在 aimEntranceCamera 里覆盖 lookAt。
+//
+// 注视点沿「主锚点 -> 棋盘中心」同一条射线单调收缩（keeps 1→0），整段只
+// 看一个特色、方向不变；相机从锚点对面走 ≤45° 短弧绕回默认机位。上一版
+// 在多个地标之间切注视点 + 绕 100°，实测摇镜 40~57°，那就是「乱」的来源。
+function deriveEntranceFrames() {
+  const registered = (state.features ?? [])
+    .filter((item) => item && Array.isArray(item.focus));
+  const outline = state.board?.outline ?? [];
+  const home = tunedPreset(viewMode);
+  const pivot = [0, home.targetY, 0];
+  const boardFocus = [home.panX, home.targetY, home.panZ];
+  const boardLook = outline.length
+    ? [outline.reduce((sum, p) => sum + p[0], 0) / outline.length, 0,
+      outline.reduce((sum, p) => sum + p[1], 0) / outline.length]
+    : [0, 0, 0];
+  const board = {
+    id: "board", label: "画境棋盘", kind: "board", focus: boardFocus, weight: 0,
+  };
+
+  // 主锚点 = 权重最高的登记地标，机位语言由它的 kind（+ shot 覆盖）决定。
+  const ranked = [...registered].sort((a, b) => (b.weight ?? 1) - (a.weight ?? 1));
+  const main = ranked[0] ?? board;
+  const lang = languageOf(main);
+  const mainBearing = bearingOf(main.focus);
+  const anchorRadius = Math.hypot(main.focus[0], main.focus[2]);
+  const opposite = anchorRadius < 5 ? 0 : angleDelta(mainBearing + 180, 0);
+  const rawSweep = THREE.MathUtils.clamp(opposite, -45, 45);
+  const sweep = Math.abs(rawSweep) < 20
+    ? 20 * (mainBearing >= 0 ? 1 : -1) : rawSweep;
+
+  // keeps 是注视点在主锚点->棋盘射线上的位置，1 = 真实地标坐标（抓到锚点）。
+  const keeps = [1, 0.7, 0.35, 0.1, 0];
+  const looks = keeps.map((keep) => main.focus.map(
+    (v, i) => v * keep + boardLook[i] * (1 - keep)));
+  looks[4] = boardFocus;   // 落位帧注视点回到默认构图
+  const ats = [0, 0.24, 0.48, 0.74, 1];
+  const azs = [1, 0.75, 0.45, 0.15].map((f) => sweep * f);
+  azs.push(home.azimuth / DEG);   // 末帧落回默认方位（弧度 -> 度）
+  const rs = [52, lang.r, lang.r * 0.92, 28, home.radius];
+  const els = [18, lang.el, lang.el * 0.7 + 2, 8, home.elevation];
+  const fovs = [44, lang.fov, lang.fov + 2, 58, home.fov];
+  const labels = ["画境远景", main.label, `${main.label} · 环绕`,
+    "画境棋盘", "画境展开"];
+  const subjects = ["全景", lang.subject, lang.subject, "棋盘", "棋盘"];
+  return ats.map((at, i) => ({
+    at, label: labels[i], subject: subjects[i],
+    focus: pivot, look: looks[i],
+    az: azs[i], r: rs[i], el: els[i], fov: fovs[i],
+  }));
+}
+
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+// 分段 smoothstep：每段首尾速度为 0，镜头在每处特色上稳一下再走，不会像
+// Catmull-Rom 那样在端点过冲、把方位甩过头造成「疯狂转圈」。
+function sampleEntranceFrame(frames, t) {
+  let i = 0;
+  while (i < frames.length - 2 && t > frames[i + 1].at) i += 1;
+  const a = frames[i];
+  const b = frames[i + 1];
+  const u = THREE.MathUtils.clamp(
+    (t - a.at) / Math.max(1e-6, b.at - a.at), 0, 1);
+  const s = u * u * (3 - 2 * u);
+  const mix = (get) => THREE.MathUtils.lerp(get(a), get(b), s);
+  const axis = (k) => (frame) => frame.focus[k];
+  const lookAxis = (k) => (frame) => frame.look[k];
+  return {
+    focus: [mix(axis(0)), mix(axis(1)), mix(axis(2))],
+    look: [mix(lookAxis(0)), mix(lookAxis(1)), mix(lookAxis(2))],
+    az: mix((frame) => frame.az),
+    r: mix((frame) => frame.r),
+    el: mix((frame) => frame.el),
+    fov: mix((frame) => frame.fov),
+  };
+}
+
+// 末帧 home 已由 deriveEntranceFrames 按 tunedPreset(viewMode) 填好。
+function makeEntranceFrames() {
+  return deriveEntranceFrames();
+}
+
+// 入场光效：棋盘区域轮廓描边「亮起」+ 从中心扩散的光圈 + 灯光由暗渐明。
+// 轮廓取 state.board.outline（ZBRD 冻结契约），不另写一套棋盘公式。
+function buildEntranceFx() {
+  const accent = new THREE.Color(
+    state.skin.scenery.ceremony?.accent
+    ?? ceremonyDoc?.palette_defaults?.accent ?? "#e8b96a");
+  const group = new THREE.Group();
+  group.name = "entrance_fx";
+  group.visible = false;
+  const points = state.board.outline.map(([x, z]) => new THREE.Vector3(x, 0.07, z));
+  const line = new THREE.LineLoop(
+    new THREE.BufferGeometry().setFromPoints(points),
+    new THREE.LineBasicMaterial({
+      color: accent, transparent: true, opacity: 0,
+      depthWrite: false, toneMapped: false,
+    }));
+  group.add(line);
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.96, 1, 96),
+    new THREE.MeshBasicMaterial({
+      color: accent, transparent: true, opacity: 0, side: THREE.DoubleSide,
+      depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending,
+    }));
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 0.09;
+  group.add(ring);
+  scene.add(group);
+  entranceFx = {
+    group, line, ring,
+    lights: (state.entranceLights ?? []).map((light) => ({ light, base: light.intensity })),
+    bloomBase: bloomPass?.strength ?? 0,
+  };
+}
+
+function driveEntranceOrbit(t) {
+  const frame = sampleEntranceFrame(entranceShot.frames, t);
+  // focus 只决定相机位置（固定绕棋盘中心的稳定短弧），不决定注视点。
+  cam.panX = frame.focus[0];
+  cam.targetY = frame.focus[1];
+  cam.panZ = frame.focus[2];
+  cam.azimuth = frame.az * DEG;   // 分镜表用度，轨道相机用弧度
+  cam.radius = frame.r;
+  cam.elevation = frame.el;
+  cam.fov = frame.fov;
+  // 真实地标坐标交给 aimEntranceCamera 覆盖 camera.lookAt，镜头才真的对准锚点。
+  entranceShot.look = frame.look;
+}
+
+// 入场第一帧就得对准锚点：startEntranceOrbit 里的 updateCamera 只会
+// lookAt 棋盘中心，不能等下一帧 animate 才纠正（会闪一帧错误朝向）。
+// Camera.lookAt 从 matrixWorld 取 eye，推进快时先同步本帧矩阵。
+function aimEntranceCamera() {
+  if (!entranceShot?.look) return;
+  const [lx, ly, lz] = entranceShot.look;
+  camera.updateMatrixWorld();
+  camera.lookAt(lx, ly, lz);
+}
+
+function driveEntranceFx(t) {
+  const fx = entranceFx;
+  if (!fx) return;
+  const env = Math.sin(Math.PI * t);
+  fx.group.visible = true;
+  fx.line.material.opacity = 0.9 * env;
+  fx.ring.scale.setScalar(2 + 24 * t);
+  fx.ring.material.opacity = 0.5 * (1 - t)
+    * THREE.MathUtils.smoothstep(t, 0, 0.14);
+  const lit = easeInOutCubic(Math.min(1, t * 1.2));
+  for (const entry of fx.lights) {
+    entry.light.intensity = entry.base * (0.38 + 0.62 * lit);
+  }
+  if (bloomPass) bloomPass.strength = fx.bloomBase + CEREMONY_FX.entrance.bloom * env;
+}
+
+function updateEntranceShot(time) {
+  const shot = entranceShot;
+  if (!shot) return;
+  const t = THREE.MathUtils.clamp((time - shot.start) / shot.duration, 0, 1);
+  driveEntranceOrbit(t);
+  driveEntranceFx(t);
+  if (dust) dust.rotation.y += CEREMONY_FX.entrance.dust * Math.sin(Math.PI * t) * 16;
+  const stage = Math.min(shot.labels.length - 1, Math.floor(t * shot.labels.length));
+  if (stage !== shot.stage) {
+    shot.stage = stage;
+    ceremony?.stage?.(
+      `ORBIT 0${stage + 1} / 0${shot.labels.length} · 突出${shot.subjects[stage]}`,
+      `${shot.labels[stage]} · ${state.pack.title_zh}`);
+  }
+  if (t >= 1) settleEntrance();
+}
+
+// 用户主动操作时把镜头交还给他：cam 停在当前机位，光效立刻收干净。
+function cancelEntranceOrbit() {
+  if (!entranceShot) return;
+  entranceShot = null;
+  if (entranceFx) {
+    entranceFx.group.visible = false;
+    entranceFx.line.material.opacity = 0;
+    entranceFx.ring.material.opacity = 0;
+    for (const entry of entranceFx.lights) entry.light.intensity = entry.base;
+    if (bloomPass) bloomPass.strength = entranceFx.bloomBase;
+  }
+}
+
+// 把构图精确复位到当前视角预设：演出收尾与无头探针取基线都走这里，
+// 所以自动入场可以是完整环绕，不必再为了像素回归砍成只有横幅。
+function settleEntrance() {
+  if (!entranceShot) return;
+  entranceShot = null;
+  Object.assign(cam, tunedPreset(viewMode));
+  tween = null;
+  ceremonyPulse = null;
+  camera.fov = cam.fov;
+  camera.updateProjectionMatrix();
+  if (entranceFx) {
+    entranceFx.group.visible = false;
+    entranceFx.line.material.opacity = 0;
+    entranceFx.ring.material.opacity = 0;
+    for (const entry of entranceFx.lights) entry.light.intensity = entry.base;
+    if (bloomPass) bloomPass.strength = entranceFx.bloomBase;
+  }
+  updateCamera(performance.now());
+}
+
+function startEntranceOrbit(event, payload) {
+  if (!state.board || !entranceFx) return false;
+  settleEntrance();              // 连播时先把上一段收干净，避免两段镜头叠在一起
+  const frames = makeEntranceFrames();
+  const stations = frames.slice(1, 4);
+  ceremonyPulse = null;
+  if (bloomPass) bloomPass.strength = entranceFx.bloomBase;
+  entranceFx.group.visible = true;
+  entranceShot = {
+    start: performance.now(),
+    duration: event.duration_ms,
+    frames,
+    labels: stations.map((frame) => frame.label),
+    subjects: stations.map((frame) => frame.subject),
+    stage: -1,
+    // 自动入场期间无头探针会 settle 后再取像素基线；手动重播 / ?event= 不打断。
+    auto: !!payload.auto,
+  };
+  driveEntranceOrbit(0);
+  updateCamera(performance.now());
+  aimEntranceCamera();   // 第一帧就对准锚点，别等 animate
+  return true;
+}
+
 function applyCeremonyFx(event, payload) {
-  // 页面加载完成的自动入场只显示横幅：此刻无头探针正在取像素与拖拽基线，
-  // 任何 fov / bloom 抖动都会污染回归。手动重播或 ?event= 才是完整演出。
-  if (payload.auto) return;
+  if (event.id === "entrance") {
+    // 入场是完整环绕镜头：自动播放、控件重播、?event=entrance 一视同仁；
+    // 像素回归的稳定性由 probe() 里的 settleEntrance() 负责，不再砍掉演出。
+    startEntranceOrbit(event, payload);
+    return;
+  }
   const fx = CEREMONY_FX[event.id] ?? CEREMONY_FX.entrance;
   ceremonyPulse = {
     start: performance.now(), duration: event.duration_ms,
@@ -1154,6 +1473,8 @@ function applyCeremonyFx(event, payload) {
 
 function playCeremony(id, payload = {}) {
   if (!ceremony || !ceremonyDoc) return false;
+  // 别的演出插进来时把入场镜头交还给用户，避免两段镜头 / 光效叠在一起。
+  if (id !== "entrance" && entranceShot) cancelEntranceOrbit();
   // 演示用的回合 / 连胜 / 等级来自契约里的 sample_payload；真实对局由宿主
   // 直接传 payload 覆盖。棋盘自己不判定胜负、不累加连胜、不推断等级。
   const sample = ceremonyDoc.events.find((event) => event.id === id)?.sample_payload ?? {};
@@ -1205,6 +1526,7 @@ function bindEvents() {
 
   canvas.addEventListener("pointerdown", (event) => {
     if (!event.isPrimary) return;
+    cancelEntranceOrbit();
     dragging = {
       x: event.clientX, y: event.clientY,
       azimuth: cam.azimuth, elevation: cam.elevation, moved: 0,
@@ -1252,6 +1574,7 @@ function bindEvents() {
   canvas.addEventListener("pointercancel", () => { dragging = null; });
   canvas.addEventListener("wheel", (event) => {
     event.preventDefault();
+    cancelEntranceOrbit();
     tween = null;
     cam.radius = THREE.MathUtils.clamp(cam.radius * (1 + event.deltaY * 0.0012), 12, 170);
   }, { passive: false });
@@ -1271,6 +1594,7 @@ function bindEvents() {
     else if (event.key === "ArrowRight") { dx = Math.cos(forward) * step; dz = -Math.sin(forward) * step; }
     else return;
     event.preventDefault();
+    cancelEntranceOrbit();
     tween = null;
     cam.panX = THREE.MathUtils.clamp(cam.panX + dx, -40, 40);
     cam.panZ = THREE.MathUtils.clamp(cam.panZ + dz, -40, 40);
@@ -1293,6 +1617,7 @@ function bindEvents() {
   });
   $("toggle-tour").addEventListener("change", (event) => {
     tour = event.target.checked;
+    if (tour) cancelEntranceOrbit();
   });
   $("inspect-close").addEventListener("click", () => showInspect(null));
   $("ceremony-select").addEventListener("change", (event) => {
@@ -1302,6 +1627,8 @@ function bindEvents() {
   });
 
   addEventListener("resize", () => {
+    // 横竖屏档位变化会重设 fov / radius：先收掉入场镜头，避免两套构图互相覆盖。
+    if (entranceShot) settleEntrance();
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
@@ -1326,7 +1653,14 @@ function render() {
 
 function animate(time) {
   requestAnimationFrame(animate);
-  if (tween) {
+  if (dust) dust.rotation.y = time * 0.000018;
+  if (skyMesh) skyMesh.rotation.y = (state.visual.skybox.rotation_deg ?? 0) * DEG
+    + time * 0.000004;
+  // 入场环绕临时接管 cam：自己插值半径 / 方位 / 仰角 / fov，结束时精确复位。
+  // dust 基线先设好，入场脉冲是叠在它上面的附加转速。
+  if (entranceShot) {
+    updateEntranceShot(time);
+  } else if (tween) {
     const t = THREE.MathUtils.clamp((time - tween.start) / tween.duration, 0, 1);
     const s = t * t * (3 - 2 * t);
     for (const key of Object.keys(tween.to)) {
@@ -1334,13 +1668,12 @@ function animate(time) {
     }
     if (t >= 1) tween = null;
   }
-  if (tour && !tween) cam.azimuth += 0.00012 * 16;
-  if (dust) dust.rotation.y = time * 0.000018;
-  if (skyMesh) skyMesh.rotation.y = (state.visual.skybox.rotation_deg ?? 0) * DEG
-    + time * 0.000004;
+  if (tour && !tween && !entranceShot) cam.azimuth += 0.00012 * 16;
   updateCamera(time);
+  // 入场每帧都对准场景锚点；结束后 entranceShot 清空，构图回到默认 lookAt。
+  aimEntranceCamera();
   // 演出脉冲必须在 updateCamera 之后：它会临时覆盖 camera.fov，但从不写回
-  // cam，所以拖拽 / setView / resize 的构图完全不受影响。
+  // cam，所以拖拽 / setView / resize 的构图完全不受影响。entrance 不走这里。
   if (ceremonyPulse) {
     const pulse = ceremonyPulse;
     const t = THREE.MathUtils.clamp((time - pulse.start) / pulse.duration, 0, 1);
@@ -1375,9 +1708,18 @@ window.__zengineStarry = {
     active: () => ceremony?.active() ?? null,
     history: () => ceremony?.history() ?? [],
     eventIds: () => ceremony?.eventIds() ?? [],
-    stop: () => ceremony?.stop(),
+    stop: () => {
+      if (entranceShot) settleEntrance();
+      ceremony?.stop();
+    },
+    orbitActive: () => !!entranceShot,
+    look: () => entranceShot?.look ?? null,
+    settle: settleEntrance,
   },
   probe() {
+    // 自动入场期间无头探针要取像素基线：先把环绕镜头锁定回默认构图，
+    // 保证 topSky / center / ground / left / right 采样永远落在同一帧。
+    if (entranceShot?.auto) settleEntrance();
     // 直出一次只取 draw call / 三角形统计（composer 的 info 只反映最后一个 pass）。
     renderer.render(scene, camera);
     const drawCalls = renderer.info.render.calls;
@@ -1406,6 +1748,18 @@ window.__zengineStarry = {
       sceneryPreset: state.skin?.scenery.preset ?? null,
       skyMode: state.pack?.sky.mode ?? null,
       conceptStatus: state.pack?.concept.status ?? null,
+      artwork: state.pack?.artwork ? {
+        mode: state.pack.artwork.mode,
+        image: state.pack.artwork.image,
+        visible: !$("artwork").hidden,
+        boardVisible: !$("artwork-grid").hidden,
+      } : null,
+      boardLayer: state.artBoard ? {
+        columns: state.artBoard.columns,
+        rows: state.artBoard.rows,
+        anchors: state.artBoard.anchors,
+        pieces: state.artBoard.pieces.size,
+      } : null,
       sceneProps,
       canvas: [width, height],
       topSky: pick(0.5, 0.9), horizon: pick(0.5, 0.58),
@@ -1454,6 +1808,201 @@ window.__zengineStarry = {
   },
 };
 
+// 原画直出（第 13 画境）：把实机截图按原比例整幅铺在 3D 画布之上。
+// 这是唯一能保证与来源图逐像素一致的做法 —— 程序化 3D 几何或 AI 生成的单件
+// 模型都只能做语义近似。3D 场景照常构建、只是 opacity 归零，因此 13 画境的
+// 地面签名 / boardSlabMeshes / ceremony / 入场分镜契约一个都不破。
+function applyArtwork(pack) {
+  const art = pack.artwork;
+  if (!art || art.mode !== "pixel_faithful") return;
+  const root = $("artwork");
+  const img = $("artwork-img");
+  const src = `../${art.image}`;
+  img.src = src;
+  img.alt = `${pack.title_zh} · 实机棋盘截图`;
+  root.style.setProperty("--artwork-blur", `url("${src}")`);
+  root.style.backgroundColor = art.backdrop ?? "#2a1a24";
+  root.hidden = false;
+  document.body.classList.add("artwork-mode");
+  // ?clean=1 连 HUD 一起隐藏，得到与来源截图逐像素一致的画面。
+  if (new URLSearchParams(location.search).has("clean")) {
+    document.body.classList.add("clean");
+  }
+  $("artwork-controls").hidden = false;
+  $("thumb").title = `${pack.title_zh} · 实机截图（原画直出）`;
+  $("hint").textContent = "原画直出 · 右侧可切换 3D 近似，或打开可落子的真实棋盘";
+
+  // 真正的棋盘层：行列数 / 逻辑边界 / 两个棋手锚点全部来自
+  // build/board.manifest.json（loadBoardRegion 已写进 state.manifest），
+  // art.grid.quad 只负责把世界坐标透视映射到原图像素坐标。
+  // 冻结契约只要求「最外一个方格 + 两个棋手占位」；7×8 是逻辑落点、不是可见几何，
+  // 所以这一层是**可开关的交互工具层**，默认关闭以保持原画 1:1。
+  const canvas = $("artwork-grid");
+  canvas.width = art.size_px[0];
+  canvas.height = art.size_px[1];
+  const ctx = canvas.getContext("2d");
+  const spec = state.manifest.grid;
+  const cols = spec.columns;               // 7
+  const rows = spec.rows;                   // 8
+  const bounds = spec.logical_bounds_xz;    // [-8.062, 8.063, -7.2, 7.2]
+  const anchors = state.manifest.anchors ?? [];
+  const q = art.grid.quad;
+
+  const at = (u, v) => {
+    const top = [q[0][0] + (q[1][0] - q[0][0]) * u,
+      q[0][1] + (q[1][1] - q[0][1]) * u];
+    const bottom = [q[3][0] + (q[2][0] - q[3][0]) * u,
+      q[3][1] + (q[2][1] - q[3][1]) * u];
+    return [top[0] + (bottom[0] - top[0]) * v,
+      top[1] + (bottom[1] - top[1]) * v];
+  };
+  // 双线性四边形的逆映射（牛顿迭代）：把鼠标像素还原成 (u,v)。
+  const invert = (px, py) => {
+    let u = .5, v = .5;
+    for (let i = 0; i < 20; i += 1) {
+      const p = at(u, v), pu = at(u + 1e-3, v), pv = at(u, v + 1e-3);
+      const a = (pu[0] - p[0]) * 1e3, b = (pv[0] - p[0]) * 1e3;
+      const c = (pu[1] - p[1]) * 1e3, d = (pv[1] - p[1]) * 1e3;
+      const det = a * d - b * c;
+      if (Math.abs(det) < 1e-9) break;
+      const ex = px - p[0], ey = py - p[1];
+      u += (d * ex - b * ey) / det;
+      v += (a * ey - c * ex) / det;
+    }
+    return [u, v];
+  };
+  const worldToUV = (x, z) => [
+    (x - bounds[0]) / (bounds[1] - bounds[0]),
+    (z - bounds[2]) / (bounds[3] - bounds[2]),
+  ];
+  const cellQuad = (col, row) => [
+    at(col / cols, row / rows), at((col + 1) / cols, row / rows),
+    at((col + 1) / cols, (row + 1) / rows), at(col / cols, (row + 1) / rows),
+  ];
+  const fillQuad = (points, color) => {
+    ctx.beginPath();
+    points.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  };
+  const stroke = (points, alpha, width) => {
+    ctx.beginPath();
+    points.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+    ctx.strokeStyle = `rgba(255, 242, 208, ${alpha})`;
+    ctx.lineWidth = width;
+    ctx.stroke();
+  };
+
+  const pieces = new Map();   // "col,row" -> 0/1，交替落子
+  let hover = null;
+  let side = 0;
+  state.artBoard = { columns: cols, rows, anchors: anchors.length, pieces };
+
+  const draw = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 冻结核心：最外一个方格（一整块连续台面，不是 56 个独立格子块）。
+    fillQuad([at(0, 0), at(1, 0), at(1, 1), at(0, 1)],
+      "rgba(255, 238, 205, .045)");
+    stroke([at(0, 0), at(1, 0), at(1, 1), at(0, 1), at(0, 0)], .85, 3);
+    // 7×8 逻辑落点：只画参考线，不产生任何几何。
+    const steps = [0, .25, .5, .75, 1];
+    for (let c = 1; c < cols; c += 1) {
+      stroke(steps.map((v) => at(c / cols, v)), .34, 1.6);
+    }
+    for (let r = 1; r < rows; r += 1) {
+      stroke(steps.map((u) => at(u, r / rows)), .34, 1.6);
+    }
+    if (hover) fillQuad(cellQuad(hover[0], hover[1]), "rgba(255, 214, 128, .28)");
+    for (const [key, player] of pieces) {
+      const [col, row] = key.split(",").map(Number);
+      const quad = cellQuad(col, row);
+      const cx = quad.reduce((s, p) => s + p[0], 0) / 4;
+      const cy = quad.reduce((s, p) => s + p[1], 0) / 4;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 15, 0, Math.PI * 2);
+      ctx.fillStyle = player ? "rgba(178, 132, 232, .88)" : "rgba(255, 198, 92, .92)";
+      ctx.shadowColor = player ? "#c9a6f2" : "#ffd27a";
+      ctx.shadowBlur = 18;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(255, 248, 226, .8)";
+      ctx.stroke();
+    }
+    // 冻结核心：左下 / 右上两个棋手占位，坐标来自 anchor_* 部件。
+    ctx.font = "18px system-ui, sans-serif";
+    ctx.textAlign = "center";
+    for (let i = 0; i < anchors.length; i += 1) {
+      const [x, , z] = anchors[i].position;
+      const [u, v] = worldToUV(x, z);
+      const [px, py] = at(u, v);
+      ctx.beginPath();
+      ctx.ellipse(px, py, 30, 18, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255, 230, 180, .9)";
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      ctx.fillStyle = "rgba(46, 22, 32, .62)";
+      ctx.fillRect(px - 46, py - 13, 92, 26);
+      ctx.fillStyle = "#ffe9c0";
+      ctx.fillText(`棋手 0${i + 1}`, px, py + 6);
+    }
+  };
+
+  const readout = $("board-readout");
+  const cellAt = (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width * canvas.width;
+    const py = (event.clientY - rect.top) / rect.height * canvas.height;
+    const [u, v] = invert(px, py);
+    if (u < 0 || u > 1 || v < 0 || v > 1) return null;
+    return [Math.min(cols - 1, Math.floor(u * cols)),
+      Math.min(rows - 1, Math.floor(v * rows))];
+  };
+  canvas.addEventListener("pointermove", (event) => {
+    hover = cellAt(event);
+    if (hover) {
+      const x = bounds[0] + (bounds[1] - bounds[0]) * ((hover[0] + .5) / cols);
+      const z = bounds[2] + (bounds[3] - bounds[2]) * ((hover[1] + .5) / rows);
+      readout.textContent = `格 ${hover[0] + 1}/${cols} · ${hover[1] + 1}/${rows}`
+        + `　世界 (${x.toFixed(2)}, ${z.toFixed(2)})`;
+    } else {
+      readout.textContent = "棋盘外";
+    }
+    draw();
+  });
+  canvas.addEventListener("pointerleave", () => {
+    hover = null; readout.textContent = ""; draw();
+  });
+  canvas.addEventListener("click", (event) => {
+    const cell = cellAt(event);
+    if (!cell) return;
+    const key = cell.join(",");
+    if (pieces.has(key)) pieces.delete(key);
+    else pieces.set(key, side++ % 2);
+    draw();
+  });
+
+  const enableBoard = (on) => {
+    canvas.hidden = !on;
+    readout.hidden = !on;
+    document.body.classList.toggle("board-mode", on);
+    if (on) draw();
+  };
+  const toggleBoard = $("toggle-board");
+  toggleBoard.addEventListener("change", (event) => enableBoard(event.target.checked));
+  // ?board=1 直接以可落子棋盘打开；?clean=1 仍是纯原画（两者同时给时纯图优先）。
+  const params = new URLSearchParams(location.search);
+  const boardParam = params.has("board") && !params.has("clean");
+  toggleBoard.checked = boardParam;
+  enableBoard(boardParam);
+
+  $("toggle-artwork").addEventListener("change", (event) => {
+    document.body.classList.toggle("artwork-mode", event.target.checked);
+    root.hidden = !event.target.checked;
+  });
+}
+
 async function main() {
   if (location.protocol === "file:") {
     fail("请通过专用静态服务打开：python integration/chessboard/tools/serve.py\n\n"
@@ -1490,7 +2039,9 @@ async function main() {
     });
 
     // 先解析 ZBRD 拿到棋盘区域轮廓，再把它画进地形贴图；顺序不能反。
+    // 原画棋盘层也要等 state.manifest 就绪：行列 / 逻辑边界 / 锚点都从它读。
     state.board = await loadBoardRegion();
+    applyArtwork(pack);
     // 星夜用 sha 锁定的同源全景图；另外 11 个世界按视觉包调色板程序化画天穹。
     state.skyTexture = pack.sky.mode === "panorama_sha_locked"
       ? await loadShaTexture(
@@ -1499,12 +2050,13 @@ async function main() {
     buildSky(visual);
     buildGround(state.board);
     if (pack.scenery.preset === "starry" || pack.scenery.preset === "generic") {
-      buildFoliage();
+      registerStarryFeatures(buildFoliage());
     } else {
       buildWorldScenery(pack.scenery.preset, {
         group: islandGroup, propsGroup: scenePropsGroup, skin: state.skin,
         random: mulberry32(90210 + pack.index * 977),
         CLEAR_R, ISLAND_R, PATHS, interactive: state.interactive,
+        features: state.features,
       });
     }
     buildSceneProps();
@@ -1516,10 +2068,11 @@ async function main() {
       await loadExternalMeshes(visual);
     }
     state.interactive = state.interactive.filter((item) => item.visible);
+    buildEntranceFx();
     bindEvents();
     animate(performance.now());
     $("loading").classList.add("done");
-    // 加载完成自动来一次轻量入场；?event=<id> 可直接分享 / 回归任一演出。
+    // 加载完成自动播完整环绕入场；?event=<id> 可直接分享 / 回归任一演出。
     const requestedEvent = new URLSearchParams(location.search).get("event");
     if (!requestedEvent || !playCeremony(requestedEvent)) {
       playCeremony("entrance", { auto: true });
